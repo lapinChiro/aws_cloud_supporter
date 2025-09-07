@@ -1,0 +1,524 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Real-time data analytics pipeline with Kinesis, Glue, and Athena'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+    Description: Environment name
+
+  DataRetentionDays:
+    Type: Number
+    Default: 7
+    MinValue: 1
+    MaxValue: 365
+    Description: Number of days to retain data in S3
+
+Resources:
+  # S3 Buckets
+  RawDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # BucketName is omitted to let CloudFormation generate a unique name
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldRawData
+            Status: Enabled
+            ExpirationInDays: !Ref DataRetentionDays
+      VersioningConfiguration:
+        Status: Enabled
+
+  ProcessedDataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # BucketName is omitted to let CloudFormation generate a unique name
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: TransitionToIA
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: STANDARD_IA
+              - TransitionInDays: 90
+                StorageClass: GLACIER
+            ExpirationInDays: 365
+
+  # Kinesis Data Stream
+  DataStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: !Sub '${AWS::StackName}-data-stream'
+      ShardCount: 2
+      RetentionPeriodHours: 24
+      StreamEncryption:
+        EncryptionType: KMS
+        KeyId: alias/aws/kinesis
+      StreamModeDetails:
+        StreamMode: PROVISIONED
+
+  # IAM Role for Kinesis Firehose
+  FirehoseDeliveryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: FirehoseDeliveryPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:AbortMultipartUpload
+                  - s3:GetBucketLocation
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:PutObject
+                Resource:
+                  - !Sub '${RawDataBucket.Arn}'
+                  - !Sub '${RawDataBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - kinesis:DescribeStream
+                  - kinesis:GetShardIterator
+                  - kinesis:GetRecords
+                  - kinesis:ListShards
+                Resource: !GetAtt DataStream.Arn
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
+              - Effect: Allow
+                Action:
+                  - glue:GetTableVersions
+                Resource: '*'
+
+  # Kinesis Data Firehose
+  DataFirehose:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Sub '${AWS::StackName}-firehose'
+      DeliveryStreamType: KinesisStreamAsSource
+      KinesisStreamSourceConfiguration:
+        KinesisStreamARN: !GetAtt DataStream.Arn
+        RoleARN: !GetAtt FirehoseDeliveryRole.Arn
+      ExtendedS3DestinationConfiguration:
+        BucketARN: !GetAtt RawDataBucket.Arn
+        Prefix: 'raw-data/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/'
+        ErrorOutputPrefix: 'error-data/'
+        RoleARN: !GetAtt FirehoseDeliveryRole.Arn
+        BufferingHints:
+          SizeInMBs: 128
+          IntervalInSeconds: 300
+        CompressionFormat: GZIP
+        DataFormatConversionConfiguration:
+          Enabled: true
+          OutputFormatConfiguration:
+            Serializer:
+              ParquetSerDe: {}
+          SchemaConfiguration:
+            DatabaseName: !Ref GlueDatabase
+            TableName: !Ref RawDataGlueTable
+            RoleARN: !GetAtt FirehoseDeliveryRole.Arn
+
+  # Glue Database
+  GlueDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: !Sub '${AWS::StackName}_analytics_db'
+        Description: Analytics database for data pipeline
+
+  # Glue Table for Raw Data
+  RawDataGlueTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref GlueDatabase
+      TableInput:
+        Name: raw_events
+        Description: Raw event data table
+        StorageDescriptor:
+          Columns:
+            - Name: event_id
+              Type: string
+            - Name: event_type
+              Type: string
+            - Name: timestamp
+              Type: timestamp
+            - Name: user_id
+              Type: string
+            - Name: session_id
+              Type: string
+            - Name: properties
+              Type: string
+            - Name: device_info
+              Type: struct<platform:string,version:string,browser:string>
+          Location: !Sub 's3://${RawDataBucket}/raw-data/'
+          InputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe
+          StoredAsSubDirectories: false
+        PartitionKeys:
+          - Name: year
+            Type: string
+          - Name: month
+            Type: string
+          - Name: day
+            Type: string
+          - Name: hour
+            Type: string
+
+  # Glue Table for Processed Data
+  ProcessedDataGlueTable:
+    Type: AWS::Glue::Table
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseName: !Ref GlueDatabase
+      TableInput:
+        Name: processed_events
+        Description: Processed and aggregated event data
+        StorageDescriptor:
+          Columns:
+            - Name: date
+              Type: date
+            - Name: hour
+              Type: int
+            - Name: event_type
+              Type: string
+            - Name: user_count
+              Type: bigint
+            - Name: event_count
+              Type: bigint
+            - Name: avg_session_duration
+              Type: double
+            - Name: platform_distribution
+              Type: map<string,bigint>
+          Location: !Sub 's3://${ProcessedDataBucket}/processed-data/'
+          InputFormat: org.apache.hadoop.mapred.TextInputFormat
+          OutputFormat: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+          SerdeInfo:
+            SerializationLibrary: org.apache.hadoop.hive.lazy.LazySimpleSerDe
+            Parameters:
+              field.delim: ','
+        PartitionKeys:
+          - Name: year
+            Type: string
+          - Name: month
+            Type: string
+
+  # IAM Role for Glue Jobs
+  GlueJobRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: glue.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+        - PolicyName: GlueJobPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub '${RawDataBucket.Arn}'
+                  - !Sub '${RawDataBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub '${ProcessedDataBucket.Arn}/*'
+
+  # Glue ETL Job
+  ProcessingJob:
+    Type: AWS::Glue::Job
+    Properties:
+      Name: !Sub '${AWS::StackName}-etl-job'
+      Description: ETL job to process raw event data
+      Role: !GetAtt GlueJobRole.Arn
+      Command:
+        Name: glueetl
+        # Note: Script must be uploaded to S3 before stack creation
+        # The bucket name follows AWS Glue's default naming convention
+        ScriptLocation: !Sub 's3://aws-glue-scripts-${AWS::AccountId}-${AWS::Region}/scripts/process_events.py'
+        PythonVersion: '3'
+      DefaultArguments:
+        '--job-language': python
+        '--job-bookmark-option': job-bookmark-enable
+        '--enable-metrics': ''
+        '--enable-continuous-cloudwatch-log': 'true'
+        '--enable-spark-ui': 'true'
+        '--spark-event-logs-path': !Sub 's3://aws-glue-scripts-${AWS::AccountId}-${AWS::Region}/sparkHistoryLogs/'
+        '--SOURCE_DATABASE': !Ref GlueDatabase
+        '--SOURCE_TABLE': !Ref RawDataGlueTable
+        '--TARGET_BUCKET': !Ref ProcessedDataBucket
+      MaxRetries: 1
+      ExecutionProperty:
+        MaxConcurrentRuns: 2
+      GlueVersion: '3.0'
+      MaxCapacity: 10
+      Timeout: 60
+
+  # Glue Crawler for Raw Data
+  RawDataCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: !Sub '${AWS::StackName}-raw-data-crawler'
+      Description: Crawler for raw event data
+      Role: !GetAtt GlueJobRole.Arn
+      DatabaseName: !Ref GlueDatabase
+      Targets:
+        S3Targets:
+          - Path: !Sub 's3://${RawDataBucket}/raw-data/'
+      SchemaChangePolicy:
+        UpdateBehavior: UPDATE_IN_DATABASE
+        DeleteBehavior: LOG
+      Schedule:
+        ScheduleExpression: 'cron(0 * * * ? *)'  # Run every hour
+
+  # Lambda Function for Real-time Processing
+  RealTimeProcessor:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-realtime-processor'
+      Runtime: python3.11
+      Handler: index.handler
+      Role: !GetAtt LambdaRole.Arn
+      Timeout: 60
+      MemorySize: 512
+      Environment:
+        Variables:
+          STREAM_NAME: !Ref DataStream
+      Code:
+        ZipFile: |
+          import json
+          import base64
+          import boto3
+          from datetime import datetime
+          
+          cloudwatch = boto3.client('cloudwatch')
+          
+          def handler(event, context):
+              processed_records = []
+              
+              for record in event['Records']:
+                  # Decode the data
+                  payload = base64.b64decode(record['kinesis']['data']).decode('utf-8')
+                  data = json.loads(payload)
+                  
+                  # Process the data (example: emit custom metrics)
+                  try:
+                      cloudwatch.put_metric_data(
+                          Namespace='DataPipeline/Events',
+                          MetricData=[
+                              {
+                                  'MetricName': 'EventCount',
+                                  'Value': 1,
+                                  'Unit': 'Count',
+                                  'Dimensions': [
+                                      {
+                                          'Name': 'EventType',
+                                          'Value': data.get('event_type', 'unknown')
+                                      }
+                                  ]
+                              }
+                          ]
+                      )
+                  except Exception as e:
+                      print(f"Error sending metrics: {e}")
+                  
+                  processed_records.append(record['recordId'])
+              
+              return {
+                  'statusCode': 200,
+                  'processedRecords': processed_records
+              }
+
+  # IAM Role for Lambda
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole
+      Policies:
+        - PolicyName: CloudWatchMetrics
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                Resource: '*'
+
+  # Event Source Mapping for Lambda
+  KinesisEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn: !GetAtt DataStream.Arn
+      FunctionName: !Ref RealTimeProcessor
+      StartingPosition: LATEST
+      MaximumBatchingWindowInSeconds: 10
+      ParallelizationFactor: 10
+
+  # Athena Workgroup
+  AthenaWorkGroup:
+    Type: AWS::Athena::WorkGroup
+    Properties:
+      Name: !Sub '${AWS::StackName}-workgroup'
+      Description: Workgroup for analytics queries
+      WorkGroupConfiguration:
+        ResultConfigurationUpdates:
+          OutputLocation: !Sub 's3://${ProcessedDataBucket}/athena-results/'
+          EncryptionConfiguration:
+            EncryptionOption: SSE_S3
+        EnforceWorkGroupConfiguration: true
+        PublishCloudWatchMetricsEnabled: true
+
+  # CloudWatch Dashboard
+  AnalyticsDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub '${AWS::StackName}-analytics-dashboard'
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  [ "AWS/Kinesis", "IncomingRecords", { "stat": "Sum" } ],
+                  [ ".", "IncomingBytes", { "stat": "Sum" } ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Kinesis Stream Metrics",
+                "yAxis": {
+                  "left": {
+                    "showUnits": false
+                  }
+                }
+              }
+            },
+            {
+              "type": "metric",
+              "properties": {
+                "metrics": [
+                  [ "AWS/Kinesis/Firehose", "DeliveryToS3.Success", { "stat": "Sum" } ],
+                  [ ".", "DeliveryToS3.DataFreshness", { "stat": "Average" } ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Firehose Delivery Metrics"
+              }
+            }
+          ]
+        }
+
+  # SNS Topic for Alerts
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${AWS::StackName}-alerts'
+      DisplayName: Data Pipeline Alerts
+      KmsMasterKeyId: alias/aws/sns
+
+  # CloudWatch Alarm for Stream
+  StreamRecordsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-stream-throttled'
+      AlarmDescription: Alert when Kinesis stream is throttled
+      MetricName: UserRecordsPending
+      Namespace: AWS/Kinesis
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 1000
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: StreamName
+          Value: !Ref DataStream
+      AlarmActions:
+        - !Ref AlertTopic
+
+Outputs:
+  DataStreamName:
+    Description: Name of the Kinesis Data Stream
+    Value: !Ref DataStream
+    Export:
+      Name: !Sub '${AWS::StackName}-DataStreamName'
+
+  RawDataBucketName:
+    Description: Name of the raw data S3 bucket
+    Value: !Ref RawDataBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-RawDataBucket'
+
+  ProcessedDataBucketName:
+    Description: Name of the processed data S3 bucket
+    Value: !Ref ProcessedDataBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-ProcessedDataBucket'
+
+  GlueDatabaseName:
+    Description: Name of the Glue database
+    Value: !Ref GlueDatabase
+    Export:
+      Name: !Sub '${AWS::StackName}-GlueDatabase'
+
+  AthenaWorkGroupName:
+    Description: Name of the Athena workgroup
+    Value: !Ref AthenaWorkGroup
+    Export:
+      Name: !Sub '${AWS::StackName}-AthenaWorkGroup'
