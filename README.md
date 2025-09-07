@@ -131,10 +131,6 @@ aws_cloud_supporter/
 ├── CLAUDE.md                      # Claude Codeの設定ファイル
 ├── usage-for-cfn-diagram.md       # cfn-diagramの詳細な使い方
 ├── visualization-tool-report.md   # ビジュアライゼーションツールの調査結果
-├── cfn-diagram/                   # cfn-diagramのソースコード（参考用）
-│   ├── commands/                  # 各種出力形式のコマンド実装
-│   ├── graph/                     # グラフ生成ロジック
-│   └── ...
 └── examples/                      # CloudFormationテンプレート集
     ├── basic-cloudformation.yaml  # 基本的なWebアプリケーション
     ├── web-application-stack.yaml # 3層Webアプリケーション
