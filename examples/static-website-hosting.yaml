@@ -1,0 +1,400 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Static website hosting with S3, CloudFront, Route53, and SSL certificate'
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: The domain name for the website (e.g., example.com)
+    AllowedPattern: '^[a-z0-9][a-z0-9\-\.]*[a-z0-9]$'
+    ConstraintDescription: Must be a valid domain name
+
+  HostedZoneId:
+    Type: String
+    Description: Route53 Hosted Zone ID for the domain
+    Default: ''
+
+  CreateHostedZone:
+    Type: String
+    Default: 'false'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Description: Whether to create a new hosted zone
+
+  PriceClass:
+    Type: String
+    Default: PriceClass_100
+    AllowedValues:
+      - PriceClass_100
+      - PriceClass_200
+      - PriceClass_All
+    Description: CloudFront distribution price class
+
+Conditions:
+  CreateNewHostedZone: !Equals [!Ref CreateHostedZone, 'true']
+  UseExistingHostedZone: !Not [!Condition CreateNewHostedZone]
+
+Resources:
+  # S3 Buckets
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref DomainName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersions
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 30
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - HEAD
+            AllowedOrigins:
+              - '*'
+            MaxAge: 3600
+
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub '${WebsiteBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}'
+
+  # S3 Bucket for Logs
+  LogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # BucketName is omitted to let CloudFormation generate a unique name
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldLogs
+            Status: Enabled
+            ExpirationInDays: 90
+      AccessControl: LogDeliveryWrite
+
+  # SSL Certificate (must be in us-east-1 for CloudFront)
+  SSLCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      SubjectAlternativeNames:
+        - !Sub 'www.${DomainName}'
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !If
+            - UseExistingHostedZone
+            - !Ref HostedZoneId
+            - !Ref HostedZone
+
+  # Route53 Hosted Zone (conditional)
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Condition: CreateNewHostedZone
+    Properties:
+      Name: !Ref DomainName
+      HostedZoneConfig:
+        Comment: !Sub 'Hosted zone for ${DomainName}'
+
+  # CloudFront Origin Access Control
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${AWS::StackName}-OAC'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: SSLCertificate
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub 'CloudFront distribution for ${DomainName}'
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        PriceClass: !Ref PriceClass
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt WebsiteBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # Managed-CachingOptimized
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf  # Managed-CORS-S3Origin
+          ResponseHeadersPolicyId: 5cc3b908-e619-4b99-88e5-2cf7f45965bd  # Managed-CORS-With-Preflight
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 300
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 300
+        Aliases:
+          - !Ref DomainName
+          - !Sub 'www.${DomainName}'
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SSLCertificate
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Logging:
+          Bucket: !GetAtt LogsBucket.RegionalDomainName
+          Prefix: cloudfront/
+          IncludeCookies: false
+        WebACLId: !If
+          - CreateWebACL
+          - !GetAtt WebACL.Arn
+          - !Ref AWS::NoValue
+
+  # Route53 DNS Records
+  DomainRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !If
+        - UseExistingHostedZone
+        - !Ref HostedZoneId
+        - !Ref HostedZone
+      Name: !Ref DomainName
+      Type: A
+      AliasTarget:
+        HostedZoneId: Z2FDTNDATAQYW2  # CloudFront Hosted Zone ID
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        EvaluateTargetHealth: false
+
+  WwwDomainRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !If
+        - UseExistingHostedZone
+        - !Ref HostedZoneId
+        - !Ref HostedZone
+      Name: !Sub 'www.${DomainName}'
+      Type: A
+      AliasTarget:
+        HostedZoneId: Z2FDTNDATAQYW2  # CloudFront Hosted Zone ID
+        DNSName: !GetAtt CloudFrontDistribution.DomainName
+        EvaluateTargetHealth: false
+
+  # WAF Web ACL (Optional - for additional security)
+  WebACL:
+    Type: AWS::WAFv2::WebACL
+    Condition: CreateWebACL
+    Properties:
+      Name: !Sub '${AWS::StackName}-WebACL'
+      Scope: CLOUDFRONT
+      DefaultAction:
+        Allow: {}
+      Rules:
+        - Name: RateLimitRule
+          Priority: 1
+          Statement:
+            RateBasedStatement:
+              Limit: 2000
+              AggregateKeyType: IP
+          Action:
+            Block: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: RateLimitRule
+        - Name: CommonRuleSet
+          Priority: 2
+          OverrideAction:
+            None: {}
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesCommonRuleSet
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: CommonRuleSet
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: !Sub '${AWS::StackName}-WebACL'
+
+  # Lambda@Edge Function for Response Headers
+  SecurityHeadersFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-security-headers'
+      Runtime: python3.11
+      Handler: index.handler
+      Role: !GetAtt SecurityHeadersFunctionRole.Arn
+      Timeout: 5
+      MemorySize: 128
+      Code:
+        ZipFile: |
+          def handler(event, context):
+              response = event['Records'][0]['cf']['response']
+              headers = response['headers']
+              
+              # Security headers
+              headers['strict-transport-security'] = [{
+                  'key': 'Strict-Transport-Security',
+                  'value': 'max-age=63072000; includeSubdomains; preload'
+              }]
+              headers['content-security-policy'] = [{
+                  'key': 'Content-Security-Policy',
+                  'value': "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';"
+              }]
+              headers['x-content-type-options'] = [{
+                  'key': 'X-Content-Type-Options',
+                  'value': 'nosniff'
+              }]
+              headers['x-frame-options'] = [{
+                  'key': 'X-Frame-Options',
+                  'value': 'DENY'
+              }]
+              headers['x-xss-protection'] = [{
+                  'key': 'X-XSS-Protection',
+                  'value': '1; mode=block'
+              }]
+              headers['referrer-policy'] = [{
+                  'key': 'Referrer-Policy',
+                  'value': 'same-origin'
+              }]
+              
+              return response
+
+  SecurityHeadersFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - edgelambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  # CloudWatch Alarms
+  HighErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-high-4xx-errors'
+      AlarmDescription: Alert on high 4xx error rate
+      MetricName: 4xxErrorRate
+      Namespace: AWS/CloudFront
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 50
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DistributionId
+          Value: !Ref CloudFrontDistribution
+
+  OriginLatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-high-origin-latency'
+      AlarmDescription: Alert on high origin latency
+      MetricName: OriginLatency
+      Namespace: AWS/CloudFront
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 1000
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: DistributionId
+          Value: !Ref CloudFrontDistribution
+
+Conditions:
+  CreateWebACL: !Equals [!Ref AWS::Region, 'us-east-1']
+
+Outputs:
+  WebsiteURL:
+    Description: Website URL
+    Value: !Sub 'https://${DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-WebsiteURL'
+
+  CloudFrontDistributionId:
+    Description: CloudFront distribution ID
+    Value: !Ref CloudFrontDistribution
+    Export:
+      Name: !Sub '${AWS::StackName}-DistributionId'
+
+  CloudFrontDomainName:
+    Description: CloudFront distribution domain name
+    Value: !GetAtt CloudFrontDistribution.DomainName
+    Export:
+      Name: !Sub '${AWS::StackName}-CloudFrontDomain'
+
+  WebsiteBucketName:
+    Description: Name of the S3 bucket hosting the website
+    Value: !Ref WebsiteBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-WebsiteBucket'
+
+  HostedZoneIdOutput:
+    Description: Route53 Hosted Zone ID
+    Value: !If
+      - UseExistingHostedZone
+      - !Ref HostedZoneId
+      - !Ref HostedZone
+    Export:
+      Name: !Sub '${AWS::StackName}-HostedZoneId'
+
+  NameServers:
+    Description: Name servers for the hosted zone (if created)
+    Condition: CreateNewHostedZone
+    Value: !Join [',', !GetAtt HostedZone.NameServers]

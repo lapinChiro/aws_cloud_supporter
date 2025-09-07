@@ -1,0 +1,393 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Serverless API with event-driven architecture using SAM'
+
+Globals:
+  Function:
+    Runtime: python3.11
+    Timeout: 30
+    MemorySize: 256
+    Tracing: Active
+    Environment:
+      Variables:
+        LOG_LEVEL: INFO
+    Layers:
+      - !Ref SharedLibraryLayer
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+
+Resources:
+  # API Gateway
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub '${AWS::StackName}-api'
+      StageName: !Ref Environment
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          ThrottlingBurstLimit: 100
+          ThrottlingRateLimit: 50
+
+  # DynamoDB Tables
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-orders'
+      BillingMode: PAY_PER_REQUEST
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      AttributeDefinitions:
+        - AttributeName: orderId
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: orderId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserOrdersIndex
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+            - AttributeName: createdAt
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  CustomersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-customers'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: customerId
+          AttributeType: S
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: customerId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: EmailIndex
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  # SQS Queues
+  OrderProcessingQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${AWS::StackName}-order-processing'
+      VisibilityTimeout: 180
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt OrderProcessingDLQ.Arn
+        maxReceiveCount: 3
+      KmsMasterKeyId: alias/aws/sqs
+
+  OrderProcessingDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${AWS::StackName}-order-processing-dlq'
+      MessageRetentionPeriod: 1209600  # 14 days
+      KmsMasterKeyId: alias/aws/sqs
+
+  # SNS Topics
+  OrderNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${AWS::StackName}-order-notifications'
+      DisplayName: Order Notifications
+      KmsMasterKeyId: alias/aws/sns
+
+  # EventBridge Event Bus
+  OrderEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: !Sub '${AWS::StackName}-order-events'
+
+  # Lambda Layer for shared code
+  # Note: ContentUri points to local directory that must exist when deploying
+  # Create the directory structure and add requirements.txt or python files
+  SharedLibraryLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub '${AWS::StackName}-shared-lib'
+      Description: Shared libraries for Lambda functions
+      ContentUri: ./layers/shared/
+      CompatibleRuntimes:
+        - python3.11
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: python3.11
+
+  # Lambda Functions
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-create-order'
+      Description: Create new order
+      Handler: app.handler
+      CodeUri: ./functions/create-order/
+      Environment:
+        Variables:
+          ORDERS_TABLE: !Ref OrdersTable
+          ORDER_QUEUE_URL: !Ref OrderProcessingQueue
+          EVENT_BUS_NAME: !Ref OrderEventBus
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OrdersTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt OrderProcessingQueue.QueueName
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref OrderEventBus
+      Events:
+        CreateOrderAPI:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /orders
+            Method: POST
+
+  GetOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-get-order'
+      Description: Get order details
+      Handler: app.handler
+      CodeUri: ./functions/get-order/
+      Environment:
+        Variables:
+          ORDERS_TABLE: !Ref OrdersTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref OrdersTable
+      Events:
+        GetOrderAPI:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Path: /orders/{orderId}
+            Method: GET
+
+  ProcessOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-process-order'
+      Description: Process orders from queue
+      Handler: app.handler
+      CodeUri: ./functions/process-order/
+      ReservedConcurrentExecutions: 5
+      Environment:
+        Variables:
+          ORDERS_TABLE: !Ref OrdersTable
+          NOTIFICATION_TOPIC: !Ref OrderNotificationTopic
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OrdersTable
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt OrderNotificationTopic.TopicName
+      Events:
+        ProcessOrderQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt OrderProcessingQueue.Arn
+            BatchSize: 10
+            MaximumBatchingWindowInSeconds: 5
+
+  OrderStreamProcessorFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-order-stream-processor'
+      Description: Process DynamoDB stream events
+      Handler: app.handler
+      CodeUri: ./functions/stream-processor/
+      Environment:
+        Variables:
+          EVENT_BUS_NAME: !Ref OrderEventBus
+      Policies:
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref OrderEventBus
+      Events:
+        OrdersTableStream:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt OrdersTable.StreamArn
+            StartingPosition: LATEST
+            BisectBatchOnFunctionError: true
+            MaximumBatchingWindowInSeconds: 10
+
+  CustomerNotificationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-customer-notification'
+      Description: Send customer notifications
+      Handler: app.handler
+      CodeUri: ./functions/customer-notification/
+      Environment:
+        Variables:
+          CUSTOMERS_TABLE: !Ref CustomersTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref CustomersTable
+      Events:
+        OrderNotificationSubscription:
+          Type: SNS
+          Properties:
+            Topic: !Ref OrderNotificationTopic
+
+  # EventBridge Rules
+  OrderCreatedRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub '${AWS::StackName}-order-created'
+      EventBusName: !Ref OrderEventBus
+      EventPattern:
+        source:
+          - order.service
+        detail-type:
+          - Order Created
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt OrderAnalyticsFunction.Arn
+          Id: OrderAnalyticsTarget
+          RetryPolicy:
+            MaximumRetryAttempts: 2
+            MaximumEventAge: 3600
+
+  # Analytics Function triggered by EventBridge
+  OrderAnalyticsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-order-analytics'
+      Description: Process order analytics
+      Handler: app.handler
+      CodeUri: ./functions/order-analytics/
+      Environment:
+        Variables:
+          METRICS_NAMESPACE: !Sub '${AWS::StackName}/Orders'
+
+  # Permission for EventBridge to invoke Lambda
+  OrderAnalyticsEventBridgePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref OrderAnalyticsFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt OrderCreatedRule.Arn
+
+  # CloudWatch Alarms
+  HighErrorRateAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-high-error-rate'
+      AlarmDescription: Alert when Lambda error rate is high
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref CreateOrderFunction
+      AlarmActions:
+        - !Ref OrderNotificationTopic
+
+  DLQMessagesAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub '${AWS::StackName}-dlq-messages'
+      AlarmDescription: Alert when messages are in DLQ
+      MetricName: ApproximateNumberOfMessagesVisible
+      Namespace: AWS/SQS
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt OrderProcessingDLQ.QueueName
+      AlarmActions:
+        - !Ref OrderNotificationTopic
+
+  # API Gateway Usage Plan
+  ApiUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    Properties:
+      UsagePlanName: !Sub '${AWS::StackName}-usage-plan'
+      Description: Usage plan for API
+      ApiStages:
+        - ApiId: !Ref ApiGateway
+          Stage: !Ref Environment
+      Throttle:
+        BurstLimit: 200
+        RateLimit: 100
+      Quota:
+        Limit: 10000
+        Period: DAY
+
+  # S3 Bucket for logs
+  LogsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # BucketName is omitted to let CloudFormation generate a unique name
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldLogs
+            Status: Enabled
+            ExpirationInDays: 90
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiEndpoint'
+
+  OrdersTableName:
+    Description: Orders DynamoDB table name
+    Value: !Ref OrdersTable
+    Export:
+      Name: !Sub '${AWS::StackName}-OrdersTable'
+
+  OrderProcessingQueueUrl:
+    Description: Order processing queue URL
+    Value: !Ref OrderProcessingQueue
+    Export:
+      Name: !Sub '${AWS::StackName}-OrderQueueUrl'
+
+  OrderNotificationTopicArn:
+    Description: Order notification topic ARN
+    Value: !Ref OrderNotificationTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-NotificationTopic'
