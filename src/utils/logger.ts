@@ -1,5 +1,7 @@
 // CLAUDE.md準拠Logger（KISS原則、シンプル実装）
 
+import { ILogger } from '../interfaces/logger';
+
 // 型安全なログレベル定義（CLAUDE.md: No any types）
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -11,15 +13,6 @@ const colors = {
   error: (text: string) => `\x1b[31m${text}\x1b[0m`, // red
   success: (text: string) => `\x1b[92m${text}\x1b[0m` // bright green
 };
-
-// ILoggerインターフェース（CLAUDE.md: Interface Segregation）
-export interface ILogger {
-  debug(message: string, ...args: unknown[]): void;
-  info(message: string, ...args: unknown[]): void;
-  warn(message: string, ...args: unknown[]): void;
-  error(message: string, error?: Error, ...args: unknown[]): void;
-  success(message: string, ...args: unknown[]): void;
-}
 
 // CLAUDE.md準拠Loggerクラス（UNIX Philosophy: 一つのことをうまくやる）
 export class Logger implements ILogger {
@@ -52,7 +45,25 @@ export class Logger implements ILogger {
   // エラーメッセージ（問題報告）
   error(message: string, error?: Error, ...args: unknown[]): void {
     if (this.shouldLog('error')) {
-      this.output('error', `❌ ${message}`, ...(error ? [error.message, ...args] : args));
+      if (error) {
+        // エラーオブジェクトの安全な文字列化（YAMLWarning対応）
+        let errorMessage = 'Unknown error';
+        if (typeof error === 'object' && error !== null) {
+          if ('message' in error && typeof error.message === 'string') {
+            errorMessage = error.message;
+          } else if ('toString' in error && typeof error.toString === 'function') {
+            errorMessage = error.toString();
+          } else {
+            errorMessage = String(error);
+          }
+        } else {
+          errorMessage = String(error);
+        }
+        
+        this.output('error', `❌ ${message}`, errorMessage, ...args);
+      } else {
+        this.output('error', `❌ ${message}`, ...args);
+      }
     }
   }
 

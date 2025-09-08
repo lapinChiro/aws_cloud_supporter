@@ -1,41 +1,34 @@
+#!/usr/bin/env node
 // CLAUDE.md準拠エントリーポイント（strict mode, no any types）
-import { Command } from 'commander';
+// T-016: CLI完全実装・統合
 
-// 型安全なCLIオプション定義
-interface CLIOptions {
-  output: 'json' | 'html' | 'yaml';
-  file?: string;
-  resourceTypes?: string;
-  includeLow?: boolean;
-  verbose?: boolean;
-  noColor?: boolean;
-}
+import { createCLICommand } from './commands';
+import { MetricsAnalyzer } from '../core/analyzer';
+import { TemplateParser } from '../core/parser';
+import { JSONOutputFormatter } from '../core/json-formatter';
+import { HTMLOutputFormatter } from '../core/html-formatter';
+import { Logger } from '../utils/logger';
 
 // UNIX Philosophy: 一つのことをうまくやる
 function main(): void {
-  const program = new Command();
-
-  program
-    .name('aws-cloud-supporter')
-    .description('Generate CloudWatch metrics recommendations for CloudFormation templates')
-    .version('1.0.0')
-    .argument('<template>', 'CloudFormation template file path (.yaml/.yml/.json)')
-    .option('-o, --output <format>', 'Output format: json|html|yaml', 'json')
-    .option('-f, --file <path>', 'Output file path (default: stdout)')
-    .option('--resource-types <types>', 'Comma-separated resource types')
-    .option('--include-low', 'Include low importance metrics')
-    .option('-v, --verbose', 'Enable verbose logging')
-    .option('--no-color', 'Disable colored output')
-    .action((templatePath: string, options: CLIOptions) => {
-      // 一時的な実装（Phase 4で本格実装）
-      console.log(`🔍 Analyzing: ${templatePath}`);
-      console.log(`📊 Format: ${options.output}`);
-      
-      if (options.verbose) {
-        console.log('✅ T-002 TypeScript strict mode validation successful');
-      }
-    });
-
+  // 依存性注入（SOLID原則: Dependency Inversion）
+  // CLI用に静かなロガーを使用（verboseオプション後に更新される）
+  const logger = new Logger('error', false);
+  const parser = new TemplateParser();
+  const jsonFormatter = new JSONOutputFormatter();
+  const htmlFormatter = new HTMLOutputFormatter();
+  const analyzer = new MetricsAnalyzer(parser, logger);
+  
+  // CLIコマンド作成
+  const program = createCLICommand({
+    analyzer,
+    parser,
+    jsonFormatter,
+    htmlFormatter,
+    logger
+  });
+  
+  // コマンドライン解析・実行
   program.parse();
 }
 

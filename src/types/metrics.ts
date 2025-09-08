@@ -78,6 +78,11 @@ export interface AnalysisMetadata {
   total_resources: number;
   supported_resources: number;
   processing_time_ms?: number;
+  parse_time_ms?: number;
+  extract_time_ms?: number;
+  generator_time_ms?: number;
+  total_time_ms?: number;
+  memory_peak_mb?: number;
 }
 
 export interface ResourceWithMetrics {

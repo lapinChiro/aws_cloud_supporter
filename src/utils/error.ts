@@ -158,6 +158,17 @@ export class ErrorHandler {
   }
 }
 
+// 単体ログ出力関数（テスト互換性）
+export function logError(error: Error | string, context?: string): void {
+  if (typeof error === 'string') {
+    const timestamp = new Date().toISOString();
+    const contextStr = context ? `[${context}] ` : '';
+    console.error(`${timestamp} ${contextStr}Error: ${error}`);
+  } else {
+    ErrorHandler.logError(error, context);
+  }
+}
+
 // エラータイプ判定ヘルパー（型安全性）
 export function isFileError(error: unknown): error is CloudSupporterError {
   return error instanceof CloudSupporterError && error.type === ErrorType.FILE_ERROR;

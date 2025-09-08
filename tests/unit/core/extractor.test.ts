@@ -370,7 +370,10 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
       path.join(__dirname, '../../../src/core/extractor.ts'),
       'utf8'
     );
-    expect(extractorCode).toHaveNoAnyTypes();
+    // Check that the code doesn't contain 'any' type declarations
+    expect(extractorCode).not.toMatch(/:\s*any\b/);
+    expect(extractorCode).not.toMatch(/\bany\s*\[\]/);
+    expect(extractorCode).not.toMatch(/\bArray<any>/);
   });
 
   // 単一責任原則テスト（GREEN段階: SOLID原則確認）

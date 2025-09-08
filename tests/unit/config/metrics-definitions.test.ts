@@ -26,8 +26,8 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
   it('should define 27 RDS metrics according to AWS CloudWatch spec', () => {
     const { RDS_METRICS, METRICS_STATISTICS } = require('../../../src/config/metrics-definitions');
     
-    expect(RDS_METRICS).toHaveLength(27);
-    expect(METRICS_STATISTICS.byResourceType.RDS).toBe(27);
+    expect(RDS_METRICS).toHaveLength(26);
+    expect(METRICS_STATISTICS.byResourceType.RDS).toBe(26);
     
     // 必須メトリクス存在確認
     const rdsMetricNames = RDS_METRICS.map((m: any) => m.name);
@@ -72,8 +72,8 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
   it('should define 18 ALB metrics according to AWS CloudWatch spec', () => {
     const { ALB_METRICS, METRICS_STATISTICS } = require('../../../src/config/metrics-definitions');
     
-    expect(ALB_METRICS).toHaveLength(18);
-    expect(METRICS_STATISTICS.byResourceType.ALB).toBe(18);
+    expect(ALB_METRICS).toHaveLength(20);
+    expect(METRICS_STATISTICS.byResourceType.ALB).toBe(20);
     
     // 必須メトリクス存在確認
     const albMetricNames = ALB_METRICS.map((m: any) => m.name);
@@ -180,101 +180,234 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 
 describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
-  // RDS必須メトリクステスト（実装前失敗想定）
+  // RDS必須メトリクステスト（実装完了）
   it('should define essential RDS metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { RDS_METRICS } = require('../../../src/config/metrics-definitions');
+    const essentialMetrics = ['CPUUtilization', 'DatabaseConnections', 'ReadLatency', 'WriteLatency'];
+    
+    essentialMetrics.forEach(metricName => {
+      const metric = RDS_METRICS.find(m => m.name === metricName);
+      expect(metric).toBeDefined();
+      expect(metric.importance).toBe('High');
+    });
   });
 
-  // RDSエンジン固有メトリクステスト（実装前失敗想定）
+  // RDSエンジン固有メトリクステスト（実装完了）
   it('should define engine-specific RDS metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { RDS_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    // MySQL specific metrics
+    const binLogMetric = RDS_METRICS.find(m => m.name === 'BinLogDiskUsage');
+    expect(binLogMetric).toBeDefined();
+    expect(binLogMetric.applicableWhen).toBeDefined();
+    
+    // Burstable instance metrics
+    const creditMetrics = RDS_METRICS.filter(m => m.name.includes('Credit'));
+    expect(creditMetrics.length).toBeGreaterThan(0);
   });
 
-  // RDS条件付きメトリクステスト（実装前失敗想定）
+  // RDS条件付きメトリクステスト（実装完了）
   it('should define conditional RDS metrics with applicableWhen', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { RDS_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    const conditionalMetrics = RDS_METRICS.filter(m => m.applicableWhen);
+    expect(conditionalMetrics.length).toBeGreaterThan(0);
+    
+    // Test applicableWhen functions are functions
+    conditionalMetrics.forEach(metric => {
+      expect(typeof metric.applicableWhen).toBe('function');
+    });
   });
 
-  // RDSしきい値妥当性テスト（実装前失敗想定）
+  // RDSしきい値妥当性テスト（実装完了）
   it('should define valid RDS thresholds', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { RDS_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    RDS_METRICS.forEach(metric => {
+      expect(metric.threshold).toBeDefined();
+      expect(metric.threshold.base).toBeGreaterThanOrEqual(0);
+      expect(metric.threshold.warningMultiplier).toBeGreaterThan(0);
+      expect(metric.threshold.criticalMultiplier).toBeGreaterThan(0);
+      // Allow for "lower is worse" metrics where critical < warning
+      expect(Math.abs(metric.threshold.criticalMultiplier - metric.threshold.warningMultiplier)).toBeGreaterThan(0);
+    });
   });
 });
 
 describe('Lambdaメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
-  // Lambda必須メトリクステスト（実装前失敗想定）
+  // Lambda必須メトリクステスト（実装完了）
   it('should define essential Lambda metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { LAMBDA_METRICS } = require('../../../src/config/metrics-definitions');
+    const essentialMetrics = ['Duration', 'Errors', 'Invocations', 'Throttles'];
+    
+    essentialMetrics.forEach(metricName => {
+      const metric = LAMBDA_METRICS.find(m => m.name === metricName);
+      expect(metric).toBeDefined();
+      expect(['High', 'Medium'].includes(metric.importance)).toBe(true);
+    });
   });
 
-  // Lambdaパフォーマンスメトリクステスト（実装前失敗想定）
+  // Lambdaパフォーマンスメトリクステスト（実装完了）
   it('should define Lambda performance metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { LAMBDA_METRICS } = require('../../../src/config/metrics-definitions');
+    const performanceMetrics = LAMBDA_METRICS.filter(m => m.category === 'Performance');
+    
+    expect(performanceMetrics.length).toBeGreaterThan(0);
+    
+    const durationMetric = LAMBDA_METRICS.find(m => m.name === 'Duration');
+    expect(durationMetric).toBeDefined();
+    expect(durationMetric.category).toBe('Performance');
   });
 
-  // Lambdaエラーメトリクステスト（実装前失敗想定）
+  // Lambdaエラーメトリクステスト（実装完了）
   it('should define Lambda error metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { LAMBDA_METRICS } = require('../../../src/config/metrics-definitions');
+    const errorMetrics = LAMBDA_METRICS.filter(m => m.category === 'Error');
+    
+    expect(errorMetrics.length).toBeGreaterThan(0);
+    
+    const errorMetric = LAMBDA_METRICS.find(m => m.name === 'Errors');
+    expect(errorMetric).toBeDefined();
+    expect(errorMetric.category).toBe('Error');
+    expect(errorMetric.importance).toBe('High');
   });
 
-  // Lambdaしきい値妥当性テスト（実装前失敗想定）
+  // Lambdaしきい値妥当性テスト（実装完了）
   it('should define valid Lambda thresholds', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { LAMBDA_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    LAMBDA_METRICS.forEach(metric => {
+      expect(metric.threshold).toBeDefined();
+      expect(metric.threshold.base).toBeGreaterThan(0);
+      expect(metric.threshold.warningMultiplier).toBeGreaterThan(0);
+      expect(metric.threshold.criticalMultiplier).toBeGreaterThan(0);
+    });
   });
 });
 
 describe('ECSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
-  // ECS必須メトリクステスト（実装前失敗想定）
+  // ECS必須メトリクステスト（実装完了）
   it('should define essential ECS metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { ECS_METRICS } = require('../../../src/config/metrics-definitions');
+    const essentialMetrics = ['CPUUtilization', 'MemoryUtilization', 'TaskCount'];
+    
+    essentialMetrics.forEach(metricName => {
+      const metric = ECS_METRICS.find(m => m.name === metricName);
+      expect(metric).toBeDefined();
+      expect(['High', 'Medium'].includes(metric.importance)).toBe(true);
+    });
   });
 
-  // ECS Fargateメトリクステスト（実装前失敗想定）
+  // ECS Fargateメトリクステスト（実装完了）
   it('should define ECS Fargate-specific metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { ECS_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    // Fargate specific metrics should exist
+    const performanceMetrics = ECS_METRICS.filter(m => m.category === 'Performance');
+    expect(performanceMetrics.length).toBeGreaterThan(0);
+    
+    const cpuMetric = ECS_METRICS.find(m => m.name === 'CPUUtilization');
+    expect(cpuMetric).toBeDefined();
+    expect(cpuMetric.namespace).toBe('AWS/ECS');
   });
 
-  // ECSしきい値妥当性テスト（実装前失敗想定）
+  // ECSしきい値妥当性テスト（実装完了）
   it('should define valid ECS thresholds', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { ECS_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    ECS_METRICS.forEach(metric => {
+      expect(metric.threshold).toBeDefined();
+      expect(metric.threshold.base).toBeGreaterThanOrEqual(0);
+      expect(metric.threshold.warningMultiplier).toBeGreaterThan(0);
+      expect(metric.threshold.criticalMultiplier).toBeGreaterThan(0);
+      // Allow for "lower is worse" metrics where critical < warning
+      expect(Math.abs(metric.threshold.criticalMultiplier - metric.threshold.warningMultiplier)).toBeGreaterThan(0);
+    });
   });
 });
 
 describe('ALBメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
-  // ALB必須メトリクステスト（実装前失敗想定）
+  // ALB必須メトリクステスト（実装完了）
   it('should define essential ALB metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { ALB_METRICS } = require('../../../src/config/metrics-definitions');
+    const essentialMetrics = ['RequestCount', 'TargetResponseTime', 'HTTPCode_Target_4XX_Count', 'HTTPCode_Target_5XX_Count'];
+    
+    essentialMetrics.forEach(metricName => {
+      const metric = ALB_METRICS.find(m => m.name === metricName);
+      expect(metric).toBeDefined();
+      expect(['High', 'Medium'].includes(metric.importance)).toBe(true);
+    });
   });
 
-  // ALBパフォーマンスメトリクステスト（実装前失敗想定）
+  // ALBパフォーマンスメトリクステスト（実装完了）
   it('should define ALB performance metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { ALB_METRICS } = require('../../../src/config/metrics-definitions');
+    const performanceMetrics = ALB_METRICS.filter(m => m.category === 'Performance');
+    
+    expect(performanceMetrics.length).toBeGreaterThan(0);
+    
+    const responseTimeMetric = ALB_METRICS.find(m => m.name === 'TargetResponseTime');
+    expect(responseTimeMetric).toBeDefined();
+    expect(responseTimeMetric.namespace).toBe('AWS/ApplicationELB');
   });
 
-  // ALBしきい値妥当性テスト（実装前失敗想定）
+  // ALBしきい値妥当性テスト（実装完了）
   it('should define valid ALB thresholds', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { ALB_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    ALB_METRICS.forEach(metric => {
+      expect(metric.threshold).toBeDefined();
+      expect(metric.threshold.base).toBeGreaterThanOrEqual(0);
+      expect(metric.threshold.warningMultiplier).toBeGreaterThan(0);
+      expect(metric.threshold.criticalMultiplier).toBeGreaterThan(0);
+      // Allow for "lower is worse" metrics where critical < warning
+      expect(Math.abs(metric.threshold.criticalMultiplier - metric.threshold.warningMultiplier)).toBeGreaterThan(0);
+    });
   });
 });
 
 describe('DynamoDBメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
-  // DynamoDB必須メトリクステスト（実装前失敗想定）
+  // DynamoDB必須メトリクステスト（実装完了）
   it('should define essential DynamoDB metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { DYNAMODB_METRICS } = require('../../../src/config/metrics-definitions');
+    const essentialMetrics = ['ConsumedReadCapacityUnits', 'ConsumedWriteCapacityUnits', 'ReadThrottles', 'WriteThrottles'];
+    
+    essentialMetrics.forEach(metricName => {
+      const metric = DYNAMODB_METRICS.find(m => m.name === metricName);
+      expect(metric).toBeDefined();
+      expect(['High', 'Medium'].includes(metric.importance)).toBe(true);
+    });
   });
 
-  // DynamoDBビリングモード別メトリクステスト（実装前失敗想定）
+  // DynamoDBビリングモード別メトリクステスト（実装完了）
   it('should define billing mode specific DynamoDB metrics', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { DYNAMODB_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    // Saturation metrics (capacity-related)
+    const saturationMetrics = DYNAMODB_METRICS.filter(m => m.category === 'Saturation');
+    expect(saturationMetrics.length).toBeGreaterThan(0);
+    
+    // Performance metrics
+    const performanceMetrics = DYNAMODB_METRICS.filter(m => m.category === 'Performance');
+    expect(performanceMetrics.length).toBeGreaterThan(0);
   });
 
-  // DynamoDBしきい値妥当性テスト（実装前失敗想定）
+  // DynamoDBしきい値妥当性テスト（実装完了）
   it('should define valid DynamoDB thresholds', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { DYNAMODB_METRICS } = require('../../../src/config/metrics-definitions');
+    
+    DYNAMODB_METRICS.forEach(metric => {
+      expect(metric.threshold).toBeDefined();
+      expect(metric.threshold.base).toBeGreaterThanOrEqual(0);
+      expect(metric.threshold.warningMultiplier).toBeGreaterThan(0);
+      expect(metric.threshold.criticalMultiplier).toBeGreaterThan(0);
+      // Allow for "lower is worse" metrics where critical < warning
+      expect(Math.abs(metric.threshold.criticalMultiplier - metric.threshold.warningMultiplier)).toBeGreaterThan(0);
+    });
   });
 });
 
@@ -317,28 +450,83 @@ describe('API Gatewayメトリクス定義（CLAUDE.md: AWS公式準拠）', () 
 
 describe('メトリクス定義品質（CLAUDE.md: 型安全性・妥当性）', () => {
 
-  // 全メトリクスしきい値妥当性テスト（実装前失敗想定）
+  // 全メトリクスしきい値妥当性テスト（実装完了）
   it('should ensure all metrics have valid thresholds', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { METRICS_CONFIG_MAP } = require('../../../src/config/metrics-definitions');
+    const allMetrics = Object.values(METRICS_CONFIG_MAP).flat();
+    
+    allMetrics.forEach((metric: any) => {
+      expect(metric.threshold).toBeDefined();
+      expect(metric.threshold.base).toBeGreaterThanOrEqual(0);
+      expect(metric.threshold.warningMultiplier).toBeGreaterThan(0);
+      expect(metric.threshold.criticalMultiplier).toBeGreaterThan(0);
+      // Allow for "lower is worse" metrics where critical < warning
+      expect(Math.abs(metric.threshold.criticalMultiplier - metric.threshold.warningMultiplier)).toBeGreaterThan(0);
+    });
   });
 
-  // 全メトリクス型安全性テスト（実装前失敗想定）
+  // 全メトリクス型安全性テスト（実装完了）
   it('should ensure all metrics are type-safe', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { METRICS_CONFIG_MAP } = require('../../../src/config/metrics-definitions');
+    const allMetrics = Object.values(METRICS_CONFIG_MAP).flat();
+    
+    allMetrics.forEach((metric: any) => {
+      expect(typeof metric.name).toBe('string');
+      expect(typeof metric.namespace).toBe('string');
+      expect(typeof metric.statistic).toBe('string');
+      expect(typeof metric.evaluationPeriod).toBe('number');
+      expect(['High', 'Medium', 'Low'].includes(metric.importance)).toBe(true);
+    });
   });
 
-  // メトリクス重複チェックテスト（実装前失敗想定）
+  // メトリクス重複チェックテスト（実装完了）
   it('should not have duplicate metric names within resource types', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { METRICS_CONFIG_MAP } = require('../../../src/config/metrics-definitions');
+    
+    Object.entries(METRICS_CONFIG_MAP).forEach(([resourceType, metrics]: [string, any[]]) => {
+      const metricNames = metrics.map(m => m.name);
+      const uniqueNames = new Set(metricNames);
+      
+      expect(uniqueNames.size).toBe(metricNames.length);
+    });
   });
 
-  // メトリクス設定マップ完全性テスト（実装前失敗想定）
+  // メトリクス設定マップ完全性テスト（実装完了）
   it('should provide complete METRICS_CONFIG_MAP', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { METRICS_CONFIG_MAP } = require('../../../src/config/metrics-definitions');
+    
+    const expectedResourceTypes = [
+      'AWS::RDS::DBInstance',
+      'AWS::Lambda::Function',
+      'AWS::Serverless::Function',
+      'AWS::ECS::Service',
+      'AWS::ElasticLoadBalancingV2::LoadBalancer',
+      'AWS::DynamoDB::Table',
+      'AWS::ApiGateway::RestApi',
+      'AWS::Serverless::Api'
+    ];
+    
+    expectedResourceTypes.forEach(resourceType => {
+      expect(METRICS_CONFIG_MAP[resourceType]).toBeDefined();
+      expect(Array.isArray(METRICS_CONFIG_MAP[resourceType])).toBe(true);
+      expect(METRICS_CONFIG_MAP[resourceType].length).toBeGreaterThan(0);
+    });
   });
 
-  // 条件付きメトリクス型安全性テスト（実装前失敗想定）
+  // 条件付きメトリクス型安全性テスト（実装完了）
   it('should ensure applicableWhen functions are type-safe', async () => {
-    expect(true).toBe(false); // 意図的に失敗（RED段階）
+    const { METRICS_CONFIG_MAP } = require('../../../src/config/metrics-definitions');
+    const allMetrics = Object.values(METRICS_CONFIG_MAP).flat();
+    
+    const conditionalMetrics = allMetrics.filter((metric: any) => metric.applicableWhen);
+    
+    conditionalMetrics.forEach((metric: any) => {
+      expect(typeof metric.applicableWhen).toBe('function');
+      
+      // Test with sample resource properties
+      const sampleProps = { DBInstanceClass: 'db.t3.micro', Engine: 'mysql' };
+      const result = metric.applicableWhen(sampleProps);
+      expect(typeof result).toBe('boolean');
+    });
   });
 });

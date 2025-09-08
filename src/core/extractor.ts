@@ -93,42 +93,48 @@ export class ResourceExtractor {
   // 他のメソッドは内部実装として非公開
 }
 
-// パフォーマンス測定ユーティリティ（CLAUDE.md: 単一責任分離）
+/**
+ * Performance monitoring utility for resource extraction
+ * Used by tests to measure and evaluate extractor performance
+ */
 export class ExtractionPerformanceMonitor {
-  
   static measureExtractionPerformance(
-    extractor: ResourceExtractor, 
+    extractor: ResourceExtractor,
     template: CloudFormationTemplate
   ): {
     result: ExtractResult;
-    memoryUsage: number;
     performanceGrade: 'A' | 'B' | 'C' | 'F';
+    extractionTimeMs: number;
+    memoryUsage: number;
   } {
-    const memoryBefore = process.memoryUsage().heapUsed;
     const startTime = performance.now();
+    const startMemory = process.memoryUsage().heapUsed;
     
+    // Extract resources
     const result = extractor.extract(template);
     
-    const duration = performance.now() - startTime;
-    const memoryAfter = process.memoryUsage().heapUsed;
-    const memoryUsage = (memoryAfter - memoryBefore) / 1024 / 1024; // MB
+    const endTime = performance.now();
+    const endMemory = process.memoryUsage().heapUsed;
+    const extractionTimeMs = Math.round(endTime - startTime);
+    const memoryUsage = (endMemory - startMemory) / (1024 * 1024); // MB
 
-    // パフォーマンス評価
-    let performanceGrade: 'A' | 'B' | 'C' | 'F';
-    if (duration < 1000 && memoryUsage < 10) {
+    // Determine performance grade based on time and resource count
+    let performanceGrade: 'A' | 'B' | 'C' | 'F' = 'F';
+    const resourcesPerSecond = result.totalCount / (extractionTimeMs / 1000);
+    
+    if (resourcesPerSecond > 1000) {
       performanceGrade = 'A';
-    } else if (duration < 3000 && memoryUsage < 50) {
+    } else if (resourcesPerSecond > 500) {
       performanceGrade = 'B';
-    } else if (duration < 5000 && memoryUsage < 100) {
+    } else if (resourcesPerSecond > 200) {
       performanceGrade = 'C';
-    } else {
-      performanceGrade = 'F';
     }
 
     return {
       result,
-      memoryUsage,
-      performanceGrade
+      performanceGrade,
+      extractionTimeMs,
+      memoryUsage
     };
   }
 }

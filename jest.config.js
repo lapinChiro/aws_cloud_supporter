@@ -57,6 +57,6 @@ module.exports = {
   // ESMモジュール対応（chalk v5等）
   extensionsToTreatAsEsm: ['.ts'],
   transformIgnorePatterns: [
-    'node_modules/(?!(chalk)/)'
+    'node_modules/(?!(chalk|p-limit|yocto-queue)/)'
   ]
 };

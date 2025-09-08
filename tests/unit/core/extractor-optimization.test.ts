@@ -60,8 +60,8 @@ describe('ResourceExtractor最適化（CLAUDE.md: BLUE段階）', () => {
     // 結果一貫性
     const firstResult = results[0];
     results.forEach(result => {
-      expect(result.supportedCount).toBe(firstResult.supportedCount);
-      expect(result.totalCount).toBe(firstResult.totalCount);
+      expect(result.supportedCount).toBe(firstResult?.supportedCount);
+      expect(result.totalCount).toBe(firstResult?.totalCount);
     });
   });
 

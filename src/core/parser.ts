@@ -1,6 +1,6 @@
 // CLAUDE.md準拠TemplateParser（Don't Reinvent the Wheel + Type-Driven Development）
 
-import { parse as parseYAML } from 'yaml';
+import { parse as parseYAML, YAMLParseError } from 'yaml';
 import { CloudFormationTemplate } from '../types/cloudformation';
 import { 
   CloudSupporterError, 
@@ -33,10 +33,25 @@ export class TemplateParser implements ITemplateParser {
       if (error instanceof CloudSupporterError) {
         throw error;
       }
+      
+      // エラーメッセージの安全な抽出
+      let errorMessage = 'Unknown error';
+      if (error && typeof error === 'object') {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if ('toString' in error && typeof error.toString === 'function') {
+          errorMessage = error.toString();
+        } else {
+          errorMessage = String(error);
+        }
+      } else {
+        errorMessage = String(error);
+      }
+      
       throw createFileError(
-        `Failed to parse template: ${(error as Error).message}`,
+        `Failed to parse template: ${errorMessage}`,
         filePath,
-        { originalError: (error as Error).message }
+        { originalError: errorMessage }
       );
     }
   }
@@ -87,10 +102,10 @@ export class TemplateParser implements ITemplateParser {
       const content = await fs.readFile(filePath, 'utf8');
       const duration = performance.now() - startTime;
       
-      // 読み込み時間制限（5秒）
-      if (duration > 5000) {
+      // 読み込み時間制限（10秒 - 並行処理とI/O競合を考慮）
+      if (duration > 10000) {
         throw createFileError(
-          `File reading timeout: ${duration.toFixed(0)}ms (max: 5000ms)`,
+          `File reading timeout: ${duration.toFixed(0)}ms (max: 10000ms)`,
           filePath,
           { duration: Math.round(duration) }
         );
@@ -118,14 +133,40 @@ export class TemplateParser implements ITemplateParser {
         // JSON解析（標準JSON.parse使用）
         return JSON.parse(content) as CloudFormationTemplate;
       } else {
-        // YAML解析（yamlライブラリ使用）
-        return parseYAML(content) as CloudFormationTemplate;
+        // YAML解析（yamlライブラリ使用）- 警告を抑制
+        const options = {
+          logLevel: 'silent' as const,
+          strict: false
+        };
+        return parseYAML(content, options) as CloudFormationTemplate;
       }
     } catch (error) {
       // 構文エラー詳細抽出
       const errorDetails = this.extractSyntaxError(error as Error, content, isJSON);
+      
+      // エラーメッセージの安全な抽出（YAMLWarning/YAMLParseError対応）
+      let errorMessage = 'Unknown parsing error';
+      
+      if (error instanceof YAMLParseError) {
+        errorMessage = error.message;
+      } else if (error && typeof error === 'object') {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if ('toString' in error && typeof error.toString === 'function') {
+          try {
+            errorMessage = error.toString();
+          } catch {
+            errorMessage = String(error);
+          }
+        } else {
+          errorMessage = String(error);
+        }
+      } else {
+        errorMessage = String(error);
+      }
+      
       throw createParseError(
-        `${isJSON ? 'JSON' : 'YAML'} syntax error: ${(error as Error).message}`,
+        `${isJSON ? 'JSON' : 'YAML'} syntax error: ${errorMessage}`,
         filePath,
         errorDetails.lineNumber,
         errorDetails
@@ -236,44 +277,6 @@ export class TemplateParser implements ITemplateParser {
           { nearText: `Resource ${logicalId} must have a Type property (e.g., "AWS::S3::Bucket")` }
         );
       }
-    }
-  }
-}
-
-// ファイル読み込み専用ユーティリティ（CLAUDE.md: UNIX Philosophy）
-export class FileReader {
-  
-  // 静的メソッド（状態を持たないシンプル設計）
-  static async readText(filePath: string): Promise<string> {
-    try {
-      const fs = await import('fs/promises');
-      return await fs.readFile(filePath, 'utf8');
-    } catch (error) {
-      const nodeError = error as NodeJS.ErrnoException;
-      throw createFileError(
-        `Failed to read file: ${nodeError.message}`,
-        filePath,
-        nodeError.code ? { error: nodeError.code } : {}
-      );
-    }
-  }
-
-  // ファイル統計情報取得
-  static async getStats(filePath: string): Promise<{ size: number; isFile: boolean }> {
-    try {
-      const fs = await import('fs/promises');
-      const stats = await fs.stat(filePath);
-      return {
-        size: stats.size,
-        isFile: stats.isFile()
-      };
-    } catch (error) {
-      const nodeError = error as NodeJS.ErrnoException;
-      throw createFileError(
-        `Cannot access file: ${nodeError.code}`,
-        filePath,
-        nodeError.code ? { error: nodeError.code } : {}
-      );
     }
   }
 }

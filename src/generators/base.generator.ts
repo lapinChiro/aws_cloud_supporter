@@ -2,8 +2,29 @@
 
 import { CloudFormationResource } from '../types/cloudformation';
 import { MetricDefinition, MetricConfig, IMetricsGenerator } from '../types/metrics';
-import { ILogger } from '../utils/logger';
+import { ILogger } from '../interfaces/logger';
 import { createResourceError } from '../utils/error';
+
+// Validation result interface
+interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+// Performance monitoring interfaces
+interface GenerationStats {
+  resourceType: string;
+  metricsGenerated: number;
+  generationTimeMs: number;
+  averageThresholdWarning: number;
+  averageThresholdCritical: number;
+}
+
+interface GenerationResult {
+  metrics: MetricDefinition[];
+  performanceGrade: 'A' | 'B' | 'C' | 'F';
+  stats: GenerationStats;
+}
 
 // SOLID原則: 抽象化による拡張性確保（Open/Closed Principle）
 export abstract class BaseMetricsGenerator implements IMetricsGenerator {
@@ -103,23 +124,50 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
     const warning = Math.round(base * scale * config.threshold.warningMultiplier);
     const critical = Math.round(base * scale * config.threshold.criticalMultiplier);
     
-    // しきい値妥当性検証（warning < critical、最小値保証）
-    if (warning >= critical || warning === 0) {
-      this.logger.warn(`Invalid threshold calculation: warning=${warning} >= critical=${critical} for ${config.name}`);
-      
-      // 最小値保証（CLAUDE.md: 実用性重視）
-      const correctedWarning = Math.max(warning, 1);
-      const correctedCritical = Math.max(critical, correctedWarning + 1);
-      
-      this.logger.info(`Auto-corrected thresholds: warning=${warning}→${correctedWarning}, critical=${critical}→${correctedCritical}`);
-      
-      return {
-        warning: correctedWarning,
-        critical: correctedCritical
-      };
+    // メトリクスの方向性チェック（低い値が悪いメトリクス）
+    const isLowerWorse = this.isLowerWorse(config.name);
+    
+    // しきい値妥当性検証
+    const isInvalid = isLowerWorse ? (warning <= critical) : (warning >= critical);
+    
+    if (isInvalid || warning === 0 || critical === 0) {
+      // 自動修正ロジック（メトリクス方向性を考慮）
+      if (isLowerWorse) {
+        // 低い値が悪い場合: critical < warning
+        const correctedCritical = Math.max(Math.min(warning, critical), 1);
+        const correctedWarning = Math.max(correctedCritical + 1, warning);
+        
+        this.logger.debug(`Auto-corrected lower-worse thresholds for ${config.name}: warning=${warning}→${correctedWarning}, critical=${critical}→${correctedCritical}`);
+        
+        return {
+          warning: correctedWarning,
+          critical: correctedCritical
+        };
+      } else {
+        // 高い値が悪い場合: warning < critical
+        const correctedWarning = Math.max(Math.min(warning, critical), 1);
+        const correctedCritical = Math.max(correctedWarning + 1, critical);
+        
+        this.logger.debug(`Auto-corrected higher-worse thresholds for ${config.name}: warning=${warning}→${correctedWarning}, critical=${critical}→${correctedCritical}`);
+        
+        return {
+          warning: correctedWarning,
+          critical: correctedCritical
+        };
+      }
     }
     
     return { warning, critical };
+  }
+
+  // メトリクスの方向性判定（低い値が悪いメトリクス）
+  private isLowerWorse(metricName: string): boolean {
+    const lowerWorsePatterns = [
+      'CreditBalance', 'HitRatio', 'HealthyHost', 'FreeableMemory', 'FreeStorageSpace',
+      'AvailabilityZone', 'Available', 'Healthy', 'Buffer', 'Cache', 'Free'
+    ];
+    
+    return lowerWorsePatterns.some(pattern => metricName.includes(pattern));
   }
 
   // CloudWatchディメンション構築（AWS仕様準拠）
@@ -182,98 +230,125 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
   }
 }
 
-// メトリクス生成統計情報（CLAUDE.md: 監視・デバッグ支援）
-export interface GenerationStats {
-  resourceType: string;
-  metricsGenerated: number;
-  generationTimeMs: number;
-  averageThresholdWarning: number;
-  averageThresholdCritical: number;
-}
-
-// パフォーマンス測定ヘルパー（CLAUDE.md: 単一責任分離）
-export class MetricsGenerationMonitor {
-  
-  static async measureGenerationPerformance<T extends BaseMetricsGenerator>(
-    generator: T,
-    resource: CloudFormationResource
-  ): Promise<{
-    metrics: MetricDefinition[];
-    stats: GenerationStats;
-    performanceGrade: 'A' | 'B' | 'C' | 'F';
-  }> {
-    const startTime = performance.now();
-    const memoryBefore = process.memoryUsage().heapUsed;
-    
-    const metrics = await generator.generate(resource);
-    
-    const duration = performance.now() - startTime;
-    const memoryAfter = process.memoryUsage().heapUsed;
-    const memoryDelta = (memoryAfter - memoryBefore) / 1024 / 1024;
-
-    // 統計情報計算
-    const stats: GenerationStats = {
-      resourceType: resource.Type,
-      metricsGenerated: metrics.length,
-      generationTimeMs: Math.round(duration),
-      averageThresholdWarning: metrics.reduce((sum, m) => sum + m.recommended_threshold.warning, 0) / metrics.length,
-      averageThresholdCritical: metrics.reduce((sum, m) => sum + m.recommended_threshold.critical, 0) / metrics.length
-    };
-
-    // パフォーマンス評価
-    let performanceGrade: 'A' | 'B' | 'C' | 'F';
-    if (duration < 100 && memoryDelta < 1) {
-      performanceGrade = 'A'; // 100ms以下、メモリ1MB以下
-    } else if (duration < 500 && memoryDelta < 5) {
-      performanceGrade = 'B'; // 500ms以下、メモリ5MB以下
-    } else if (duration < 1000 && memoryDelta < 10) {
-      performanceGrade = 'C'; // 1秒以下、メモリ10MB以下
-    } else {
-      performanceGrade = 'F'; // 要件超過
-    }
-
-    return {
-      metrics,
-      stats,
-      performanceGrade
-    };
-  }
-}
-
-// 型安全なメトリクス検証（CLAUDE.md: Type-Driven Development）
-export function validateMetricDefinition(metric: MetricDefinition): {
-  isValid: boolean;
-  errors: string[];
-} {
+/**
+ * Validate MetricDefinition object for correctness
+ * Used by tests to ensure metric definitions meet standards
+ */
+export function validateMetricDefinition(metric: Partial<MetricDefinition>): ValidationResult {
   const errors: string[] = [];
 
-  // 必須フィールド検証
-  if (!metric.metric_name || typeof metric.metric_name !== 'string') {
-    errors.push('metric_name must be a non-empty string');
-  }
-  
-  if (!metric.namespace || typeof metric.namespace !== 'string') {
-    errors.push('namespace must be a non-empty string');
+  // Required string fields
+  const requiredStringFields: Array<keyof MetricDefinition> = [
+    'metric_name', 'namespace', 'unit', 'description', 'statistic', 'category', 'importance'
+  ];
+
+  for (const field of requiredStringFields) {
+    if (!metric[field] || typeof metric[field] !== 'string') {
+      errors.push(`${field} must be a non-empty string`);
+    }
   }
 
-  // しきい値妥当性検証（カスタムマッチャーと同じロジック）
-  const threshold = metric.recommended_threshold;
-  if (threshold.warning >= threshold.critical) {
-    errors.push(`Invalid threshold: warning(${threshold.warning}) >= critical(${threshold.critical})`);
+  // evaluation_period validation
+  if (typeof metric.evaluation_period !== 'number' || metric.evaluation_period <= 0) {
+    errors.push('evaluation_period must be a positive number');
   }
 
-  if (threshold.warning <= 0 || threshold.critical <= 0) {
-    errors.push('Thresholds must be positive numbers');
+  // Valid evaluation periods (CloudWatch standard periods)
+  const validPeriods = [60, 300, 900, 3600, 21600, 86400];
+  if (metric.evaluation_period && !validPeriods.includes(metric.evaluation_period)) {
+    errors.push(`evaluation_period must be one of: ${validPeriods.join(', ')}`);
   }
 
-  // 評価期間検証
-  const validPeriods = [60, 300, 900, 3600]; // CloudWatch標準期間
-  if (!validPeriods.includes(metric.evaluation_period)) {
-    errors.push(`Invalid evaluation_period: ${metric.evaluation_period}. Valid: ${validPeriods.join(', ')}`);
+  // recommended_threshold validation
+  if (!metric.recommended_threshold || typeof metric.recommended_threshold !== 'object') {
+    errors.push('recommended_threshold must be an object');
+  } else {
+    const threshold = metric.recommended_threshold;
+    if (typeof threshold.warning !== 'number') {
+      errors.push('recommended_threshold.warning must be a number');
+    }
+    if (typeof threshold.critical !== 'number') {
+      errors.push('recommended_threshold.critical must be a number');
+    }
+    if (threshold.warning && threshold.critical && threshold.warning >= threshold.critical) {
+      errors.push('recommended_threshold.warning must be less than critical');
+    }
+  }
+
+  // Category validation
+  const validCategories = ['Performance', 'Error', 'Saturation', 'Latency'];
+  if (metric.category && !validCategories.includes(metric.category)) {
+    errors.push(`category must be one of: ${validCategories.join(', ')}`);
+  }
+
+  // Importance validation
+  const validImportance = ['High', 'Medium', 'Low'];
+  if (metric.importance && !validImportance.includes(metric.importance)) {
+    errors.push(`importance must be one of: ${validImportance.join(', ')}`);
+  }
+
+  // Dimensions validation (if present)
+  if (metric.dimensions && Array.isArray(metric.dimensions)) {
+    metric.dimensions.forEach((dim, index) => {
+      if (!dim.name || typeof dim.name !== 'string') {
+        errors.push(`dimensions[${index}].name must be a non-empty string`);
+      }
+      if (!dim.value || typeof dim.value !== 'string') {
+        errors.push(`dimensions[${index}].value must be a non-empty string`);
+      }
+    });
   }
 
   return {
     isValid: errors.length === 0,
     errors
   };
+}
+
+/**
+ * Performance monitoring utility for metric generation
+ * Used by tests to measure and evaluate generator performance
+ */
+export class MetricsGenerationMonitor {
+  static async measureGenerationPerformance(
+    generator: IMetricsGenerator, 
+    resource: CloudFormationResource
+  ): Promise<GenerationResult> {
+    const startTime = performance.now();
+    
+    // Generate metrics
+    const metrics = await generator.generate(resource);
+    
+    const endTime = performance.now();
+    const generationTimeMs = endTime - startTime;
+
+    // Calculate statistics
+    const stats: GenerationStats = {
+      resourceType: resource.Type,
+      metricsGenerated: metrics.length,
+      generationTimeMs: Math.round(generationTimeMs),
+      averageThresholdWarning: metrics.length > 0 
+        ? metrics.reduce((sum, m) => sum + m.recommended_threshold.warning, 0) / metrics.length
+        : 0,
+      averageThresholdCritical: metrics.length > 0
+        ? metrics.reduce((sum, m) => sum + m.recommended_threshold.critical, 0) / metrics.length
+        : 0
+    };
+
+    // Determine performance grade
+    let performanceGrade: 'A' | 'B' | 'C' | 'F' = 'F';
+    if (generationTimeMs < 100) {
+      performanceGrade = 'A';
+    } else if (generationTimeMs < 500) {
+      performanceGrade = 'B';
+    } else if (generationTimeMs < 1000) {
+      performanceGrade = 'C';
+    }
+
+    return {
+      metrics,
+      performanceGrade,
+      stats
+    };
+  }
 }
