@@ -37,9 +37,9 @@ export interface ErrorDetails {
 export interface StructuredError {
   error: string;
   message: string;
-  details?: ErrorDetails;
-  filePath?: string;
-  lineNumber?: number;
+  details?: ErrorDetails | undefined;
+  filePath?: string | undefined;
+  lineNumber?: number | undefined;
   timestamp: TimestampISO;
 }
 

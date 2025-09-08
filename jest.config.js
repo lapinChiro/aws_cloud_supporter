@@ -52,5 +52,11 @@ module.exports = {
   
   // パフォーマンス最適化
   maxWorkers: '50%',
-  cacheDirectory: '<rootDir>/.jest-cache'
+  cacheDirectory: '<rootDir>/.jest-cache',
+  
+  // ESMモジュール対応（chalk v5等）
+  extensionsToTreatAsEsm: ['.ts'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(chalk)/)'
+  ]
 };
