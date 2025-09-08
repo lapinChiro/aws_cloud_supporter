@@ -21,10 +21,10 @@ npm install -g @mhlabs/cfn-diagram
 
 ```bash
 # インタラクティブなHTML図を生成
-cfn-dia html -t examples/web-application-stack.yaml
+cfn-dia html -t examples/web-application-stack.yaml -o examples/output
 
 # Mermaid形式でMarkdownに埋め込み可能な図を生成
-cfn-dia mermaid -t examples/serverless-api-sam.yaml
+cfn-dia mermaid -t examples/serverless-api-sam.yaml -o examples/output.md
 
 # Draw.io形式で編集可能な図を生成
 cfn-dia draw.io -t examples/container-microservices-ecs.yaml
