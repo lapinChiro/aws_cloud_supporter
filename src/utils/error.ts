@@ -14,7 +14,8 @@ export enum ErrorType {
   FILE_ERROR = 'FILE_ERROR',
   PARSE_ERROR = 'PARSE_ERROR',
   RESOURCE_ERROR = 'RESOURCE_ERROR',
-  OUTPUT_ERROR = 'OUTPUT_ERROR'
+  OUTPUT_ERROR = 'OUTPUT_ERROR',
+  VALIDATION_ERROR = 'VALIDATION_ERROR'
 }
 
 // CLAUDE.md準拠カスタムエラークラス（型安全、No any types）
@@ -117,7 +118,8 @@ export class ErrorHandler {
       [ErrorType.FILE_ERROR]: "Check if file exists and has read permissions",
       [ErrorType.PARSE_ERROR]: "Validate CloudFormation template syntax using 'cfn-lint' or AWS CloudFormation Designer",
       [ErrorType.RESOURCE_ERROR]: "Verify resource properties match AWS CloudFormation specification",
-      [ErrorType.OUTPUT_ERROR]: "Check output directory exists and has write permissions"
+      [ErrorType.OUTPUT_ERROR]: "Check output directory exists and has write permissions",
+      [ErrorType.VALIDATION_ERROR]: "Ensure all required fields are correctly set in the configuration"
     };
     
     return suggestions[type];
@@ -134,7 +136,8 @@ export class ErrorHandler {
       [ErrorType.FILE_ERROR]: 1,
       [ErrorType.PARSE_ERROR]: 2,
       [ErrorType.RESOURCE_ERROR]: 3,
-      [ErrorType.OUTPUT_ERROR]: 4
+      [ErrorType.OUTPUT_ERROR]: 4,
+      [ErrorType.VALIDATION_ERROR]: 5
     };
     
     return exitCodes[error.type] ?? 1;

@@ -1,20 +1,14 @@
 import { LambdaMetricsGenerator } from '../../../src/generators/lambda.generator';
-import { CloudFormationResource, LambdaFunction } from '../../../src/types/cloudformation';
-import { MetricDefinition } from '../../../src/types/metrics';
-import { ILogger } from '../../../src/utils/logger';
+import { LambdaFunction } from '../../../src/types/cloudformation';
+import { ILogger } from '../../../src/interfaces/logger';
+import { createMockLogger, measureGeneratorPerformance, createLambdaFunction, createTestResource } from '../../helpers';
 
 describe('LambdaMetricsGenerator', () => {
   let generator: LambdaMetricsGenerator;
   let mockLogger: ILogger;
 
   beforeEach(() => {
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      success: jest.fn()
-    };
+    mockLogger = createMockLogger();
     generator = new LambdaMetricsGenerator(mockLogger);
   });
 
@@ -27,15 +21,11 @@ describe('LambdaMetricsGenerator', () => {
 
   describe('generate', () => {
     it('should generate base Lambda metrics for 128MB memory function', async () => {
-      const resource: LambdaFunction = {
-        Type: 'AWS::Lambda::Function',
-        LogicalId: 'TestFunction',
-        Properties: {
-          Runtime: 'nodejs18.x',
-          MemorySize: 128,
-          Timeout: 30
-        }
-      };
+      const resource = createLambdaFunction('TestFunction128MB', {
+        Runtime: 'nodejs18.x',
+        MemorySize: 128,
+        Timeout: 30
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -57,15 +47,11 @@ describe('LambdaMetricsGenerator', () => {
     });
 
     it('should generate metrics with higher thresholds for 3008MB memory function', async () => {
-      const resource: LambdaFunction = {
-        Type: 'AWS::Lambda::Function',
-        LogicalId: 'HighMemFunction',
-        Properties: {
-          Runtime: 'python3.11',
-          MemorySize: 3008,
-          Timeout: 900
-        }
-      };
+      const resource = createLambdaFunction('TestFunction3GB', {
+        Runtime: 'python3.11',
+        MemorySize: 3008,
+        Timeout: 900
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -76,15 +62,11 @@ describe('LambdaMetricsGenerator', () => {
     });
 
     it('should handle Serverless Function type', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::Serverless::Function',
-        LogicalId: 'SAMFunction',
-        Properties: {
-          Runtime: 'java17',
-          MemorySize: 512,
-          Timeout: 60
-        }
-      };
+      const resource = createTestResource('AWS::Serverless::Function', 'ServerlessFunction', {
+        Runtime: 'java17',
+        MemorySize: 512,
+        Timeout: 60
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -95,15 +77,11 @@ describe('LambdaMetricsGenerator', () => {
     });
 
     it('should include runtime-specific metrics for container functions', async () => {
-      const resource: LambdaFunction = {
-        Type: 'AWS::Lambda::Function',
-        LogicalId: 'ContainerFunction',
-        Properties: {
-          PackageType: 'Image',
-          MemorySize: 1024,
-          Timeout: 180
-        }
-      };
+      const resource = createLambdaFunction('ContainerFunction', {
+        PackageType: 'Image',
+        MemorySize: 1024,
+        Timeout: 180
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -113,15 +91,11 @@ describe('LambdaMetricsGenerator', () => {
     });
 
     it('should handle functions with provisioned concurrency', async () => {
-      const resource: LambdaFunction = {
-        Type: 'AWS::Lambda::Function',
-        LogicalId: 'ProvisionedFunction',
-        Properties: {
-          Runtime: 'nodejs18.x',
-          MemorySize: 256,
-          ReservedConcurrentExecutions: 100
-        }
-      };
+      const resource = createLambdaFunction('ProvisionedFunction', {
+        Runtime: 'nodejs18.x',
+        MemorySize: 256,
+        ReservedConcurrentExecutions: 100
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -132,14 +106,10 @@ describe('LambdaMetricsGenerator', () => {
     });
 
     it('should handle unknown memory sizes with appropriate scale', async () => {
-      const resource: LambdaFunction = {
-        Type: 'AWS::Lambda::Function',
-        LogicalId: 'DefaultFunction',
-        Properties: {
-          Runtime: 'nodejs18.x'
-          // MemorySizeが未定義
-        }
-      };
+      const resource = createLambdaFunction('DefaultMemoryFunction', {
+        Runtime: 'nodejs18.x'
+        // MemorySizeが未定義
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -149,22 +119,18 @@ describe('LambdaMetricsGenerator', () => {
     });
 
     it('should generate proper dimensions for all metrics', async () => {
-      const resource: LambdaFunction = {
-        Type: 'AWS::Lambda::Function',
-        LogicalId: 'TestFunction',
-        Properties: {
-          Runtime: 'python3.11',
-          MemorySize: 512
-        }
-      };
+      const resource = createLambdaFunction('TestFunction', {
+        Runtime: 'python3.11',
+        MemorySize: 512
+      });
 
       const metrics = await generator.generate(resource);
       
       for (const metric of metrics) {
         expect(metric.dimensions).toBeDefined();
         expect(metric.dimensions?.length).toBeGreaterThan(0);
-        expect(metric.dimensions?.[0].name).toBe('FunctionName');
-        expect(metric.dimensions?.[0].value).toBe('TestFunction');
+        expect(metric.dimensions?.[0]?.name).toBe('FunctionName');
+        expect(metric.dimensions?.[0]?.value).toBe('TestFunction');
       }
     });
 
@@ -180,26 +146,18 @@ describe('LambdaMetricsGenerator', () => {
         }
       };
 
-      const startTime = performance.now();
-      await generator.generate(resource);
-      const duration = performance.now() - startTime;
-
-      expect(duration).toBeLessThan(1000);
+      await measureGeneratorPerformance(generator, resource);
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringMatching(/Generated \d+ metrics for PerfTestFunction in [\d.]+ms/)
       );
     });
 
     it('should handle edge runtime functions appropriately', async () => {
-      const resource: LambdaFunction = {
-        Type: 'AWS::Lambda::Function',
-        LogicalId: 'EdgeFunction',
-        Properties: {
-          Runtime: 'nodejs18.x',
-          MemorySize: 128,
-          Timeout: 5 // Edge関数は最大5秒
-        }
-      };
+      const resource = createLambdaFunction('EdgeFunction', {
+        Runtime: 'nodejs18.x',
+        MemorySize: 128,
+        Timeout: 5 // Edge関数は最大5秒
+      });
 
       const metrics = await generator.generate(resource);
       

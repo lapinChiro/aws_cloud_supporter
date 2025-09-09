@@ -3,13 +3,14 @@ import { CloudFormationResource } from '../../../../src/types/cloudformation';
 import { MetricDefinition } from '../../../../src/types/metrics';
 
 export class RDSMetricsGenerator {
-  constructor(private logger: ILogger) {}
+  // @ts-ignore
+  constructor(private _logger: ILogger) {}
   
   getSupportedTypes(): string[] {
     return ['AWS::RDS::DBInstance'];
   }
   
-  async generate(resource: CloudFormationResource): Promise<MetricDefinition[]> {
+  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
     return [
       {
         metric_name: 'CPUUtilization',
@@ -25,7 +26,7 @@ export class RDSMetricsGenerator {
         category: 'Performance',
         importance: 'High',
         dimensions: [
-          { name: 'DBInstanceIdentifier', value: resource.Properties?.DBInstanceIdentifier || 'test-db' }
+          { name: 'DBInstanceIdentifier', value: 'test-db' }
         ]
       }
     ];

@@ -270,7 +270,8 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       const serverlessFunction = result.resources.find(
         (r) => r.resource_type === 'AWS::Serverless::Function'
       );
-      expect(serverlessFunction.metrics.length).toBeGreaterThan(10);
+      expect(serverlessFunction).toBeDefined();
+      expect(serverlessFunction!.metrics.length).toBeGreaterThan(10);
     });
   });
 });

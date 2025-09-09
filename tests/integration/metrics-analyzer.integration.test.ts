@@ -6,8 +6,6 @@ import { TemplateParser } from '../../src/core/parser';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { HTMLOutputFormatter } from '../../src/core/html-formatter';
 import { Logger } from '../../src/utils/logger';
-import { AnalysisResult } from '../../src/types/metrics';
-import { CloudSupporterError, ErrorType } from '../../src/utils/error';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
@@ -85,8 +83,8 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       expect(result.metadata.total_resources).toBe(1);
       expect(result.metadata.supported_resources).toBe(1);
       expect(result.resources).toHaveLength(1);
-      expect(result.resources[0].resource_type).toBe('AWS::Lambda::Function');
-      expect(result.resources[0].metrics.length).toBeGreaterThanOrEqual(15);
+      expect(result.resources[0]?.resource_type).toBe('AWS::Lambda::Function');
+      expect(result.resources[0]?.metrics.length).toBeGreaterThanOrEqual(15);
     });
   });
 
@@ -111,7 +109,7 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       expect(result.resources.length).toBeGreaterThan(300);
       
       // Verify parallel processing worked
-      const metricsPerMs = result.resources.length / result.metadata.processing_time_ms;
+      const metricsPerMs = result.resources.length / (result.metadata.processing_time_ms || 1);
       expect(metricsPerMs).toBeGreaterThan(0.01); // At least 0.01 resources per ms
       
       console.log(`Performance: ${result.resources.length} resources processed in ${duration.toFixed(0)}ms`);
@@ -311,7 +309,7 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
         // Both are extracted initially, but only Fargate succeeds in generation
         expect(result.metadata.total_resources).toBe(2);
         expect(result.resources).toHaveLength(1); // Only Fargate successfully processed
-        expect(result.resources[0].logical_id).toBe('FargateService');
+        expect(result.resources[0]?.logical_id).toBe('FargateService');
         
         // Should have errors for failed EC2 service
         expect(result.errors).toBeDefined();
@@ -352,7 +350,6 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       try {
         const result = await analyzer.analyze(tempPath, { outputFormat: 'json' });
         
-        const onDemandTable = result.resources.find(r => r.logical_id === 'OnDemandTable');
         const provisionedTable = result.resources.find(r => r.logical_id === 'ProvisionedTable');
         
         // Different metrics for different billing modes
@@ -495,15 +492,15 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       });
       
       // Should have more metrics when including low importance
-      const metricsWithout = resultWithout.resources[0].metrics.length;
-      const metricsWith = resultWith.resources[0].metrics.length;
+      const metricsWithout = resultWithout.resources[0]?.metrics.length || 0;
+      const metricsWith = resultWith.resources[0]?.metrics.length || 0;
       
       expect(metricsWith).toBeGreaterThanOrEqual(metricsWithout);
       
       // Check if low importance metrics exist
-      const lowImportanceMetrics = resultWith.resources[0].metrics.filter(
+      const lowImportanceMetrics = resultWith.resources[0]?.metrics.filter(
         m => m.importance === 'Low'
-      );
+      ) || [];
       expect(lowImportanceMetrics.length).toBeGreaterThan(0);
     });
 

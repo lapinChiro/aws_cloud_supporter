@@ -2,22 +2,32 @@
 
 import { readFileSync } from 'fs';
 import path from 'path';
+import { 
+  CloudSupporterError, 
+  ErrorType, 
+  ErrorHandler,
+  createFileError,
+  isFileError,
+  createParseError,
+  isParseError,
+  createResourceError,
+  isResourceError,
+  createOutputError,
+  isOutputError
+} from '../../../src/utils/error';
 
 describe('エラーハンドリングシステム（CLAUDE.md: KISS原則）', () => {
   
   // エラーハンドラ実装確認
   it('should implement ErrorHandler class', () => {
-    const errorModule = require('../../../src/utils/error');
-    
-    expect(errorModule.ErrorHandler).toBeDefined();
-    expect(errorModule.CloudSupporterError).toBeDefined();
-    expect(errorModule.ErrorType).toBeDefined();
-    expect(typeof errorModule.ErrorHandler.handle).toBe('function');
+    expect(ErrorHandler).toBeDefined();
+    expect(CloudSupporterError).toBeDefined();
+    expect(ErrorType).toBeDefined();
+    expect(typeof ErrorHandler.handle).toBe('function');
   });
 
   // エラータイプ列挙テスト
   it('should define proper error types', () => {
-    const { ErrorType } = require('../../../src/utils/error');
     
     expect(ErrorType.FILE_ERROR).toBe('FILE_ERROR');
     expect(ErrorType.PARSE_ERROR).toBe('PARSE_ERROR');
@@ -27,7 +37,6 @@ describe('エラーハンドリングシステム（CLAUDE.md: KISS原則）', (
 
   // CloudSupporterErrorクラステスト
   it('should define CloudSupporterError class', () => {
-    const { CloudSupporterError, ErrorType } = require('../../../src/utils/error');
     
     const testError = new CloudSupporterError(
       ErrorType.FILE_ERROR,
@@ -47,7 +56,6 @@ describe('エラーハンドリングシステム（CLAUDE.md: KISS原則）', (
 
   // エラーメッセージテスト（ユーザビリティ）
   it('should provide helpful error messages', () => {
-    const { CloudSupporterError, ErrorType } = require('../../../src/utils/error');
     
     const fileError = new CloudSupporterError(
       ErrorType.FILE_ERROR, 
@@ -64,7 +72,6 @@ describe('エラーハンドリングシステム（CLAUDE.md: KISS原則）', (
 
   // 終了コードテスト（UNIX Philosophy）
   it('should set correct exit codes', () => {
-    const { ErrorType } = require('../../../src/utils/error');
     
     // プライベートメソッドは直接テストできないが、
     // ErrorTypeごとの期待値を確認
@@ -85,7 +92,6 @@ describe('エラーハンドリングシステム（CLAUDE.md: KISS原則）', (
 
   // KISS原則テスト（複雑性回避）
   it('should keep error handling simple (KISS principle)', () => {
-    const { ErrorHandler } = require('../../../src/utils/error');
     
     // シンプルなAPIであることを確認
     expect(typeof ErrorHandler.handle).toBe('function');
@@ -100,7 +106,6 @@ describe('エラー処理フロー（CLAUDE.md: 型安全性）', () => {
 
   // ファイルエラーヘルパー関数テスト
   it('should handle file errors properly', () => {
-    const { createFileError, isFileError } = require('../../../src/utils/error');
     
     const fileError = createFileError(
       'Template file not found', 
@@ -115,7 +120,6 @@ describe('エラー処理フロー（CLAUDE.md: 型安全性）', () => {
 
   // 構文エラーハンドリングテスト（行番号情報）
   it('should handle parse errors with line numbers', () => {
-    const { createParseError, isParseError } = require('../../../src/utils/error');
     
     const parseError = createParseError(
       'YAML syntax error',
@@ -131,7 +135,6 @@ describe('エラー処理フロー（CLAUDE.md: 型安全性）', () => {
 
   // リソースエラーハンドリングテスト
   it('should handle resource errors gracefully', () => {
-    const { createResourceError, isResourceError } = require('../../../src/utils/error');
     
     const resourceError = createResourceError(
       'Unsupported resource type',
@@ -144,7 +147,6 @@ describe('エラー処理フロー（CLAUDE.md: 型安全性）', () => {
 
   // 出力エラーハンドリングテスト
   it('should handle output errors correctly', () => {
-    const { createOutputError, isOutputError } = require('../../../src/utils/error');
     
     const outputError = createOutputError(
       'Failed to write output file',

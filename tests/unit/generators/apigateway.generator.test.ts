@@ -1,19 +1,14 @@
 import { APIGatewayMetricsGenerator } from '../../../src/generators/apigateway.generator';
 import { CloudFormationResource } from '../../../src/types/cloudformation';
-import { ILogger } from '../../../src/utils/logger';
+import { ILogger } from '../../../src/interfaces/logger';
+import { createMockLogger, measureGeneratorPerformance, createAPIGateway } from '../../helpers';
 
 describe('APIGatewayMetricsGenerator', () => {
   let generator: APIGatewayMetricsGenerator;
   let mockLogger: ILogger;
 
   beforeEach(() => {
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      success: jest.fn()
-    };
+    mockLogger = createMockLogger();
     generator = new APIGatewayMetricsGenerator(mockLogger);
   });
 
@@ -26,14 +21,10 @@ describe('APIGatewayMetricsGenerator', () => {
 
   describe('generate', () => {
     it('should generate base API Gateway metrics for REST API', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ApiGateway::RestApi',
-        LogicalId: 'TestApi',
-        Properties: {
-          Name: 'test-api',
-          Description: 'Test API Gateway'
-        }
-      };
+      const resource = createAPIGateway('TestRestAPI', {
+        Name: 'test-api',
+        Description: 'Test API Gateway'
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -59,7 +50,6 @@ describe('APIGatewayMetricsGenerator', () => {
     it('should generate metrics for SAM API', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::Serverless::Api',
-        LogicalId: 'SamApi',
         Properties: {
           Name: 'sam-api',
           StageName: 'prod'
@@ -80,7 +70,6 @@ describe('APIGatewayMetricsGenerator', () => {
     it('should scale thresholds based on stage configuration', async () => {
       const prodApi: CloudFormationResource = {
         Type: 'AWS::ApiGateway::RestApi',
-        LogicalId: 'ProdApi',
         Properties: {
           Name: 'prod-api',
           Tags: [
@@ -91,7 +80,6 @@ describe('APIGatewayMetricsGenerator', () => {
 
       const devApi: CloudFormationResource = {
         Type: 'AWS::ApiGateway::RestApi',
-        LogicalId: 'DevApi',
         Properties: {
           Name: 'dev-api',
           Tags: [
@@ -137,7 +125,6 @@ describe('APIGatewayMetricsGenerator', () => {
     it('should handle custom domain configurations', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::ApiGateway::RestApi',
-        LogicalId: 'ApiWithDomain',
         Properties: {
           Name: 'api-with-domain',
           Tags: [
@@ -159,7 +146,6 @@ describe('APIGatewayMetricsGenerator', () => {
     it('should handle API with authorization', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::ApiGateway::RestApi',
-        LogicalId: 'AuthorizedApi',
         Properties: {
           Name: 'authorized-api',
           Policy: {
@@ -189,11 +175,7 @@ describe('APIGatewayMetricsGenerator', () => {
         }
       };
 
-      const startTime = performance.now();
-      await generator.generate(resource);
-      const duration = performance.now() - startTime;
-
-      expect(duration).toBeLessThan(1000);
+      await measureGeneratorPerformance(generator, resource);
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringMatching(/Generated \d+ metrics for PerfTestApi in [\d.]+ms/)
       );
@@ -202,7 +184,6 @@ describe('APIGatewayMetricsGenerator', () => {
     it('should handle minimal configuration', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::ApiGateway::RestApi',
-        LogicalId: 'MinimalApi',
         Properties: {}
       };
 

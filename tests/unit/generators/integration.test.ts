@@ -6,23 +6,18 @@ import { ECSMetricsGenerator } from '../../../src/generators/ecs.generator';
 import { ALBMetricsGenerator } from '../../../src/generators/alb.generator';
 import { DynamoDBMetricsGenerator } from '../../../src/generators/dynamodb.generator';
 import { APIGatewayMetricsGenerator } from '../../../src/generators/apigateway.generator';
-import { CloudFormationResource, RDSDBInstance, LambdaFunction, ECSService } from '../../../src/types/cloudformation';
-import { IMetricsGenerator } from '../../../src/generators/base.generator';
-import { ILogger } from '../../../src/utils/logger';
+import { CloudFormationResource, RDSDBInstance, LambdaFunction } from '../../../src/types/cloudformation';
+import { IMetricsGenerator } from '../../../src/interfaces/generator';
+import { ILogger } from '../../../src/interfaces/logger';
 import { METRICS_CONFIG_MAP } from '../../../src/config/metrics-definitions';
+import { createMockLogger } from '../../helpers';
 
 describe('Generators Integration Tests', () => {
   let mockLogger: ILogger;
   let generators: IMetricsGenerator[];
 
   beforeEach(() => {
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      success: jest.fn()
-    };
+    mockLogger = createMockLogger();
 
     generators = [
       new RDSMetricsGenerator(mockLogger),
@@ -39,7 +34,7 @@ describe('Generators Integration Tests', () => {
       const supportedTypes = new Set<string>();
       
       for (const generator of generators) {
-        generator.getSupportedTypes().forEach(type => supportedTypes.add(type));
+        generator.getSupportedTypes().forEach((type: string) => supportedTypes.add(type));
       }
 
       // T-009で定義された6つのリソースタイプのうち、T-010,T-011,T-012で実装した分を確認
@@ -58,7 +53,6 @@ describe('Generators Integration Tests', () => {
     it('should use metrics from METRICS_CONFIG_MAP', async () => {
       const rdsResource: RDSDBInstance = {
         Type: 'AWS::RDS::DBInstance',
-        LogicalId: 'TestDB',
         Properties: {
           Engine: 'mysql'
         }
@@ -66,7 +60,6 @@ describe('Generators Integration Tests', () => {
 
       const lambdaResource: LambdaFunction = {
         Type: 'AWS::Lambda::Function',
-        LogicalId: 'TestFunction',
         Properties: {
           Runtime: 'nodejs18.x'
         }
@@ -79,10 +72,10 @@ describe('Generators Integration Tests', () => {
       const lambdaMetrics = await lambdaGenerator.generate(lambdaResource);
 
       // メトリクス数がMETRICS_CONFIG_MAPと整合していることを確認
-      const expectedRDSCount = METRICS_CONFIG_MAP['AWS::RDS::DBInstance'].filter(
+      const expectedRDSCount = METRICS_CONFIG_MAP['AWS::RDS::DBInstance']?.filter(
         m => !m.applicableWhen || m.applicableWhen(rdsResource)
       ).length;
-      const expectedLambdaCount = METRICS_CONFIG_MAP['AWS::Lambda::Function'].filter(
+      const expectedLambdaCount = METRICS_CONFIG_MAP['AWS::Lambda::Function']?.filter(
         m => !m.applicableWhen || m.applicableWhen(lambdaResource)
       ).length;
 
@@ -97,21 +90,18 @@ describe('Generators Integration Tests', () => {
       const resources: CloudFormationResource[] = [
         {
           Type: 'AWS::RDS::DBInstance',
-          LogicalId: 'StrictDB',
           Properties: {
             DBInstanceClass: 'db.t3.micro'
           }
         },
         {
           Type: 'AWS::Lambda::Function',
-          LogicalId: 'StrictFunction',
           Properties: {
             MemorySize: 256
           }
         },
         {
           Type: 'AWS::ECS::Service',
-          LogicalId: 'StrictECS',
           Properties: {
             LaunchType: 'FARGATE',
             DesiredCount: 2
@@ -119,7 +109,6 @@ describe('Generators Integration Tests', () => {
         },
         {
           Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-          LogicalId: 'StrictALB',
           Properties: {
             Type: 'application'
           }
@@ -177,7 +166,6 @@ describe('Generators Integration Tests', () => {
         // RDS instances with different configurations
         ...Array.from({ length: 10 }, (_, i) => ({
           Type: 'AWS::RDS::DBInstance',
-          LogicalId: `DB${i}`,
           Properties: {
             DBInstanceClass: ['db.t3.micro', 'db.m5.large', 'db.r5.xlarge'][i % 3],
             Engine: ['mysql', 'postgresql'][i % 2],
@@ -187,7 +175,6 @@ describe('Generators Integration Tests', () => {
         // Lambda functions with different memory sizes
         ...Array.from({ length: 10 }, (_, i) => ({
           Type: 'AWS::Lambda::Function',
-          LogicalId: `Function${i}`,
           Properties: {
             Runtime: ['nodejs18.x', 'python3.11', 'java17'][i % 3],
             MemorySize: [128, 512, 1024, 3008][i % 4],
@@ -197,7 +184,6 @@ describe('Generators Integration Tests', () => {
         // ECS services with different configurations
         ...Array.from({ length: 10 }, (_, i) => ({
           Type: 'AWS::ECS::Service',
-          LogicalId: `Service${i}`,
           Properties: {
             LaunchType: 'FARGATE',
             DesiredCount: [1, 2, 5, 10][i % 4]
@@ -206,7 +192,6 @@ describe('Generators Integration Tests', () => {
         // ALBs with different configurations
         ...Array.from({ length: 10 }, (_, i) => ({
           Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-          LogicalId: `ALB${i}`,
           Properties: {
             Type: 'application',
             Scheme: i % 2 === 0 ? 'internet-facing' : 'internal'
@@ -215,7 +200,6 @@ describe('Generators Integration Tests', () => {
         // DynamoDB tables with different configurations
         ...Array.from({ length: 10 }, (_, i) => ({
           Type: 'AWS::DynamoDB::Table',
-          LogicalId: `DynamoTable${i}`,
           Properties: {
             TableName: `table-${i}`,
             BillingMode: i % 2 === 0 ? 'PROVISIONED' : 'PAY_PER_REQUEST',
@@ -236,7 +220,6 @@ describe('Generators Integration Tests', () => {
         // API Gateway REST APIs with different configurations
         ...Array.from({ length: 10 }, (_, i) => ({
           Type: 'AWS::ApiGateway::RestApi',
-          LogicalId: `RestApi${i}`,
           Properties: {
             Name: `api-${i}`,
             Tags: [
@@ -275,7 +258,6 @@ describe('Generators Integration Tests', () => {
     it('should handle invalid resource types gracefully', async () => {
       const invalidResource: CloudFormationResource = {
         Type: 'AWS::Unsupported::Resource',
-        LogicalId: 'InvalidResource'
       };
 
       const supportingGenerator = generators.find(g => 
@@ -289,22 +271,18 @@ describe('Generators Integration Tests', () => {
       const incompleteResources: CloudFormationResource[] = [
         {
           Type: 'AWS::RDS::DBInstance',
-          LogicalId: 'IncompleteDB'
           // Properties undefined
         },
         {
           Type: 'AWS::Lambda::Function',
-          LogicalId: 'IncompleteFunction',
           Properties: {} // Empty properties
         },
         {
           Type: 'AWS::ECS::Service',
-          LogicalId: 'IncompleteECS'
           // Properties undefined, will fail Fargate check
         },
         {
           Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-          LogicalId: 'IncompleteALB',
           Properties: {} // Empty properties, defaults to application type
         }
       ];

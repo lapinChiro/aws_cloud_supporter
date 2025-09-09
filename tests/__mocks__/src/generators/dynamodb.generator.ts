@@ -3,13 +3,14 @@ import { CloudFormationResource } from '../../../../src/types/cloudformation';
 import { MetricDefinition } from '../../../../src/types/metrics';
 
 export class DynamoDBMetricsGenerator {
-  constructor(private logger: ILogger) {}
+  // @ts-ignore
+  constructor(private _logger: ILogger) {}
   
   getSupportedTypes(): string[] {
     return ['AWS::DynamoDB::Table'];
   }
   
-  async generate(resource: CloudFormationResource): Promise<MetricDefinition[]> {
+  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
     return [{
       metric_name: 'ConsumedReadCapacityUnits',
       namespace: 'AWS/DynamoDB',

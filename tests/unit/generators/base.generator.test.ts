@@ -2,19 +2,23 @@
 
 import { readFileSync } from 'fs';
 import path from 'path';
+import { createMockLogger, measureGeneratorPerformance } from '../../helpers';
+import { IMetricsGenerator } from '../../../src/interfaces/generator';
+import { BaseMetricsGenerator, validateMetricDefinition, MetricsGenerationMonitor } from '../../../src/generators/base.generator';
+import { createLogger } from '../../../src/utils/logger';
 
 describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', () => {
 
   // GREEN段階: BaseMetricsGenerator実装確認
   it('should implement BaseMetricsGenerator successfully', () => {
     expect(() => {
-      require('../../../src/generators/base.generator');
+      // Import already done at top level - test the exported class
+      expect(BaseMetricsGenerator).toBeDefined();
     }).not.toThrow(); // 実装完了で成功
   });
 
   // 抽象クラス設計テスト（GREEN段階: 実装確認）
   it('should define proper abstract base class', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
     
     // 抽象クラスが定義されている確認
     expect(BaseMetricsGenerator).toBeDefined();
@@ -27,7 +31,6 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
 
   // IMetricsGeneratorインターフェース実装テスト（GREEN段階: インターフェース確認）
   it('should implement IMetricsGenerator interface', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
     
     // プロトタイプにgenerateメソッドがあることを確認
     expect(BaseMetricsGenerator.prototype.generate).toBeDefined();
@@ -39,9 +42,8 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
   });
 
   // テスト用具象クラス作成（動作確認用）
-  class TestMetricsGenerator extends (require('../../../src/generators/base.generator').BaseMetricsGenerator) {
+  class TestMetricsGenerator extends BaseMetricsGenerator {
     constructor() {
-      const { createLogger } = require('../../../src/utils/logger');
       super(createLogger('error'));
     }
 
@@ -86,7 +88,7 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     const metrics = await testGenerator.generate(testResource);
     
     expect(metrics).toHaveLength(1);
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // しきい値計算確認
     expect(metric.recommended_threshold).toHaveValidThreshold();
@@ -98,7 +100,7 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
   it('should compute resource scale factors', async () => {
     // スケール係数2.0のテストジェネレータ
     class ScaledTestGenerator extends TestMetricsGenerator {
-      protected getResourceScale() {
+      protected override getResourceScale() {
         return 2.0; // 2倍スケール
       }
     }
@@ -111,7 +113,7 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     };
 
     const metrics = await scaledGenerator.generate(testResource);
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // スケール係数が反映されている確認
     expect(metric.recommended_threshold.warning).toBe(200); // 100 * 2.0 * 1.0
@@ -127,11 +129,8 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
       LogicalId: 'PerformanceTestResource'
     };
 
-    const startTime = performance.now();
-    const metrics = await testGenerator.generate(testResource);
-    const duration = performance.now() - startTime;
+    const { metrics } = await measureGeneratorPerformance(testGenerator as unknown as IMetricsGenerator, testResource);
     
-    expect(duration).toBeLessThan(1000); // 1秒以内
     expect(metrics).toHaveLength(1);
   });
 
@@ -139,7 +138,7 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
   it('should filter applicable metrics correctly', async () => {
     // 条件付きメトリクス用テストジェネレータ
     class ConditionalTestGenerator extends TestMetricsGenerator {
-      protected getMetricsConfig() {
+      protected override getMetricsConfig() {
         return [
           {
             name: 'AlwaysApplicable',
@@ -160,10 +159,10 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
             statistic: 'Average' as const,
             evaluationPeriod: 300 as const,
             category: 'Performance' as const,
-            importance: 'Medium' as const,
+            importance: 'High' as const,
             threshold: { base: 75, warningMultiplier: 1.0, criticalMultiplier: 2.0 },
-            applicableWhen: (resource) => {
-              return resource.LogicalId === 'ConditionalTestResource';
+            applicableWhen: (resource: unknown) => {
+              return (resource as { LogicalId?: string }).LogicalId === 'ConditionalTestResource';
             }
           }
         ];
@@ -203,14 +202,14 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     };
 
     const metrics = await testGenerator.generate(testResource);
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // ディメンション構築確認
     expect(metric.dimensions).toBeDefined();
     expect(metric.dimensions).toHaveLength(1);
     
     if (metric.dimensions && metric.dimensions.length > 0) {
-      const dimension = metric.dimensions[0];
+      const dimension = metric.dimensions[0]!;
       expect(dimension.name).toBe('ResourceId'); // Test::Resourceはマップにないのでデフォルト
       expect(dimension.value).toBe('DimensionTestResource');
     }
@@ -227,12 +226,11 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
 
   // 抽象メソッド定義テスト（GREEN段階: 必須メソッド確認）
   it('should define required abstract methods', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
     
     // 抽象クラス自体にはない（子クラスで実装）
     expect(BaseMetricsGenerator.prototype.getSupportedTypes).toBeUndefined();
-    expect(BaseMetricsGenerator.prototype.getMetricsConfig).toBeUndefined();
-    expect(BaseMetricsGenerator.prototype.getResourceScale).toBeUndefined();
+    expect((BaseMetricsGenerator.prototype as any).getMetricsConfig).toBeUndefined();
+    expect((BaseMetricsGenerator.prototype as any).getResourceScale).toBeUndefined();
     
     // 具象実装を持つメソッド
     expect(BaseMetricsGenerator.prototype.generate).toBeDefined();
@@ -253,8 +251,9 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     try {
       await testGenerator.generate(invalidResource);
     } catch (error) {
-      expect(error.type).toBe('RESOURCE_ERROR');
-      expect(error.message).toContain('Unsupported resource type');
+      const err = error as { type: string; message: string };
+      expect(err.type).toBe('RESOURCE_ERROR');
+      expect(err.message).toContain('Unsupported resource type');
     }
   });
 });
@@ -262,9 +261,8 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
 describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム要件）', () => {
   
   // テスト用具象クラス
-  class ThresholdTestGenerator extends (require('../../../src/generators/base.generator').BaseMetricsGenerator) {
+  class ThresholdTestGenerator extends BaseMetricsGenerator {
     constructor() {
-      const { createLogger } = require('../../../src/utils/logger');
       super(createLogger('error'));
     }
 
@@ -307,7 +305,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     };
 
     const metrics = await thresholdGenerator.generate(testResource);
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // 計算式: base * scale * multiplier
     // warning: 80 * 2.0 * 0.875 = 140
@@ -324,7 +322,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
         super();
       }
       
-      protected getResourceScale() {
+      protected override getResourceScale() {
         return this.scale;
       }
     }
@@ -339,7 +337,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     for (const scale of scales) {
       const generator = new VariableScaleGenerator(scale);
       const metrics = await generator.generate(testResource);
-      const metric = metrics[0];
+      const metric = metrics[0]!;
       
       const expectedWarning = Math.round(80 * scale * 0.875);
       const expectedCritical = Math.round(80 * scale * 1.25);
@@ -353,7 +351,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
   it('should ensure warning < critical threshold validity', async () => {
     // 不正な乗数でwarning >= criticalになる設定
     class InvalidThresholdGenerator extends ThresholdTestGenerator {
-      protected getMetricsConfig() {
+      protected override getMetricsConfig() {
         return [
           {
             name: 'InvalidThresholdMetric',
@@ -382,7 +380,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     };
 
     const metrics = await invalidGenerator.generate(testResource);
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // 自動修正により warning < critical が保証される
     expect(metric.recommended_threshold).toHaveValidThreshold();
@@ -393,7 +391,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
   it('should maintain numerical precision in calculations', async () => {
     // 小数点を含む計算のテスト
     class PrecisionTestGenerator extends ThresholdTestGenerator {
-      protected getMetricsConfig() {
+      protected override getMetricsConfig() {
         return [
           {
             name: 'PrecisionTestMetric',
@@ -402,7 +400,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
             description: 'Precision test metric',
             statistic: 'Average' as const,
             evaluationPeriod: 300 as const,
-            category: 'Latency' as const,
+            category: 'Performance' as const,
             importance: 'High' as const,
             threshold: {
               base: 0.1234, // 小数点
@@ -413,7 +411,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
         ];
       }
 
-      protected getResourceScale() {
+      protected override getResourceScale() {
         return 1.789; // 小数点スケール
       }
     }
@@ -426,7 +424,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     };
 
     const metrics = await precisionGenerator.generate(testResource);
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // 丸め処理により整数値になっている確認
     expect(Number.isInteger(metric.recommended_threshold.warning)).toBe(true);
@@ -438,7 +436,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
   // 境界値テスト（GREEN段階: エッジケース確認）
   it('should handle edge cases in threshold calculation', async () => {
     class EdgeCaseTestGenerator extends ThresholdTestGenerator {
-      protected getMetricsConfig() {
+      protected override getMetricsConfig() {
         return [
           {
             name: 'EdgeCaseMetric',
@@ -458,7 +456,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
         ];
       }
 
-      protected getResourceScale() {
+      protected override getResourceScale() {
         return 0.1; // 極小スケール
       }
     }
@@ -471,7 +469,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     };
 
     const metrics = await edgeCaseGenerator.generate(testResource);
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // 極小値でも適切に処理される確認（0値許可、自動修正機能）
     expect(metric.recommended_threshold.warning).toBeGreaterThanOrEqual(0);
@@ -487,9 +485,8 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
 describe('BaseMetricsGeneratorパフォーマンス（CLAUDE.md: 性能要件）', () => {
   
   // テスト用高速ジェネレータ
-  class PerformanceTestGenerator extends (require('../../../src/generators/base.generator').BaseMetricsGenerator) {
+  class PerformanceTestGenerator extends BaseMetricsGenerator {
     constructor() {
-      const { createLogger } = require('../../../src/utils/logger');
       super(createLogger('error'));
     }
 
@@ -520,7 +517,6 @@ describe('BaseMetricsGeneratorパフォーマンス（CLAUDE.md: 性能要件）
 
   // 1秒以内生成要件テスト（GREEN段階: 実パフォーマンス確認）
   it('should generate metrics within performance limits', async () => {
-    const { MetricsGenerationMonitor } = require('../../../src/generators/base.generator');
     const performanceGenerator = new PerformanceTestGenerator();
     
     const testResource = {
@@ -578,13 +574,12 @@ describe('BaseMetricsGeneratorパフォーマンス（CLAUDE.md: 性能要件）
     expect(results).toHaveLength(10);
     results.forEach(metrics => {
       expect(metrics).toHaveLength(1);
-      expect(metrics[0].metric_name).toBe('FastMetric');
+      expect(metrics[0]!.metric_name).toBe('FastMetric');
     });
   });
 
   // パフォーマンス監視テスト（GREEN段階: 監視機能確認）
   it('should provide performance monitoring', async () => {
-    const { MetricsGenerationMonitor } = require('../../../src/generators/base.generator');
     const performanceGenerator = new PerformanceTestGenerator();
     
     const testResource = {
@@ -610,9 +605,8 @@ describe('BaseMetricsGeneratorパフォーマンス（CLAUDE.md: 性能要件）
 describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development）', () => {
   
   // テスト用型安全ジェネレータ
-  class TypeSafeTestGenerator extends (require('../../../src/generators/base.generator').BaseMetricsGenerator) {
+  class TypeSafeTestGenerator extends BaseMetricsGenerator {
     constructor() {
-      const { createLogger } = require('../../../src/utils/logger');
       super(createLogger('error'));
     }
 
@@ -658,7 +652,7 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
     const metrics = await typeSafeGenerator.generate(cloudFormationResource);
     
     expect(metrics).toHaveLength(1);
-    expect(metrics[0].metric_name).toBe('TypeSafeMetric');
+    expect(metrics[0]!.metric_name).toBe('TypeSafeMetric');
   });
 
   // MetricDefinition型生成テスト（GREEN段階: 型準拠確認）
@@ -671,7 +665,7 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
     };
 
     const metrics = await typeSafeGenerator.generate(testResource);
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // MetricDefinition型の全フィールド確認
     expect(typeof metric.metric_name).toBe('string');
@@ -690,7 +684,7 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
     // ディメンション配列の型安全性
     expect(Array.isArray(metric.dimensions)).toBe(true);
     if (metric.dimensions && metric.dimensions.length > 0) {
-      const dimension = metric.dimensions[0];
+      const dimension = metric.dimensions[0]!;
       expect(typeof dimension.name).toBe('string');
       expect(typeof dimension.value).toBe('string');
     }
@@ -709,7 +703,7 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
     const metrics = await typeSafeGenerator.generate(testResource);
     expect(metrics).toHaveLength(1);
     
-    const metric = metrics[0];
+    const metric = metrics[0]!;
     
     // MetricConfig→MetricDefinition変換の型安全性
     expect(metric.metric_name).toBe('TypeSafeMetric');
@@ -722,7 +716,6 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
 
   // 型安全なGenerics使用テスト（GREEN段階: ジェネリック確認）
   it('should utilize type-safe generics properly', () => {
-    const { validateMetricDefinition } = require('../../../src/generators/base.generator');
     
     // 型安全なメトリクス検証関数
     const validMetric = {
@@ -746,7 +739,7 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
   it('should handle applicableWhen functions type-safely', async () => {
     // applicableWhen関数の型安全性を確認
     class ConditionalTypeSafeGenerator extends TypeSafeTestGenerator {
-      protected getMetricsConfig() {
+      protected override getMetricsConfig() {
         return [
           {
             name: 'ConditionalTypeSafeMetric',
@@ -758,11 +751,12 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
             category: 'Performance' as const,
             importance: 'High' as const,
             threshold: { base: 100, warningMultiplier: 1.0, criticalMultiplier: 2.0 },
-            applicableWhen: (resource) => {
+            applicableWhen: (resource: unknown) => {
               // 型安全な条件判定
-              return resource.Type === 'AWS::Test::TypeSafe' && 
-                     !!resource.LogicalId &&
-                     resource.LogicalId.startsWith('Conditional');
+              const r = resource as { Type?: string; LogicalId?: string };
+              return r.Type === 'AWS::Test::TypeSafe' && 
+                     !!r.LogicalId &&
+                     r.LogicalId.startsWith('Conditional');
             }
           }
         ];
@@ -778,7 +772,7 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
 
     const metrics = await conditionalGenerator.generate(testResource);
     expect(metrics).toHaveLength(1);
-    expect(metrics[0].metric_name).toBe('ConditionalTypeSafeMetric');
+    expect(metrics[0]!.metric_name).toBe('ConditionalTypeSafeMetric');
   });
 });
 
@@ -786,7 +780,6 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
 
   // 単一責任原則テスト（GREEN段階: SRP確認）
   it('should follow Single Responsibility Principle', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
     
     // BaseMetricsGeneratorの責任：メトリクス生成のみ
     const prototype = BaseMetricsGenerator.prototype;
@@ -798,7 +791,7 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
     const publicMethods = methods.filter(name => 
       !name.startsWith('_') && 
       name !== 'constructor' &&
-      typeof prototype[name] === 'function'
+      typeof (prototype as any)[name] === 'function'
     );
     
     expect(publicMethods).toContain('generate');
@@ -807,7 +800,6 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
 
   // 開放閉鎖原則テスト（GREEN段階: OCP確認）
   it('should follow Open/Closed Principle', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
     
     // 拡張のために開かれている（抽象メソッド存在）
     // 変更のために閉ざされている（具象実装）
@@ -815,7 +807,6 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
     // 抽象クラスとして拡張可能
     class ExtendedTestGenerator extends BaseMetricsGenerator {
       constructor() {
-        const { createLogger } = require('../../../src/utils/logger');
         super(createLogger('error'));
       }
 
@@ -839,7 +830,6 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
 
   // インターフェース分離テスト（GREEN段階: ISP確認）
   it('should follow Interface Segregation Principle', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
     
     // IMetricsGeneratorインターフェースのみ実装
     // 他の不要なインターフェースは実装していない
@@ -851,7 +841,6 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
 
   // 依存関係逆転テスト（GREEN段階: DIP確認）
   it('should follow Dependency Inversion Principle', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
     
     // ILoggerインターフェースに依存（具象クラスに非依存）
     class DIPTestGenerator extends BaseMetricsGenerator {
@@ -873,13 +862,7 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
     }
 
     // モックLoggerでもインスタンス化可能（抽象化に依存）
-    const mockLogger = {
-      debug: jest.fn(),
-      info: jest.fn(), 
-      warn: jest.fn(),
-      error: jest.fn(),
-      success: jest.fn()
-    };
+    const mockLogger = createMockLogger();
 
     const dipGenerator = new DIPTestGenerator(mockLogger);
     expect(dipGenerator).toBeInstanceOf(BaseMetricsGenerator);
@@ -887,12 +870,10 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
 
   // リスコフ置換原則テスト（GREEN段階: LSP確認）
   it('should follow Liskov Substitution Principle', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
     
     // 子クラスが基底クラスと置換可能であることを確認
     class LSPTestGeneratorA extends BaseMetricsGenerator {
       constructor() {
-        const { createLogger } = require('../../../src/utils/logger');
         super(createLogger('error'));
       }
 
@@ -923,7 +904,6 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
 
     class LSPTestGeneratorB extends BaseMetricsGenerator {
       constructor() {
-        const { createLogger } = require('../../../src/utils/logger');
         super(createLogger('error'));
       }
 
@@ -960,7 +940,7 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
     expect(generatorB).toBeInstanceOf(BaseMetricsGenerator);
     
     // 共通インターフェースとして使用可能
-    const generators: BaseMetricsGenerator[] = [generatorA, generatorB];
+    const generators: InstanceType<typeof BaseMetricsGenerator>[] = [generatorA, generatorB];
     generators.forEach(generator => {
       expect(typeof generator.generate).toBe('function');
       expect(Array.isArray(generator.getSupportedTypes())).toBe(true);

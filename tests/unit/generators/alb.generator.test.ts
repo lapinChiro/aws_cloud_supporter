@@ -1,19 +1,13 @@
 import { ALBMetricsGenerator } from '../../../src/generators/alb.generator';
-import { CloudFormationResource } from '../../../src/types/cloudformation';
-import { ILogger } from '../../../src/utils/logger';
+import { ILogger } from '../../../src/interfaces/logger';
+import { createMockLogger, measureGeneratorPerformance, createALB, createTestResource } from '../../helpers';
 
 describe('ALBMetricsGenerator', () => {
   let generator: ALBMetricsGenerator;
   let mockLogger: ILogger;
 
   beforeEach(() => {
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      success: jest.fn()
-    };
+    mockLogger = createMockLogger();
     generator = new ALBMetricsGenerator(mockLogger);
   });
 
@@ -26,15 +20,10 @@ describe('ALBMetricsGenerator', () => {
 
   describe('generate', () => {
     it('should generate base ALB metrics for Application Load Balancer', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'TestALB',
-        Properties: {
-          Type: 'application',
-          Name: 'test-alb',
-          Scheme: 'internet-facing'
-        }
-      };
+      const resource = createALB('TestALB', {
+        Name: 'test-alb',
+        Scheme: 'internet-facing'
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -58,42 +47,30 @@ describe('ALBMetricsGenerator', () => {
     });
 
     it('should exclude Network Load Balancers', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'TestNLB',
-        Properties: {
-          Type: 'network',
-          Name: 'test-nlb'
-        }
-      };
+      const resource = createTestResource('AWS::ElasticLoadBalancingV2::LoadBalancer', 'TestNLB', {
+        Type: 'network',
+        Name: 'test-nlb'
+      });
 
       // NLBはサポート外として例外を投げることを期待
       await expect(generator.generate(resource)).rejects.toThrow('Only Application Load Balancers are supported');
     });
 
     it('should exclude Gateway Load Balancers', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'TestGWLB',
-        Properties: {
-          Type: 'gateway',
-          Name: 'test-gwlb'
-        }
-      };
+      const resource = createTestResource('AWS::ElasticLoadBalancingV2::LoadBalancer', 'TestGWLB', {
+        Type: 'gateway',
+        Name: 'test-gwlb'
+      });
 
       // GWLBはサポート外として例外を投げることを期待
       await expect(generator.generate(resource)).rejects.toThrow('Only Application Load Balancers are supported');
     });
 
     it('should handle load balancers without explicit type (default to ALB)', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'DefaultLB',
-        Properties: {
-          Name: 'default-lb'
-          // Typeが未定義の場合
-        }
-      };
+      const resource = createTestResource('AWS::ElasticLoadBalancingV2::LoadBalancer', 'DefaultLB', {
+        Name: 'default-lb'
+        // Typeが未定義の場合（createALBは自動でType: 'application'を設定するため、ここでは明示的にundefined）
+      });
 
       // Typeが未定義の場合はALBとして扱う
       const metrics = await generator.generate(resource);
@@ -101,24 +78,14 @@ describe('ALBMetricsGenerator', () => {
     });
 
     it('should scale thresholds based on target group count estimation', async () => {
-      const smallALB: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'SmallALB',
-        Properties: {
-          Type: 'application',
-          // 小規模ALB（デフォルト）
-        }
-      };
+      const smallALB = createALB('SmallALB', {
+        // 小規模ALB（デフォルト）
+      });
 
-      const largeALB: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'LargeALB',
-        Properties: {
-          Type: 'application',
-          // 大規模ALBのマーカー（実際にはターゲットグループ数で判断するが、ここではシミュレート）
-          Tags: [{ Key: 'Scale', Value: 'Large' }]
-        }
-      };
+      const largeALB = createALB('LargeALB', {
+        // 大規模ALBのマーカー（実際にはターゲットグループ数で判断するが、ここではシミュレート）
+        Tags: [{ Key: 'Scale', Value: 'Large' }]
+      });
 
       const smallMetrics = await generator.generate(smallALB);
       const largeMetrics = await generator.generate(largeALB);
@@ -132,14 +99,9 @@ describe('ALBMetricsGenerator', () => {
     });
 
     it('should generate proper dimensions for all metrics', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'TestALB',
-        Properties: {
-          Type: 'application',
-          Name: 'test-alb'
-        }
-      };
+      const resource = createALB('TestALB', {
+        Name: 'test-alb'
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -155,34 +117,21 @@ describe('ALBMetricsGenerator', () => {
     });
 
     it('should measure performance and complete within 1 second', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'PerfTestALB',
-        Properties: {
-          Type: 'application',
-          Name: 'performance-test-alb'
-        }
-      };
+      const resource = createALB('PerfTestALB', {
+        Name: 'performance-test-alb'
+      });
 
-      const startTime = performance.now();
-      await generator.generate(resource);
-      const duration = performance.now() - startTime;
-
-      expect(duration).toBeLessThan(1000);
+      await measureGeneratorPerformance(generator, resource);
+      
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringMatching(/Generated \d+ metrics for PerfTestALB in [\d.]+ms/)
       );
     });
 
     it('should include WAF-related metrics', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'WAFProtectedALB',
-        Properties: {
-          Type: 'application',
-          Name: 'waf-protected-alb'
-        }
-      };
+      const resource = createALB('WAFProtectedALB', {
+        Name: 'waf-protected-alb'
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -193,20 +142,15 @@ describe('ALBMetricsGenerator', () => {
     });
 
     it('should handle cross-zone load balancing metrics', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
-        LogicalId: 'CrossZoneALB',
-        Properties: {
-          Type: 'application',
-          Name: 'cross-zone-alb',
-          LoadBalancerAttributes: [
-            {
-              Key: 'load_balancing.cross_zone.enabled',
-              Value: 'true'
-            }
-          ]
-        }
-      };
+      const resource = createALB('CrossZoneALB', {
+        Name: 'cross-zone-alb',
+        LoadBalancerAttributes: [
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: 'true'
+          }
+        ]
+      });
 
       const metrics = await generator.generate(resource);
       

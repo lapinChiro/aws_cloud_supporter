@@ -3,13 +3,14 @@ import { CloudFormationResource } from '../../../../src/types/cloudformation';
 import { MetricDefinition } from '../../../../src/types/metrics';
 
 export class APIGatewayMetricsGenerator {
-  constructor(private logger: ILogger) {}
+  // @ts-ignore
+  constructor(private _logger: ILogger) {}
   
   getSupportedTypes(): string[] {
     return ['AWS::ApiGateway::RestApi', 'AWS::Serverless::Api'];
   }
   
-  async generate(resource: CloudFormationResource): Promise<MetricDefinition[]> {
+  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
     return [{
       metric_name: '4XXError',
       namespace: 'AWS/ApiGateway',

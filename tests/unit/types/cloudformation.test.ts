@@ -128,7 +128,6 @@ describe('メトリクス型定義（CLAUDE.md: Type-Driven Development）', () 
 
   // MetricConfig型安全性テスト
   it('should define type-safe MetricConfig interface', () => {
-    const metricsTypes = require('../../../src/types/metrics');
     
     // MetricConfig型のテスト用データ
     const testMetricConfig = {

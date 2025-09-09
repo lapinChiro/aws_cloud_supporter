@@ -2,7 +2,6 @@
 
 import { 
   CloudFormationResource, 
-  SupportedResource, 
   ResourceType,
   isRDSInstance,
   isLambdaFunction,
@@ -10,7 +9,7 @@ import {
   isFargateService,
   isApplicationLoadBalancer
 } from '../../../src/types/cloudformation';
-import { MetricDefinition, MetricConfig } from '../../../src/types/metrics';
+import { MetricDefinition } from '../../../src/types/metrics';
 import { ErrorDetails } from '../../../src/types/common';
 
 describe('型安全性包括テスト（CLAUDE.md BLUE段階）', () => {
@@ -45,7 +44,7 @@ describe('型安全性包括テスト（CLAUDE.md BLUE段階）', () => {
     if (rdsResources.length > 0) {
       const rds = rdsResources[0];
       // TypeScriptの型推論でRDSDBInstance型として認識される
-      expect(rds.Type).toBe('AWS::RDS::DBInstance');
+      expect(rds?.Type).toBe('AWS::RDS::DBInstance');
     }
   });
 

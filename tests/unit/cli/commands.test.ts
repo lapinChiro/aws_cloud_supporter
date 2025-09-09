@@ -10,7 +10,6 @@ import { HTMLOutputFormatter } from '../../../src/core/html-formatter';
 import { Logger } from '../../../src/utils/logger';
 import { CloudSupporterError, ErrorType } from '../../../src/utils/error';
 import { writeFileSync } from 'fs';
-import { join } from 'path';
 
 // モック
 jest.mock('../../../src/core/analyzer');
@@ -36,7 +35,7 @@ describe('CLI Commands (T-016)', () => {
   
   const mockAnalysisResult = {
     metadata: {
-      version: '1.0.0',
+      version: '1.0.0' as const,
       generated_at: new Date().toISOString(),
       template_path: 'test.yaml',
       total_resources: 10,
@@ -52,20 +51,14 @@ describe('CLI Commands (T-016)', () => {
           {
             metric_name: 'CPUUtilization',
             namespace: 'AWS/RDS',
-            dimensions: [],
-            statistic: 'Average',
-            period: 300,
-            evaluation_periods: 2,
-            threshold: 80,
-            comparison_operator: 'GreaterThanThreshold',
-            treat_missing_data: 'notBreaching',
-            importance: 'high',
-            description: 'CPU usage',
-            documentation_url: 'https://docs.aws.amazon.com',
             unit: 'Percent',
+            description: 'CPU usage',
+            statistic: 'Average' as const,
             recommended_threshold: { warning: 70, critical: 90 },
-            evaluation_period: 300,
-            category: 'Performance'
+            evaluation_period: 300 as const,
+            category: 'Performance' as const,
+            importance: 'High' as const,
+            dimensions: []
           }
         ]
       }
@@ -78,10 +71,9 @@ describe('CLI Commands (T-016)', () => {
     mockAnalyzer = new MetricsAnalyzer(
       {} as any,
       {} as any,
-      {} as any
     ) as jest.Mocked<MetricsAnalyzer>;
     
-    mockParser = new TemplateParser({} as any) as jest.Mocked<TemplateParser>;
+    mockParser = new TemplateParser() as jest.Mocked<TemplateParser>;
     mockJSONFormatter = new JSONOutputFormatter() as jest.Mocked<JSONOutputFormatter>;
     mockHTMLFormatter = new HTMLOutputFormatter() as jest.Mocked<HTMLOutputFormatter>;
     mockLogger = new Logger() as jest.Mocked<Logger>;
@@ -121,10 +113,15 @@ describe('CLI Commands (T-016)', () => {
     });
 
     it('should accept template file as required argument', () => {
-      const args = program._args || [];
-      expect(args).toHaveLength(1);
-      expect(args[0].name()).toBe('template');
-      expect(args[0].description).toContain('CloudFormation template file path');
+      // Commander.js stores argument definitions differently
+      // Test that the argument is properly configured by checking command usage
+      const usage = program.usage();
+      expect(usage).toContain('<template>');
+      
+      // Alternative: check that the argument is in the help text
+      const helpText = program.helpInformation();
+      expect(helpText).toContain('template');
+      expect(helpText).toContain('CloudFormation template file path');
     });
   });
 
@@ -202,12 +199,6 @@ describe('CLI Commands (T-016)', () => {
     });
 
     it('should filter resource types when --resource-types is provided', async () => {
-      const filteredResult = {
-        ...mockAnalysisResult,
-        resources: mockAnalysisResult.resources.filter(r => 
-          r.resource_type === 'AWS::RDS::DBInstance'
-        )
-      };
       
       mockAnalyzer.analyze.mockResolvedValue(mockAnalysisResult);
       mockJSONFormatter.format.mockResolvedValue('{"filtered": true}');
@@ -415,30 +406,26 @@ describe('CLI Commands (T-016)', () => {
             {
               metric_name: 'CPUUtilization',
               namespace: 'AWS/RDS',
-              dimensions: [],
-              statistic: 'Average',
-              period: 300,
-              evaluation_periods: 2,
-              threshold: 80,
-              comparison_operator: 'GreaterThanThreshold',
-              treat_missing_data: 'notBreaching',
-              importance: 'high',
+              unit: 'Percent',
               description: 'CPU usage',
-              documentation_url: 'https://docs.aws.amazon.com'
+              statistic: 'Average' as const,
+              recommended_threshold: { warning: 70, critical: 90 },
+              evaluation_period: 300 as const,
+              category: 'Performance' as const,
+              importance: 'High' as const,
+              dimensions: []
             },
             {
               metric_name: 'SwapUsage',
               namespace: 'AWS/RDS',
-              dimensions: [],
-              statistic: 'Average',
-              period: 300,
-              evaluation_periods: 2,
-              threshold: 100,
-              comparison_operator: 'GreaterThanThreshold',
-              treat_missing_data: 'notBreaching',
-              importance: 'low',
+              unit: 'Bytes',
               description: 'Swap usage',
-              documentation_url: 'https://docs.aws.amazon.com'
+              statistic: 'Average' as const,
+              recommended_threshold: { warning: 80, critical: 100 },
+              evaluation_period: 300 as const,
+              category: 'Performance' as const,
+              importance: 'Low' as const,
+              dimensions: []
             }
           ]
         }]
@@ -476,30 +463,26 @@ describe('CLI Commands (T-016)', () => {
             {
               metric_name: 'CPUUtilization',
               namespace: 'AWS/RDS',
-              dimensions: [],
-              statistic: 'Average',
-              period: 300,
-              evaluation_periods: 2,
-              threshold: 80,
-              comparison_operator: 'GreaterThanThreshold',
-              treat_missing_data: 'notBreaching',
-              importance: 'high',
+              unit: 'Percent',
               description: 'CPU usage',
-              documentation_url: 'https://docs.aws.amazon.com'
+              statistic: 'Average' as const,
+              recommended_threshold: { warning: 70, critical: 90 },
+              evaluation_period: 300 as const,
+              category: 'Performance' as const,
+              importance: 'High' as const,
+              dimensions: []
             },
             {
               metric_name: 'SwapUsage',
               namespace: 'AWS/RDS',
-              dimensions: [],
-              statistic: 'Average', 
-              period: 300,
-              evaluation_periods: 2,
-              threshold: 100,
-              comparison_operator: 'GreaterThanThreshold',
-              treat_missing_data: 'notBreaching',
-              importance: 'low',
+              unit: 'Bytes',
               description: 'Swap usage',
-              documentation_url: 'https://docs.aws.amazon.com'
+              statistic: 'Average' as const,
+              recommended_threshold: { warning: 80, critical: 100 },
+              evaluation_period: 300 as const,
+              category: 'Performance' as const,
+              importance: 'Low' as const,
+              dimensions: []
             }
           ]
         }]
@@ -516,8 +499,8 @@ describe('CLI Commands (T-016)', () => {
           resources: expect.arrayContaining([
             expect.objectContaining({
               metrics: expect.arrayContaining([
-                expect.objectContaining({ importance: 'high' }),
-                expect.objectContaining({ importance: 'low' })
+                expect.objectContaining({ importance: 'High' }),
+                expect.objectContaining({ importance: 'Low' })
               ])
             })
           ])

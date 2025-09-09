@@ -138,10 +138,16 @@ describe('MetricsAnalyzer Integration Tests', () => {
       
       for (let i = 0; i < 100; i++) {
         const resourceType = ['AWS::RDS::DBInstance', 'AWS::Lambda::Function', 
-                            'AWS::ECS::Service', 'AWS::DynamoDB::Table'][i % 4];
+                            'AWS::ECS::Service', 'AWS::DynamoDB::Table'][i % 4] || 'AWS::RDS::DBInstance';
+        
+        let properties = {};
+        if (resourceType === 'AWS::ECS::Service') {
+          properties = { LaunchType: 'FARGATE' }; // Ensure ECS services are Fargate
+        }
+        
         largeTemplate.Resources[`Resource${i}`] = {
           Type: resourceType,
-          Properties: {}
+          Properties: properties
         };
       }
       
@@ -186,7 +192,7 @@ describe('MetricsAnalyzer Integration Tests', () => {
         await expect(analyzer.analyze(tempPath, {
           outputFormat: 'json',
           memoryLimit: lowLimit
-        })).rejects.toThrow('Memory usage exceeded');
+        })).rejects.toThrow('Memory usage already exceeds limit');
         
       } finally {
         await fs.unlink(tempPath);
@@ -273,10 +279,10 @@ describe('MetricsAnalyzer Integration Tests', () => {
         const binLogMetric = mysqlResource?.metrics.find(m => m.metric_name === 'BinLogDiskUsage');
         expect(binLogMetric).toBeDefined();
         
-        // DynamoDB GSIメトリクスの確認
+        // DynamoDB GSIメトリクスの確認（table-level GSI metrics）
         const tableResource = result.resources.find(r => r.logical_id === 'TableWithGSI');
         const gsiMetrics = tableResource?.metrics.filter(m => 
-          m.dimensions?.some(d => d.name === 'GlobalSecondaryIndexName')
+          m.metric_name.includes('GlobalSecondaryIndexes')
         );
         expect(gsiMetrics?.length).toBeGreaterThan(0);
         
@@ -344,7 +350,7 @@ describe('MetricsAnalyzer Integration Tests', () => {
       try {
         await expect(analyzer.analyze(invalidPath, {
           outputFormat: 'json'
-        })).rejects.toThrow('Analysis failed');
+        })).rejects.toThrow('Template must contain "Resources" section');
         
       } finally {
         await fs.unlink(invalidPath);

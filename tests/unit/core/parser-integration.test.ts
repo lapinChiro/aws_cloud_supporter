@@ -61,7 +61,7 @@ describe('TemplateParser実テンプレート統合（CLAUDE.md: 実用性確認
     let supportedCount = 0;
     let totalCount = 0;
     
-    for (const [logicalId, resource] of Object.entries(template.Resources)) {
+    for (const [, resource] of Object.entries(template.Resources)) {
       totalCount++;
       if (isSupportedResource(resource)) {
         supportedCount++;
@@ -91,9 +91,10 @@ Resources:
       await parser.parse(problematicPath);
     } catch (error) {
       // 詳細で有用なエラーレポート
-      expect(error.type).toBe('PARSE_ERROR');
-      expect(error.message).toContain('Type');
-      expect(error.filePath).toBe(problematicPath);
+      const err = error as { type: string; message: string; filePath: string };
+      expect(err.type).toBe('PARSE_ERROR');
+      expect(err.message).toContain('Type');
+      expect(err.filePath).toBe(problematicPath);
     }
   });
 });

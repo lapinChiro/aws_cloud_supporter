@@ -1,20 +1,14 @@
 import { RDSMetricsGenerator } from '../../../src/generators/rds.generator';
-import { CloudFormationResource, RDSDBInstance } from '../../../src/types/cloudformation';
-import { MetricDefinition } from '../../../src/types/metrics';
-import { ILogger } from '../../../src/utils/logger';
+import { RDSDBInstance } from '../../../src/types/cloudformation';
+import { ILogger } from '../../../src/interfaces/logger';
+import { createMockLogger, measureGeneratorPerformance, createRDSInstance } from '../../helpers';
 
 describe('RDSMetricsGenerator', () => {
   let generator: RDSMetricsGenerator;
   let mockLogger: ILogger;
 
   beforeEach(() => {
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      success: jest.fn()
-    };
+    mockLogger = createMockLogger();
     generator = new RDSMetricsGenerator(mockLogger);
   });
 
@@ -27,15 +21,11 @@ describe('RDSMetricsGenerator', () => {
 
   describe('generate', () => {
     it('should generate base RDS metrics for db.t3.micro instance', async () => {
-      const resource: RDSDBInstance = {
-        Type: 'AWS::RDS::DBInstance',
-        LogicalId: 'TestDB',
-        Properties: {
-          DBInstanceClass: 'db.t3.micro',
-          Engine: 'mysql',
-          AllocatedStorage: 20
-        }
-      };
+      const resource = createRDSInstance('TestMicroDB', {
+        DBInstanceClass: 'db.t3.micro',
+        Engine: 'mysql',
+        AllocatedStorage: 20
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -57,15 +47,11 @@ describe('RDSMetricsGenerator', () => {
     });
 
     it('should generate metrics with higher thresholds for db.m5.xlarge instance', async () => {
-      const resource: RDSDBInstance = {
-        Type: 'AWS::RDS::DBInstance',
-        LogicalId: 'ProdDB',
-        Properties: {
-          DBInstanceClass: 'db.m5.xlarge',
-          Engine: 'postgresql',
-          AllocatedStorage: 100
-        }
-      };
+      const resource = createRDSInstance('TestXLargeDB', {
+        DBInstanceClass: 'db.m5.xlarge',
+        Engine: 'postgresql',
+        AllocatedStorage: 100
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -76,15 +62,11 @@ describe('RDSMetricsGenerator', () => {
     });
 
     it('should include BinLogDiskUsage for MySQL with backup retention', async () => {
-      const resource: RDSDBInstance = {
-        Type: 'AWS::RDS::DBInstance',
-        LogicalId: 'MySQLDB',
-        Properties: {
-          DBInstanceClass: 'db.t3.medium',
-          Engine: 'mysql',
-          BackupRetentionPeriod: 7
-        }
-      };
+      const resource = createRDSInstance('MySQLWithBackup', {
+        DBInstanceClass: 'db.t3.medium',
+        Engine: 'mysql',
+        BackupRetentionPeriod: 7
+      });
 
       const metrics = await generator.generate(resource);
       const binLogMetric = metrics.find(m => m.metric_name === 'BinLogDiskUsage');
@@ -95,15 +77,11 @@ describe('RDSMetricsGenerator', () => {
     });
 
     it('should exclude BinLogDiskUsage for PostgreSQL', async () => {
-      const resource: RDSDBInstance = {
-        Type: 'AWS::RDS::DBInstance',
-        LogicalId: 'PostgresDB',
-        Properties: {
-          DBInstanceClass: 'db.t3.medium',
-          Engine: 'postgresql',
-          BackupRetentionPeriod: 7
-        }
-      };
+      const resource = createRDSInstance('PostgreSQLWithBackup', {
+        DBInstanceClass: 'db.t3.medium',
+        Engine: 'postgresql',
+        BackupRetentionPeriod: 7
+      });
 
       const metrics = await generator.generate(resource);
       const binLogMetric = metrics.find(m => m.metric_name === 'BinLogDiskUsage');
@@ -112,14 +90,10 @@ describe('RDSMetricsGenerator', () => {
     });
 
     it('should handle unknown instance classes with default scale', async () => {
-      const resource: RDSDBInstance = {
-        Type: 'AWS::RDS::DBInstance',
-        LogicalId: 'FutureDB',
-        Properties: {
-          DBInstanceClass: 'db.future.large',
-          Engine: 'mysql'
-        }
-      };
+      const resource = createRDSInstance('FutureInstanceDB', {
+        DBInstanceClass: 'db.future.large',
+        Engine: 'mysql'
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -130,22 +104,18 @@ describe('RDSMetricsGenerator', () => {
     });
 
     it('should generate proper dimensions for all metrics', async () => {
-      const resource: RDSDBInstance = {
-        Type: 'AWS::RDS::DBInstance',
-        LogicalId: 'TestDB',
-        Properties: {
-          DBInstanceClass: 'db.t3.micro',
-          Engine: 'mysql'
-        }
-      };
+      const resource = createRDSInstance('TestDB', {
+        DBInstanceClass: 'db.t3.micro',
+        Engine: 'mysql'
+      });
 
       const metrics = await generator.generate(resource);
       
       for (const metric of metrics) {
         expect(metric.dimensions).toBeDefined();
         expect(metric.dimensions?.length).toBeGreaterThan(0);
-        expect(metric.dimensions?.[0].name).toBe('DBInstanceIdentifier');
-        expect(metric.dimensions?.[0].value).toBe('TestDB');
+        expect(metric.dimensions?.[0]?.name).toBe('DBInstanceIdentifier');
+        expect(metric.dimensions?.[0]?.value).toBe('TestDB');
       }
     });
 
@@ -161,11 +131,7 @@ describe('RDSMetricsGenerator', () => {
         }
       };
 
-      const startTime = performance.now();
-      await generator.generate(resource);
-      const duration = performance.now() - startTime;
-
-      expect(duration).toBeLessThan(1000);
+      await measureGeneratorPerformance(generator, resource);
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringMatching(/Generated \d+ metrics for PerfTestDB in [\d.]+ms/)
       );

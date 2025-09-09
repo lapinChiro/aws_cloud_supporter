@@ -6,8 +6,6 @@ import { TemplateParser } from '../../src/core/parser';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { HTMLOutputFormatter } from '../../src/core/html-formatter';
 import { Logger } from '../../src/utils/logger';
-import { AnalysisOptions } from '../../src/types/common';
-import * as fs from 'fs/promises';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
 
@@ -176,11 +174,14 @@ describe('Performance Tests', () => {
       // Check for memory leak indicators
       const firstReading = memoryReadings[0];
       const lastReading = memoryReadings[memoryReadings.length - 1];
-      const memoryGrowth = lastReading - firstReading;
-      
+      let memoryGrowth = 0;
+      if (lastReading && firstReading) {
+        memoryGrowth = lastReading - firstReading;
+      }
+
       console.log('=== Memory Leak Test ===');
-      console.log(`Initial Memory: ${firstReading.toFixed(2)}MB`);
-      console.log(`Final Memory: ${lastReading.toFixed(2)}MB`);
+      console.log(`Initial Memory: ${firstReading?.toFixed(2)}MB`);
+      console.log(`Final Memory: ${lastReading?.toFixed(2)}MB`);
       console.log(`Growth: ${memoryGrowth.toFixed(2)}MB over ${iterations} iterations`);
       console.log('=======================');
       
@@ -249,7 +250,7 @@ describe('Performance Tests', () => {
       const startTime = performance.now();
       
       // Fire off many requests simultaneously
-      const promises = Array(requestCount).fill(null).map((_, index) => 
+      const promises = Array(requestCount).fill(null).map(() => 
         analyzer.analyze(templatePath, {
           outputFormat: 'json',
           concurrency: 3
@@ -263,7 +264,7 @@ describe('Performance Tests', () => {
       expect(results).toHaveLength(requestCount);
       results.forEach(result => {
         expect(result.resources).toHaveLength(1);
-        expect(result.resources[0].resource_type).toBe('AWS::Lambda::Function');
+        expect(result.resources[0]?.resource_type).toBe('AWS::Lambda::Function');
       });
       
       console.log(`Processed ${requestCount} requests in ${totalTime.toFixed(0)}ms`);

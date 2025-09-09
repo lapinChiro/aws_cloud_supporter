@@ -93,8 +93,9 @@ describe('ResourceExtractor最適化（CLAUDE.md: BLUE段階）', () => {
     // SupportedResource型の型安全性
     result.supported.forEach(resource => {
       // LogicalIdプロパティの存在確認
-      expect(resource.LogicalId).toBeDefined();
-      expect(typeof resource.LogicalId).toBe('string');
+      const r = resource as { LogicalId?: string; Type: string };
+      expect(r.LogicalId).toBeDefined();
+      expect(typeof r.LogicalId).toBe('string');
       
       // Type プロパティの型安全性
       expect(resource.Type).toBeDefined();
@@ -115,7 +116,7 @@ describe('ResourceExtractor最適化（CLAUDE.md: BLUE段階）', () => {
   it('should handle edge cases gracefully', () => {
     // 空のテンプレート
     const emptyTemplate = {
-      AWSTemplateFormatVersion: "2010-09-09",
+      AWSTemplateFormatVersion: "2010-09-09" as const,
       Resources: {}
     };
     

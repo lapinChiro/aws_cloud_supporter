@@ -58,6 +58,7 @@ export interface CloudFormationMetadata {
 export interface CloudFormationResource {
   Type: string;
   Properties?: unknown; // プロパティは型別に厳密定義
+  LogicalId?: string; // ランタイムで使用されるLogicalId（テンプレートキーから設定）
   Condition?: string;
   DependsOn?: string | string[];
   Metadata?: CloudFormationMetadata;

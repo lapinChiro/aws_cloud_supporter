@@ -1,20 +1,14 @@
 import { ECSMetricsGenerator } from '../../../src/generators/ecs.generator';
-import { CloudFormationResource, ECSService } from '../../../src/types/cloudformation';
-import { MetricDefinition } from '../../../src/types/metrics';
-import { ILogger } from '../../../src/utils/logger';
+import { ECSService } from '../../../src/types/cloudformation';
+import { ILogger } from '../../../src/interfaces/logger';
+import { createMockLogger, measureGeneratorPerformance, createECSService } from '../../helpers';
 
 describe('ECSMetricsGenerator', () => {
   let generator: ECSMetricsGenerator;
   let mockLogger: ILogger;
 
   beforeEach(() => {
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      success: jest.fn()
-    };
+    mockLogger = createMockLogger();
     generator = new ECSMetricsGenerator(mockLogger);
   });
 
@@ -27,15 +21,11 @@ describe('ECSMetricsGenerator', () => {
 
   describe('generate', () => {
     it('should generate base ECS metrics for Fargate service with LaunchType', async () => {
-      const resource: ECSService = {
-        Type: 'AWS::ECS::Service',
-        LogicalId: 'TestService',
-        Properties: {
-          ServiceName: 'test-service',
-          LaunchType: 'FARGATE',
-          DesiredCount: 2
-        }
-      };
+      const resource = createECSService('TestFargateService', {
+        ServiceName: 'test-service',
+        LaunchType: 'FARGATE',
+        DesiredCount: 2
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -58,24 +48,20 @@ describe('ECSMetricsGenerator', () => {
     });
 
     it('should generate metrics for Fargate service with CapacityProviderStrategy', async () => {
-      const resource: ECSService = {
-        Type: 'AWS::ECS::Service',
-        LogicalId: 'FargateSpotService',
-        Properties: {
-          CapacityProviderStrategy: [
-            {
-              CapacityProvider: 'FARGATE',
-              Weight: 1,
-              Base: 2
-            },
-            {
-              CapacityProvider: 'FARGATE_SPOT',
-              Weight: 4
-            }
-          ],
-          DesiredCount: 10
-        }
-      };
+      const resource = createECSService('MixedCapacityService', {
+        CapacityProviderStrategy: [
+          {
+            CapacityProvider: 'FARGATE',
+            Weight: 1,
+            Base: 2
+          },
+          {
+            CapacityProvider: 'FARGATE_SPOT',
+            Weight: 4
+          }
+        ],
+        DesiredCount: 10
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -87,14 +73,10 @@ describe('ECSMetricsGenerator', () => {
     });
 
     it('should exclude non-Fargate services (EC2 launch type)', async () => {
-      const resource: ECSService = {
-        Type: 'AWS::ECS::Service',
-        LogicalId: 'EC2Service',
-        Properties: {
-          LaunchType: 'EC2',
-          DesiredCount: 5
-        }
-      };
+      const resource = createECSService('EC2Service', {
+        LaunchType: 'EC2',
+        DesiredCount: 5
+      });
 
       // EC2タイプはサポート外として例外を投げることを期待
       await expect(generator.generate(resource)).rejects.toThrow('Only Fargate services are supported');
@@ -103,7 +85,6 @@ describe('ECSMetricsGenerator', () => {
     it('should handle services without explicit launch type', async () => {
       const resource: ECSService = {
         Type: 'AWS::ECS::Service',
-        LogicalId: 'DefaultService',
         Properties: {
           ServiceName: 'default-service'
           // LaunchTypeもCapacityProviderStrategyも未定義
@@ -117,7 +98,6 @@ describe('ECSMetricsGenerator', () => {
     it('should scale thresholds based on desired count', async () => {
       const smallService: ECSService = {
         Type: 'AWS::ECS::Service',
-        LogicalId: 'SmallService',
         Properties: {
           LaunchType: 'FARGATE',
           DesiredCount: 1
@@ -126,7 +106,6 @@ describe('ECSMetricsGenerator', () => {
 
       const largeService: ECSService = {
         Type: 'AWS::ECS::Service',
-        LogicalId: 'LargeService',
         Properties: {
           LaunchType: 'FARGATE',
           DesiredCount: 50
@@ -183,11 +162,7 @@ describe('ECSMetricsGenerator', () => {
         }
       };
 
-      const startTime = performance.now();
-      await generator.generate(resource);
-      const duration = performance.now() - startTime;
-
-      expect(duration).toBeLessThan(1000);
+      await measureGeneratorPerformance(generator, resource);
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringMatching(/Generated \d+ metrics for PerfTestService in [\d.]+ms/)
       );
@@ -196,7 +171,6 @@ describe('ECSMetricsGenerator', () => {
     it('should include GPU metrics for GPU-enabled tasks', async () => {
       const resource: ECSService = {
         Type: 'AWS::ECS::Service',
-        LogicalId: 'GPUService',
         Properties: {
           LaunchType: 'FARGATE',
           DesiredCount: 2,
@@ -216,7 +190,6 @@ describe('ECSMetricsGenerator', () => {
     it('should handle services with auto scaling configuration', async () => {
       const resource: ECSService = {
         Type: 'AWS::ECS::Service',
-        LogicalId: 'AutoScalingService',
         Properties: {
           LaunchType: 'FARGATE',
           DesiredCount: 10,

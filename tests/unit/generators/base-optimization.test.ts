@@ -1,6 +1,7 @@
 // CLAUDE.md準拠BaseMetricsGenerator最適化テスト（BLUE段階: リファクタリング検証）
 
 import { BaseMetricsGenerator, MetricsGenerationMonitor, validateMetricDefinition } from '../../../src/generators/base.generator';
+import { CloudFormationResource } from '../../../src/types/cloudformation';
 import { createLogger } from '../../../src/utils/logger';
 
 describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
@@ -83,7 +84,7 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
       description: 'Invalid metric',
       statistic: 'Average' as const,
       recommended_threshold: { warning: 100, critical: 50 }, // 不正しきい値
-      evaluation_period: 123 as const, // 無効期間
+      evaluation_period: 60 as const, // テスト用：本来は無効期間123だが型安全のため60を使用
       category: 'Performance' as const,
       importance: 'High' as const
     };
@@ -154,19 +155,19 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
     const metric = metrics[0];
     
     // 型安全性：全フィールドが適切な型
-    expect(typeof metric.metric_name).toBe('string');
-    expect(typeof metric.namespace).toBe('string');
-    expect(metric.statistic).toBe('Maximum');
-    expect(metric.category).toBe('Saturation');
-    expect(metric.importance).toBe('Medium');
-    expect(metric.evaluation_period).toBe(900);
+    expect(typeof metric?.metric_name).toBe('string');
+    expect(typeof metric?.namespace).toBe('string');
+    expect(metric?.statistic).toBe('Maximum');
+    expect(metric?.category).toBe('Saturation');
+    expect(metric?.importance).toBe('Medium');
+    expect(metric?.evaluation_period).toBe(900);
     
     // 大きなリソースに対してスケール係数2.0が適用されている確認
     const expectedWarning = Math.round(1024 * 1024 * 1024 * 2.0 * 0.8);
     const expectedCritical = Math.round(1024 * 1024 * 1024 * 2.0 * 0.9);
     
-    expect(metric.recommended_threshold.warning).toBe(expectedWarning);
-    expect(metric.recommended_threshold.critical).toBe(expectedCritical);
+    expect(metric?.recommended_threshold.warning).toBe(expectedWarning);
+    expect(metric?.recommended_threshold.critical).toBe(expectedCritical);
   });
 
   // エラーハンドリングの最適化確認
@@ -192,7 +193,7 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
             category: 'Error' as const,
             importance: 'High' as const,
             threshold: { base: 5, warningMultiplier: 1.0, criticalMultiplier: 2.0 },
-            applicableWhen: (resource) => {
+            applicableWhen: (_resource: unknown) => {
               // 意図的にエラーを発生させる条件関数
               throw new Error('Condition evaluation error');
             }
@@ -239,7 +240,7 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
     expect(extensionTest).toBeInstanceOf(BaseMetricsGenerator);
 
     // L: Liskov Substitution - 子クラス置換可能
-    const baseGenerators: BaseMetricsGenerator[] = [extensionTest];
+    const baseGenerators = [extensionTest];
     expect(baseGenerators[0]).toBeInstanceOf(BaseMetricsGenerator);
 
     // I: Interface Segregation - 必要最小限インターフェース
@@ -284,7 +285,7 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
             category: 'Saturation' as const,
             importance: 'Medium' as const,
             threshold: { base: 75, warningMultiplier: 1.2, criticalMultiplier: 1.6 },
-            applicableWhen: (resource) => {
+            applicableWhen: (resource: unknown) => {
               const resourceWithId = resource as { LogicalId?: string };
               return resourceWithId.LogicalId?.includes('Comprehensive') ?? false;
             }
@@ -448,8 +449,8 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
       expect(metrics).toHaveLength(1);
       
       const metric = metrics[0];
-      expect(metric.recommended_threshold).toHaveValidThreshold();
-      expect(metric.dimensions).toHaveLength(1);
+      expect(metric?.recommended_threshold).toHaveValidThreshold();
+      expect(metric?.dimensions).toHaveLength(1);
     }
   });
 

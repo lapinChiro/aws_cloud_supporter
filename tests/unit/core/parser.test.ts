@@ -106,7 +106,7 @@ Resources:
   
   // より大量のリソースを生成（50MB超にするため）
   for (let i = 0; i < 50000; i++) {
-    largeTemplate.Resources[`TestBucket${i}`] = {
+    (largeTemplate.Resources as Record<string, unknown>)[`TestBucket${i}`] = {
       Type: "AWS::S3::Bucket",
       Properties: {
         BucketName: `large-test-bucket-${i}`,
@@ -224,7 +224,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
   // YAML構文エラーハンドリングテスト
   it('should provide detailed YAML syntax error', async () => {
     const { TemplateParser } = require('../../../src/core/parser');
-    const { isParseError } = require('../../../src/utils/error');
     const parser = new TemplateParser();
     
     // バイナリデータでYAMLパーサーを確実に失敗させる
@@ -408,15 +407,16 @@ describe('TemplateParserエラーハンドリング統合（CLAUDE.md: 型安全
       await parser.parse(nonExistentPath);
     } catch (error) {
       if (error instanceof CloudSupporterError) {
-      expect(error).toBeInstanceOf(CloudSupporterError);
-      expect(error.type).toBe(ErrorType.FILE_ERROR);
-      expect(error.filePath).toBe(nonExistentPath);
-      
-      // 構造化出力確認
-      const structured = error.toStructuredOutput();
-      expect(structured.error).toBe('FILE_ERROR');
-      expect(structured.filePath).toBe(nonExistentPath);
-      expect(structured.timestamp).toBeDefined();
+        const csError = error as CloudSupporterError;
+        expect(csError).toBeInstanceOf(CloudSupporterError);
+        expect(csError.type).toBe(ErrorType.FILE_ERROR);
+        expect(csError.filePath).toBe(nonExistentPath);
+        
+        // 構造化出力確認
+        const structured = csError.toStructuredOutput();
+        expect(structured.error).toBe('FILE_ERROR');
+        expect(structured.filePath).toBe(nonExistentPath);
+        expect(structured.timestamp).toBeDefined();
       }
     }
   });

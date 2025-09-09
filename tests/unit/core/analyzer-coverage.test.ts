@@ -4,8 +4,7 @@
 import { MetricsAnalyzer } from '../../../src/core/analyzer';
 import { TemplateParser } from '../../../src/core/parser';
 import { Logger } from '../../../src/utils/logger';
-import { CloudSupporterError, ErrorType } from '../../../src/utils/error';
-import { AnalysisOptions } from '../../../src/types/common';
+import { CloudSupporterError } from '../../../src/utils/error';
 import { CloudFormationTemplate } from '../../../src/types/cloudformation';
 
 // Mock dependencies
@@ -89,7 +88,6 @@ describe('MetricsAnalyzer Coverage Tests', () => {
       mockParser.parse.mockResolvedValue(template);
 
       // Mock generator failure for first resource
-      const generatorError = new Error('Generator failed');
       
       // This is a simplified test - in real implementation, 
       // we'd need to mock the actual generator behavior

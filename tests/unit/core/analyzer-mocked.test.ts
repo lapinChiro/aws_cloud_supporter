@@ -61,10 +61,8 @@ jest.mock('../../../src/generators/apigateway.generator', () => ({
 import { MetricsAnalyzer } from '../../../src/core/analyzer';
 import { ITemplateParser } from '../../../src/interfaces/parser';
 import { ILogger } from '../../../src/interfaces/logger';
-import { AnalysisResult, ResourceWithMetrics } from '../../../src/types/metrics';
-import { CloudFormationTemplate, CloudFormationResource } from '../../../src/types/cloudformation';
-import { CloudSupporterError, ErrorType } from '../../../src/utils/error';
-import { performance } from 'perf_hooks';
+import { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import { createMockLogger } from '../../helpers';
 
 describe('MetricsAnalyzer (Mocked Unit Tests)', () => {
   let analyzer: MetricsAnalyzer;
@@ -77,14 +75,7 @@ describe('MetricsAnalyzer (Mocked Unit Tests)', () => {
       parse: jest.fn()
     };
 
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      success: jest.fn(),
-      setLevel: jest.fn()
-    };
+    mockLogger = createMockLogger();
 
     analyzer = new MetricsAnalyzer(mockParser, mockLogger);
   });

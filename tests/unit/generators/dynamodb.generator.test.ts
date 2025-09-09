@@ -1,19 +1,14 @@
 import { DynamoDBMetricsGenerator } from '../../../src/generators/dynamodb.generator';
 import { CloudFormationResource } from '../../../src/types/cloudformation';
-import { ILogger } from '../../../src/utils/logger';
+import { ILogger } from '../../../src/interfaces/logger';
+import { createMockLogger, measureGeneratorPerformance, createDynamoDBTable } from '../../helpers';
 
 describe('DynamoDBMetricsGenerator', () => {
   let generator: DynamoDBMetricsGenerator;
   let mockLogger: ILogger;
 
   beforeEach(() => {
-    mockLogger = {
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      debug: jest.fn(),
-      success: jest.fn()
-    };
+    mockLogger = createMockLogger();
     generator = new DynamoDBMetricsGenerator(mockLogger);
   });
 
@@ -26,18 +21,14 @@ describe('DynamoDBMetricsGenerator', () => {
 
   describe('generate', () => {
     it('should generate base DynamoDB metrics for provisioned capacity table', async () => {
-      const resource: CloudFormationResource = {
-        Type: 'AWS::DynamoDB::Table',
-        LogicalId: 'TestTable',
-        Properties: {
-          TableName: 'test-table',
-          BillingMode: 'PROVISIONED',
-          ProvisionedThroughput: {
-            ReadCapacityUnits: 5,
-            WriteCapacityUnits: 5
-          }
+      const resource = createDynamoDBTable('ProvisionedTable', {
+        TableName: 'test-table',
+        BillingMode: 'PROVISIONED',
+        ProvisionedThroughput: {
+          ReadCapacityUnits: 5,
+          WriteCapacityUnits: 5
         }
-      };
+      });
 
       const metrics = await generator.generate(resource);
       
@@ -63,7 +54,6 @@ describe('DynamoDBMetricsGenerator', () => {
     it('should generate metrics for pay-per-request (on-demand) table', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::DynamoDB::Table',
-        LogicalId: 'OnDemandTable',
         Properties: {
           TableName: 'on-demand-table',
           BillingMode: 'PAY_PER_REQUEST'
@@ -87,7 +77,6 @@ describe('DynamoDBMetricsGenerator', () => {
     it('should handle tables with global secondary indexes (GSI)', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::DynamoDB::Table',
-        LogicalId: 'TableWithGSI',
         Properties: {
           TableName: 'table-with-gsi',
           BillingMode: 'PROVISIONED',
@@ -134,7 +123,6 @@ describe('DynamoDBMetricsGenerator', () => {
     it('should handle tables without explicit billing mode (default to provisioned)', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::DynamoDB::Table',
-        LogicalId: 'DefaultTable',
         Properties: {
           TableName: 'default-table'
           // BillingModeが未定義の場合
@@ -152,7 +140,6 @@ describe('DynamoDBMetricsGenerator', () => {
     it('should scale thresholds based on capacity units', async () => {
       const smallTable: CloudFormationResource = {
         Type: 'AWS::DynamoDB::Table',
-        LogicalId: 'SmallTable',
         Properties: {
           BillingMode: 'PROVISIONED',
           ProvisionedThroughput: {
@@ -164,7 +151,6 @@ describe('DynamoDBMetricsGenerator', () => {
 
       const largeTable: CloudFormationResource = {
         Type: 'AWS::DynamoDB::Table',
-        LogicalId: 'LargeTable',
         Properties: {
           BillingMode: 'PROVISIONED',
           ProvisionedThroughput: {
@@ -222,11 +208,7 @@ describe('DynamoDBMetricsGenerator', () => {
         }
       };
 
-      const startTime = performance.now();
-      await generator.generate(resource);
-      const duration = performance.now() - startTime;
-
-      expect(duration).toBeLessThan(1000);
+      await measureGeneratorPerformance(generator, resource);
       expect(mockLogger.debug).toHaveBeenCalledWith(
         expect.stringMatching(/Generated \d+ metrics for PerfTestTable in [\d.]+ms/)
       );
@@ -235,7 +217,6 @@ describe('DynamoDBMetricsGenerator', () => {
     it('should include stream metrics when streams are enabled', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::DynamoDB::Table',
-        LogicalId: 'StreamTable',
         Properties: {
           TableName: 'stream-table',
           StreamSpecification: {
@@ -253,7 +234,6 @@ describe('DynamoDBMetricsGenerator', () => {
     it('should handle autoscaling configuration', async () => {
       const resource: CloudFormationResource = {
         Type: 'AWS::DynamoDB::Table',
-        LogicalId: 'AutoScalingTable',
         Properties: {
           TableName: 'auto-scaling-table',
           BillingMode: 'PROVISIONED',

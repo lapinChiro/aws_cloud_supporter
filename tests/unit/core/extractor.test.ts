@@ -212,9 +212,7 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
   // O(n)アルゴリズム要件テスト（GREEN段階: 実装確認）
   it('should extract resources with O(n) algorithm', () => {
     const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
-    const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
     
     // アルゴリズムの時間計算量がO(n)であることを確認
@@ -293,7 +291,7 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     const result = extractor.extract(template);
     
     // Fargateサービスのみがサポート対象として抽出される  
-    const fargateServices = result.supported.filter(r => r.Type === 'AWS::ECS::Service');
+    const fargateServices = result.supported.filter((r: any) => r.Type === 'AWS::ECS::Service');
     expect(fargateServices.length).toBe(3); // Fargate + FargateSpot + MixedCapacity
     
     // EC2サービスはサポート対象外
@@ -313,7 +311,7 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     const result = extractor.extract(template);
     
     // Application LBのみがサポート対象
-    const supportedLBs = result.supported.filter(r => 
+    const supportedLBs = result.supported.filter((r: any) => 
       r.Type === 'AWS::ElasticLoadBalancingV2::LoadBalancer'
     );
     expect(supportedLBs.length).toBe(2); // ApplicationLB + DefaultLB
@@ -515,9 +513,10 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
     
     // SupportedResource Union型が正しく使用されている
     expect(result.supported).toHaveLength(2);
-    result.supported.forEach(resource => {
-      expect(resource.LogicalId).toBeDefined();
-      expect(resource.Type).toBeDefined();
+    result.supported.forEach((resource: unknown) => {
+      const r = resource as { LogicalId?: string; Type: string };
+      expect(r.LogicalId).toBeDefined();
+      expect(r.Type).toBeDefined();
     });
   });
 
@@ -538,7 +537,7 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
     
     // 型安全性確認
     expect(template.Resources).toBeDefined();
-    expect(result.supported.every(r => typeof r.Type === 'string')).toBe(true);
+    expect(result.supported.every((r: unknown) => typeof (r as { Type: string }).Type === 'string')).toBe(true);
   });
 
   // ExtractResult型安全性テスト（GREEN段階: 戻り値型確認）
