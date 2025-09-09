@@ -1,0 +1,4941 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Large template with 500+ resources for performance testing
+Resources:
+  RDSInstance1:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-1
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-1
+  RDSInstance2:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-2
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-2
+  RDSInstance3:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-3
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-3
+  RDSInstance4:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-4
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-4
+  RDSInstance5:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-5
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-5
+  RDSInstance6:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-6
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-6
+  RDSInstance7:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-7
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-7
+  RDSInstance8:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-8
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-8
+  RDSInstance9:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-9
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-9
+  RDSInstance10:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-10
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-10
+  RDSInstance11:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-11
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-11
+  RDSInstance12:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-12
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-12
+  RDSInstance13:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-13
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-13
+  RDSInstance14:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-14
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-14
+  RDSInstance15:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-15
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-15
+  RDSInstance16:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-16
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-16
+  RDSInstance17:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-17
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-17
+  RDSInstance18:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-18
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-18
+  RDSInstance19:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-19
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-19
+  RDSInstance20:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-20
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-20
+  RDSInstance21:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-21
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-21
+  RDSInstance22:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-22
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-22
+  RDSInstance23:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-23
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-23
+  RDSInstance24:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-24
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-24
+  RDSInstance25:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-25
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-25
+  RDSInstance26:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-26
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-26
+  RDSInstance27:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-27
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-27
+  RDSInstance28:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-28
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-28
+  RDSInstance29:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-29
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-29
+  RDSInstance30:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-30
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-30
+  RDSInstance31:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-31
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-31
+  RDSInstance32:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-32
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-32
+  RDSInstance33:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-33
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-33
+  RDSInstance34:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-34
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-34
+  RDSInstance35:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-35
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-35
+  RDSInstance36:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-36
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-36
+  RDSInstance37:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-37
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-37
+  RDSInstance38:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-38
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-38
+  RDSInstance39:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-39
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-39
+  RDSInstance40:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-40
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-40
+  RDSInstance41:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-41
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-41
+  RDSInstance42:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-42
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-42
+  RDSInstance43:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-43
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-43
+  RDSInstance44:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-44
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-44
+  RDSInstance45:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-45
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-45
+  RDSInstance46:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-46
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-46
+  RDSInstance47:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-47
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-47
+  RDSInstance48:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-48
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-48
+  RDSInstance49:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-49
+      DBInstanceClass: db.t3.micro
+      Engine: postgresql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-49
+  RDSInstance50:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier:
+        Fn::Sub: ${AWS::StackName}-db-50
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword:
+        Fn::Sub: password-${AWS::StackId}-50
+  LambdaFunction1:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-1
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 1' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction2:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-2
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 2' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction3:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-3
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 3' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction4:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-4
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 4' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction5:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-5
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 5' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction6:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-6
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 6' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction7:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-7
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 7' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction8:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-8
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 8' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction9:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-9
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 9' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction10:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-10
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 10' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction11:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-11
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 11' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction12:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-12
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 12' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction13:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-13
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 13' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction14:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-14
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 14' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction15:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-15
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 15' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction16:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-16
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 16' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction17:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-17
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 17' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction18:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-18
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 18' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction19:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-19
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 19' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction20:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-20
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 20' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction21:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-21
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 21' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction22:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-22
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 22' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction23:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-23
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 23' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction24:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-24
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 24' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction25:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-25
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 25' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction26:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-26
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 26' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction27:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-27
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 27' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction28:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-28
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 28' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction29:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-29
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 29' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction30:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-30
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 30' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction31:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-31
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 31' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction32:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-32
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 32' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction33:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-33
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 33' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction34:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-34
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 34' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction35:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-35
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 35' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction36:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-36
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 36' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction37:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-37
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 37' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction38:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-38
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 38' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction39:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-39
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 39' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction40:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-40
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 40' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction41:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-41
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 41' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction42:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-42
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 42' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction43:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-43
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 43' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction44:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-44
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 44' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction45:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-45
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 45' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction46:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-46
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 46' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction47:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-47
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 47' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction48:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-48
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 48' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction49:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-49
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 49' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction50:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-50
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 50' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction51:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-51
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 51' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction52:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-52
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 52' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction53:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-53
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 53' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction54:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-54
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 54' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction55:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-55
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 55' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction56:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-56
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 56' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction57:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-57
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 57' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction58:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-58
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 58' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction59:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-59
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 59' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction60:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-60
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 60' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction61:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-61
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 61' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction62:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-62
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 62' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction63:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-63
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 63' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction64:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-64
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 64' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction65:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-65
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 65' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction66:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-66
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 66' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction67:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-67
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 67' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction68:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-68
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 68' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction69:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-69
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 69' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction70:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-70
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 70' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction71:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-71
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 71' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction72:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-72
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 72' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction73:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-73
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 73' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction74:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-74
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 74' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction75:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-75
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 75' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction76:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-76
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 76' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction77:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-77
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 77' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction78:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-78
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 78' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction79:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-79
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 79' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction80:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-80
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 80' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction81:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-81
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 81' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction82:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-82
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 82' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction83:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-83
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 83' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction84:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-84
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 84' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction85:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-85
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 85' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction86:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-86
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 86' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction87:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-87
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 87' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction88:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-88
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 88' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction89:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-89
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 89' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction90:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-90
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 90' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction91:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-91
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 91' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction92:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-92
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 92' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction93:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-93
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 93' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction94:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-94
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 94' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction95:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-95
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 95' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction96:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-96
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 96' }; };"
+      MemorySize: 256
+      Timeout: 60
+  LambdaFunction97:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-97
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 97' }; };"
+      MemorySize: 512
+      Timeout: 60
+  LambdaFunction98:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-98
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 98' }; };"
+      MemorySize: 768
+      Timeout: 60
+  LambdaFunction99:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-99
+      Runtime: python3.11
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 99' }; };"
+      MemorySize: 1024
+      Timeout: 60
+  LambdaFunction100:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-lambda-100
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: "exports.handler = async (event) => { return { statusCode: 200, body:
+          'Function 100' }; };"
+      MemorySize: 256
+      Timeout: 60
+  DynamoDBTable1:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-1
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable2:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-2
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable3:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-3
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable4:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-4
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable5:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-5
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable6:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-6
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable7:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-7
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable8:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-8
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable9:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-9
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable10:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-10
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable11:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-11
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable12:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-12
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable13:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-13
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable14:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-14
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable15:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-15
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable16:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-16
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable17:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-17
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable18:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-18
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable19:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-19
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable20:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-20
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable21:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-21
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable22:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-22
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable23:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-23
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable24:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-24
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable25:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-25
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable26:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-26
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable27:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-27
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable28:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-28
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable29:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-29
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable30:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-30
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable31:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-31
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable32:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-32
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable33:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-33
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable34:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-34
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable35:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-35
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable36:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-36
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable37:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-37
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable38:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-38
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable39:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-39
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable40:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-40
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable41:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-41
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable42:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-42
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable43:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-43
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable44:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-44
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable45:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-45
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable46:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-46
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable47:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-47
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable48:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-48
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable49:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-49
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable50:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-50
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable51:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-51
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable52:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-52
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable53:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-53
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable54:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-54
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable55:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-55
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable56:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-56
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable57:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-57
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable58:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-58
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable59:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-59
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable60:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-60
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable61:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-61
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable62:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-62
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable63:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-63
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable64:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-64
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable65:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-65
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable66:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-66
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable67:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-67
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable68:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-68
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable69:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-69
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable70:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-70
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable71:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-71
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable72:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-72
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable73:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-73
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  DynamoDBTable74:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-74
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  DynamoDBTable75:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName:
+        Fn::Sub: ${AWS::StackName}-table-75
+      BillingMode: PROVISIONED
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  ECSTaskDefinition1:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-1
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService1:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-1
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition1
+  ECSTaskDefinition2:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-2
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService2:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-2
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition2
+  ECSTaskDefinition3:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-3
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService3:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-3
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition3
+  ECSTaskDefinition4:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-4
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService4:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-4
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition4
+  ECSTaskDefinition5:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-5
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService5:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-5
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition5
+  ECSTaskDefinition6:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-6
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService6:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-6
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition6
+  ECSTaskDefinition7:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-7
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService7:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-7
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition7
+  ECSTaskDefinition8:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-8
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService8:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-8
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition8
+  ECSTaskDefinition9:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-9
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService9:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-9
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition9
+  ECSTaskDefinition10:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-10
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService10:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-10
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition10
+  ECSTaskDefinition11:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-11
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService11:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-11
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition11
+  ECSTaskDefinition12:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-12
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService12:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-12
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition12
+  ECSTaskDefinition13:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-13
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService13:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-13
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition13
+  ECSTaskDefinition14:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-14
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService14:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-14
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition14
+  ECSTaskDefinition15:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-15
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService15:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-15
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition15
+  ECSTaskDefinition16:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-16
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService16:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-16
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition16
+  ECSTaskDefinition17:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-17
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService17:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-17
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition17
+  ECSTaskDefinition18:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-18
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService18:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-18
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition18
+  ECSTaskDefinition19:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-19
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService19:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-19
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition19
+  ECSTaskDefinition20:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-20
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService20:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-20
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition20
+  ECSTaskDefinition21:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-21
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService21:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-21
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition21
+  ECSTaskDefinition22:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-22
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService22:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-22
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition22
+  ECSTaskDefinition23:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-23
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService23:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-23
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition23
+  ECSTaskDefinition24:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-24
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService24:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-24
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition24
+  ECSTaskDefinition25:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-25
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService25:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-25
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition25
+  ECSTaskDefinition26:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-26
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService26:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-26
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition26
+  ECSTaskDefinition27:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-27
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService27:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-27
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition27
+  ECSTaskDefinition28:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-28
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService28:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-28
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition28
+  ECSTaskDefinition29:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-29
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService29:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-29
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition29
+  ECSTaskDefinition30:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-30
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService30:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-30
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition30
+  ECSTaskDefinition31:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-31
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService31:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-31
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition31
+  ECSTaskDefinition32:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-32
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService32:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-32
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition32
+  ECSTaskDefinition33:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-33
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService33:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-33
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition33
+  ECSTaskDefinition34:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-34
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService34:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-34
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition34
+  ECSTaskDefinition35:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-35
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService35:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-35
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition35
+  ECSTaskDefinition36:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-36
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService36:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-36
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition36
+  ECSTaskDefinition37:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-37
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService37:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-37
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition37
+  ECSTaskDefinition38:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-38
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService38:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-38
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition38
+  ECSTaskDefinition39:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-39
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService39:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-39
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition39
+  ECSTaskDefinition40:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-40
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService40:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-40
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition40
+  ECSTaskDefinition41:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-41
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService41:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-41
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition41
+  ECSTaskDefinition42:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-42
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService42:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-42
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition42
+  ECSTaskDefinition43:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-43
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService43:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-43
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition43
+  ECSTaskDefinition44:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-44
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService44:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-44
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition44
+  ECSTaskDefinition45:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-45
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService45:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-45
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition45
+  ECSTaskDefinition46:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-46
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService46:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-46
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition46
+  ECSTaskDefinition47:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-47
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService47:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-47
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition47
+  ECSTaskDefinition48:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-48
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService48:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-48
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition:
+        Ref: ECSTaskDefinition48
+  ECSTaskDefinition49:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-49
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService49:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-49
+      LaunchType: FARGATE
+      DesiredCount: 2
+      TaskDefinition:
+        Ref: ECSTaskDefinition49
+  ECSTaskDefinition50:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family:
+        Fn::Sub: ${AWS::StackName}-task-50
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Cpu: "256"
+      Memory: "512"
+      ContainerDefinitions:
+        - Name: container
+          Image: nginx:alpine
+          PortMappings:
+            - ContainerPort: 80
+  ECSService50:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName:
+        Fn::Sub: ${AWS::StackName}-service-50
+      LaunchType: FARGATE
+      DesiredCount: 3
+      TaskDefinition:
+        Ref: ECSTaskDefinition50
+  ApplicationLoadBalancer1:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-1
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer2:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-2
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer3:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-3
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer4:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-4
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer5:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-5
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer6:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-6
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer7:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-7
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer8:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-8
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer9:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-9
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer10:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-10
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer11:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-11
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer12:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-12
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer13:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-13
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer14:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-14
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer15:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-15
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer16:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-16
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer17:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-17
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer18:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-18
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer19:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-19
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer20:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-20
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer21:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-21
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer22:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-22
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer23:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-23
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer24:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-24
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  ApplicationLoadBalancer25:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-alb-25
+      Type: application
+      Scheme: internal
+      Subnets:
+        - Ref: Subnet1
+        - Ref: Subnet2
+  APIGateway1:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-1
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway2:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-2
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway3:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-3
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway4:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-4
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway5:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-5
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway6:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-6
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway7:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-7
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway8:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-8
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway9:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-9
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway10:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-10
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway11:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-11
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway12:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-12
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway13:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-13
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway14:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-14
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway15:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-15
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway16:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-16
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway17:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-17
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway18:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-18
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway19:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-19
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway20:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-20
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway21:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-21
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway22:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-22
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway23:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-23
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway24:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-24
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  APIGateway25:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-api-25
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+  S3Bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-1-${AWS::AccountId}
+  S3Bucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-2-${AWS::AccountId}
+  S3Bucket3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-3-${AWS::AccountId}
+  S3Bucket4:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-4-${AWS::AccountId}
+  S3Bucket5:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-5-${AWS::AccountId}
+  S3Bucket6:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-6-${AWS::AccountId}
+  S3Bucket7:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-7-${AWS::AccountId}
+  S3Bucket8:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-8-${AWS::AccountId}
+  S3Bucket9:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-9-${AWS::AccountId}
+  S3Bucket10:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-10-${AWS::AccountId}
+  S3Bucket11:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-11-${AWS::AccountId}
+  S3Bucket12:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-12-${AWS::AccountId}
+  S3Bucket13:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-13-${AWS::AccountId}
+  S3Bucket14:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-14-${AWS::AccountId}
+  S3Bucket15:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-15-${AWS::AccountId}
+  S3Bucket16:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-16-${AWS::AccountId}
+  S3Bucket17:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-17-${AWS::AccountId}
+  S3Bucket18:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-18-${AWS::AccountId}
+  S3Bucket19:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-19-${AWS::AccountId}
+  S3Bucket20:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-20-${AWS::AccountId}
+  S3Bucket21:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-21-${AWS::AccountId}
+  S3Bucket22:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-22-${AWS::AccountId}
+  S3Bucket23:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-23-${AWS::AccountId}
+  S3Bucket24:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-24-${AWS::AccountId}
+  S3Bucket25:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-25-${AWS::AccountId}
+  S3Bucket26:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-26-${AWS::AccountId}
+  S3Bucket27:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-27-${AWS::AccountId}
+  S3Bucket28:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-28-${AWS::AccountId}
+  S3Bucket29:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-29-${AWS::AccountId}
+  S3Bucket30:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-30-${AWS::AccountId}
+  S3Bucket31:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-31-${AWS::AccountId}
+  S3Bucket32:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-32-${AWS::AccountId}
+  S3Bucket33:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-33-${AWS::AccountId}
+  S3Bucket34:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-34-${AWS::AccountId}
+  S3Bucket35:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-35-${AWS::AccountId}
+  S3Bucket36:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-36-${AWS::AccountId}
+  S3Bucket37:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-37-${AWS::AccountId}
+  S3Bucket38:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-38-${AWS::AccountId}
+  S3Bucket39:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-39-${AWS::AccountId}
+  S3Bucket40:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-40-${AWS::AccountId}
+  S3Bucket41:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-41-${AWS::AccountId}
+  S3Bucket42:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-42-${AWS::AccountId}
+  S3Bucket43:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-43-${AWS::AccountId}
+  S3Bucket44:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-44-${AWS::AccountId}
+  S3Bucket45:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-45-${AWS::AccountId}
+  S3Bucket46:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-46-${AWS::AccountId}
+  S3Bucket47:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-47-${AWS::AccountId}
+  S3Bucket48:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-48-${AWS::AccountId}
+  S3Bucket49:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-49-${AWS::AccountId}
+  S3Bucket50:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-bucket-50-${AWS::AccountId}
+  EC2Instance1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance3:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance4:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance5:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance6:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance7:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance8:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance9:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance10:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance11:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance12:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance13:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance14:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance15:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance16:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance17:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance18:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance19:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance20:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance21:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance22:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance23:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance24:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance25:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance26:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance27:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance28:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance29:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance30:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance31:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance32:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance33:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance34:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance35:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance36:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance37:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance38:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance39:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance40:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance41:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance42:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance43:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance44:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance45:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance46:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance47:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance48:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance49:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  EC2Instance50:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0123456789abcdef0
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""

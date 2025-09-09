@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: "Serverless application with API and Lambda"
+
+Resources:
+  # Serverless API
+  ServerlessApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: serverless-api
+      StageName: prod
+      EndpointConfiguration:
+        Type: REGIONAL
+
+  # Serverless Function
+  DataProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: serverless-data-processor
+      Runtime: python3.11
+      Handler: app.handler
+      MemorySize: 2048
+      Timeout: 900
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DataTable
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /process
+            Method: POST
+
+  # DynamoDB Table
+  DataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: serverless-data-table
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 10
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: timestamp-index
+          KeySchema:
+            - AttributeName: timestamp
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5

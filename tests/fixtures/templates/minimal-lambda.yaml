@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Minimal Lambda function template"
+
+Resources:
+  SimpleLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: test-function
+      Runtime: nodejs20.x
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+            return { statusCode: 200, body: 'Hello from Lambda!' };
+          };
+      MemorySize: 128
+      Timeout: 30
