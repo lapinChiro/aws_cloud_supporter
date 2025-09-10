@@ -19,8 +19,8 @@ describe('CDK Official Handlebars Template', () => {
 
       const result = CDKOfficialHandlebarsHelpers.renderDimensionsMap(dimensionsMap);
       
-      expect(result).toContain("DBInstanceIdentifier: 'test-db'");
-      expect(result).toContain("ResourceId: 'test-resource'");
+      expect(result).toContain('DBInstanceIdentifier: "test-db"');
+      expect(result).toContain('ResourceId: "test-resource"');
       expect(result).toMatch(/\{[\s\S]*\}/); // Contains curly braces
     });
 
@@ -36,9 +36,9 @@ describe('CDK Official Handlebars Template', () => {
       const result = CDKOfficialHandlebarsHelpers.renderCompleteMetric(metricConfig);
       
       expect(result).toContain("new cloudwatch.Metric({");
-      expect(result).toContain("metricName: 'CPUUtilization'");
-      expect(result).toContain("namespace: 'AWS/RDS'");
-      expect(result).toContain("statistic: 'Average'");
+      expect(result).toContain('metricName: "CPUUtilization"');
+      expect(result).toContain('namespace: "AWS/RDS"');
+      expect(result).toContain('statistic: "Average"');
       expect(result).toContain("cdk.Duration.seconds(300)");
     });
 
@@ -47,7 +47,7 @@ describe('CDK Official Handlebars Template', () => {
         cloudwatch.TreatMissingData.NOT_BREACHING
       );
       
-      expect(result).toBe('cloudwatch.TreatMissingData.notBreaching');
+      expect(result).toBe('cloudwatch.TreatMissingData.NOT_BREACHING');
     });
 
     it('should render ComparisonOperator correctly', () => {
@@ -55,7 +55,7 @@ describe('CDK Official Handlebars Template', () => {
         cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD
       );
       
-      expect(result).toBe('cloudwatch.ComparisonOperator.GreaterThanThreshold');
+      expect(result).toBe('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
     });
 
     it('should render TopicProps correctly', () => {
@@ -66,8 +66,8 @@ describe('CDK Official Handlebars Template', () => {
 
       const result = CDKOfficialHandlebarsHelpers.renderTopicProps(topicProps);
       
-      expect(result).toContain("topicName: 'alarm-notifications'");
-      expect(result).toContain("displayName: 'Alarm Notifications'");
+      expect(result).toContain('topicName: "alarm-notifications"');
+      expect(result).toContain('displayName: "Alarm Notifications"');
       expect(result).toMatch(/\{[\s\S]*\}/); // Contains curly braces
     });
 

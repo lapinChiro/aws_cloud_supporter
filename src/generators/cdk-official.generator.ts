@@ -249,10 +249,18 @@ export class CDKOfficialGenerator {
    * 識別子サニタイズ（既存CDKGeneratorと同等）
    */
   private sanitizeIdentifier(input: string): string {
-    return input
+    // Keep first digit for identifiers like 4XXError -> FourXXError, 5XXError -> FiveXXError
+    let sanitized = input
+      .replace(/^4/, 'Four')
+      .replace(/^5/, 'Five');
+    
+    // Replace non-alphanumeric characters with underscore
+    sanitized = sanitized
       .replace(/[^a-zA-Z0-9_]/g, '_')
       .replace(/^[^a-zA-Z_]/, '_')
       .replace(/__+/g, '_');
+    
+    return sanitized;
   }
 
   /**

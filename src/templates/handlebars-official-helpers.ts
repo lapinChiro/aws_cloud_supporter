@@ -13,7 +13,7 @@ export class CDKOfficialHandlebarsHelpers {
    */
   static renderDimensionsMap(dimensionsMap: cloudwatch.DimensionsMap): string {
     const entries = Object.entries(dimensionsMap).map(([key, value]) => 
-      `          ${key}: '${value}'`
+      `          ${key}: "${value}"`
     ).join(',\n');
     
     return `{\n${entries}\n        }`;
@@ -32,10 +32,10 @@ export class CDKOfficialHandlebarsHelpers {
     period: { seconds: number };
   }): string {
     return `new cloudwatch.Metric({
-        metricName: '${metricConfig.metricName}',
-        namespace: '${metricConfig.namespace}',
+        metricName: "${metricConfig.metricName}",
+        namespace: "${metricConfig.namespace}",
         dimensionsMap: ${CDKOfficialHandlebarsHelpers.renderDimensionsMap(metricConfig.dimensionsMap)},
-        statistic: '${metricConfig.statistic}',
+        statistic: "${metricConfig.statistic}",
         period: cdk.Duration.seconds(${metricConfig.period.seconds})
       })`;
   }
@@ -44,14 +44,30 @@ export class CDKOfficialHandlebarsHelpers {
    * TreatMissingDataをコード文字列として表現
    */
   static renderTreatMissingData(treatMissingData: cloudwatch.TreatMissingData): string {
-    return `cloudwatch.TreatMissingData.${treatMissingData}`;
+    // Convert enum value to match CDK's actual enum values
+    const treatMissingDataMap: Record<string, string> = {
+      'notBreaching': 'NOT_BREACHING',
+      'breaching': 'BREACHING',  
+      'missing': 'MISSING',
+      'ignore': 'IGNORE'
+    };
+    return `cloudwatch.TreatMissingData.${treatMissingDataMap[treatMissingData as string] || treatMissingData}`;
   }
 
   /**
    * ComparisonOperatorをコード文字列として表現
    */
   static renderComparisonOperator(comparisonOperator: cloudwatch.ComparisonOperator): string {
-    return `cloudwatch.ComparisonOperator.${comparisonOperator}`;
+    // Convert enum value to match CDK's actual enum values
+    const comparisonOperatorMap: Record<string, string> = {
+      'GreaterThanThreshold': 'GREATER_THAN_THRESHOLD',
+      'GreaterThanOrEqualToThreshold': 'GREATER_THAN_OR_EQUAL_TO_THRESHOLD',
+      'LessThanThreshold': 'LESS_THAN_THRESHOLD',
+      'LessThanOrEqualToThreshold': 'LESS_THAN_OR_EQUAL_TO_THRESHOLD',
+      'GreaterThanUpperThreshold': 'GREATER_THAN_UPPER_THRESHOLD',
+      'LessThanLowerThreshold': 'LESS_THAN_LOWER_THRESHOLD'
+    };
+    return `cloudwatch.ComparisonOperator.${comparisonOperatorMap[comparisonOperator as string] || comparisonOperator}`;
   }
 
   /**
@@ -60,10 +76,10 @@ export class CDKOfficialHandlebarsHelpers {
   static renderTopicProps(topicProps: sns.TopicProps): string {
     const props = [];
     if (topicProps.topicName) {
-      props.push(`      topicName: '${topicProps.topicName}'`);
+      props.push(`      topicName: "${topicProps.topicName}"`);
     }
     if (topicProps.displayName) {
-      props.push(`      displayName: '${topicProps.displayName}'`);
+      props.push(`      displayName: "${topicProps.displayName}"`);
     }
     
     return `{\n${props.join(',\n')}\n    }`;
