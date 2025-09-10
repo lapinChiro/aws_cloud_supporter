@@ -42,3 +42,12 @@ tmp/
 temp/
 *.tmp
 .jest-cache/
+
+# Temporary development artifacts (C-003)
+tmp-output/
+*.tmp.ts
+
+# Development backup prevention (C-005)
+backup/
+*.backup
+legacy-migration-archive-*.tar.gz
