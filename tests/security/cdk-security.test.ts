@@ -290,7 +290,7 @@ describe('CDK Security Features', () => {
     it('should detect accidentally included sensitive patterns', () => {
       const codeWithSensitiveData = `
         export class MyStack extends cdk.Stack {
-          private apiKey = "sk_test_DUMMY_KEY_FOR_TESTING_PURPOSES_ONLY";
+          private apiKey = "AKIAIOSFODNN7EXAMPLE";
         }
       `;
       

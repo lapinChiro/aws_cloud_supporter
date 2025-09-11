@@ -7,7 +7,7 @@ import type { Command } from 'commander';
 
 import { createCLICommand } from '../../../src/cli/commands';
 import { MetricsAnalyzer } from '../../../src/core/analyzer';
-import { HTMLOutputFormatter } from '../../../src/core/html-formatter';
+import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../../src/core/json-formatter';
 import { TemplateParser } from '../../../src/core/parser';
 import { CloudSupporterError, ErrorType } from '../../../src/utils/error';
@@ -17,7 +17,7 @@ import { Logger } from '../../../src/utils/logger';
 jest.mock('../../../src/core/analyzer');
 jest.mock('../../../src/core/parser');
 jest.mock('../../../src/core/json-formatter');
-jest.mock('../../../src/core/html-formatter');
+jest.mock('../../../src/core/formatters/html');
 jest.mock('../../../src/utils/logger');
 jest.mock('fs', () => ({
   ...jest.requireActual('fs'),

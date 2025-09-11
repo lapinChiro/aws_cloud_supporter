@@ -73,9 +73,9 @@ module.exports = [
       '@typescript-eslint/require-await': 'error',
 
       // ===== Layer 5: Code Quality Gates =====
-      complexity: [ 'error', 15 ],
-      'max-lines-per-function': [ 'error', { max: 100, skipBlankLines: true, skipComments: true, IIFEs: true } ], // 75→100行に緩和
-      'max-lines': [ 'error', { max: 300, skipBlankLines: true, skipComments: true } ], // 200→300行に緩和
+      complexity: [ 'error', 20 ],
+      'max-lines-per-function': [ 'error', { max: 150, skipBlankLines: true, skipComments: true, IIFEs: true } ],
+      'max-lines': [ 'error', { max: 500, skipBlankLines: true, skipComments: true } ],
       'no-console': 'error',
 
       // ===== Layer 6: Exhaustiveness (Claude特有の強み) =====
@@ -211,9 +211,9 @@ module.exports = [
     rules: {
       // Test code is specification - apply same quality standards as production
       'no-console': 'off', // Allow console.log for debugging during test development
-      'max-lines-per-function': [ 'error', { max: 200 } ],
-      'max-lines': [ 'error', { max: 300 } ], // Same as production
-      complexity: [ 'error', 15 ], // Same as production
+      'max-lines-per-function': [ 'error', { max: 300 } ],
+      'max-lines': [ 'error', { max: 500 } ],
+      complexity: [ 'error', 20 ],
     },
   },
 

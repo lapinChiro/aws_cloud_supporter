@@ -12,7 +12,7 @@ import {
   API_GATEWAY_METRICS,
   METRICS_STATISTICS,
   METRICS_CONFIG_MAP
-} from '../../../src/config/metrics-definitions';
+} from '../../../src/config/metrics';
 
 // Test type definitions for unknown metrics
 interface TestMetric {

@@ -3,7 +3,7 @@
 // T-016: CLI完全実装・統合
 
 import { MetricsAnalyzer } from '../core/analyzer';
-import { HTMLOutputFormatter } from '../core/html-formatter';
+import { HTMLOutputFormatter } from '../core/formatters/html';
 import { JSONOutputFormatter } from '../core/json-formatter';
 import { TemplateParser } from '../core/parser';
 import { Logger, log } from '../utils/logger';

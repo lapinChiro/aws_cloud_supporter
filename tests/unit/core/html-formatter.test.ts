@@ -1,7 +1,7 @@
 // HTMLOutputFormatter単体テスト
 // CLAUDE.md準拠: No any types、TDD実践
 
-import { HTMLOutputFormatter } from '../../../src/core/html-formatter';
+import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
 import type { AnalysisResult } from '../../../src/types/metrics';
 
 describe('HTMLOutputFormatter', () => {

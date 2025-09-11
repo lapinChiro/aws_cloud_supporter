@@ -1,8 +1,8 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
-import { METRICS_CONFIG_MAP } from '../config/metrics-definitions';
+import { METRICS_CONFIG_MAP } from '../config/metrics';
 import type { CloudFormationResource, ECSService} from '../types/cloudformation';
-import { ECSServiceProperties , isFargateService } from '../types/cloudformation';
+import { /* ECSServiceProperties, */ isFargateService } from '../types/cloudformation';
 import type { MetricConfig, MetricDefinition } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 

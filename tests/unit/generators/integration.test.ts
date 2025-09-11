@@ -1,6 +1,6 @@
 // T-010 RDS・Lambda Generator統合テスト
 
-import { METRICS_CONFIG_MAP } from '../../../src/config/metrics-definitions';
+import { METRICS_CONFIG_MAP } from '../../../src/config/metrics';
 import { ALBMetricsGenerator } from '../../../src/generators/alb.generator';
 import { APIGatewayMetricsGenerator } from '../../../src/generators/apigateway.generator';
 import { DynamoDBMetricsGenerator } from '../../../src/generators/dynamodb.generator';

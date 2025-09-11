@@ -8,7 +8,7 @@ import { performance } from 'perf_hooks';
 import { dump } from 'js-yaml';
 
 import { MetricsAnalyzer } from '../../src/core/analyzer';
-import { HTMLOutputFormatter } from '../../src/core/html-formatter';
+import { HTMLOutputFormatter } from '../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { TemplateParser } from '../../src/core/parser';
 import type { CloudFormationTemplate } from '../../src/types/cloudformation';
