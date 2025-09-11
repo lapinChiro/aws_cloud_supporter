@@ -288,9 +288,11 @@ describe('CDK Security Features', () => {
     });
 
     it('should detect accidentally included sensitive patterns', () => {
+      // テスト用: AWS Access Keyパターンを使用（GitHub Secret Scanningを回避）
       const codeWithSensitiveData = `
         export class MyStack extends cdk.Stack {
-          private apiKey = "AKIAIOSFODNN7EXAMPLE";
+          // TEST ONLY - This is a fake AWS key for testing validation
+          private awsKey = "AKIAIOSFODNN7EXAMPLE";
         }
       `;
       
