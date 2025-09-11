@@ -1,0 +1,27 @@
+
+/home/kyohei/aws_cloud_supporter/src/cli/commands.ts
+   29:11  error  'handleCLIAction' was used before it was defined                                                  @typescript-eslint/no-use-before-define
+   48:5   error  'setupLogging' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+   58:11  error  Unsafe assignment of an `any` value                                                               @typescript-eslint/no-unsafe-assignment
+   58:26  error  'executeAnalysis' was used before it was defined                                                  @typescript-eslint/no-use-before-define
+   61:11  error  'handleOutput' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+   64:5   error  'handleError' was used before it was defined                                                      @typescript-eslint/no-use-before-define
+   89:13  error  Unexpected any. Specify a different type                                                          @typescript-eslint/no-explicit-any
+   91:12  error  Unexpected any. Specify a different type                                                          @typescript-eslint/no-explicit-any
+  100:9   error  Unsafe assignment of an `any` value                                                               @typescript-eslint/no-unsafe-assignment
+  100:24  error  Unsafe call of a(n) `any` typed value                                                             @typescript-eslint/no-unsafe-call
+  100:33  error  Unsafe member access .analyze on an `any` value                                                   @typescript-eslint/no-unsafe-member-access
+  110:53  error  Unsafe argument of type `any` assigned to a parameter of type `AnalysisResult`                    @typescript-eslint/no-unsafe-argument
+  120:11  error  Unexpected any. Specify a different type                                                          @typescript-eslint/no-explicit-any
+  122:18  error  Unexpected any. Specify a different type                                                          @typescript-eslint/no-explicit-any
+  123:18  error  Unexpected any. Specify a different type                                                          @typescript-eslint/no-explicit-any
+  132:7   error  Unsafe argument of type `any` assigned to a parameter of type `AnalysisResult`                    @typescript-eslint/no-unsafe-argument
+  133:7   error  Unsafe argument of type `any` assigned to a parameter of type `IOutputFormatter`                  @typescript-eslint/no-unsafe-argument
+  134:7   error  Unsafe argument of type `any` assigned to a parameter of type `IOutputFormatter`                  @typescript-eslint/no-unsafe-argument
+  142:7   error  Unsafe argument of type `any` assigned to a parameter of type `AnalysisResult`                    @typescript-eslint/no-unsafe-argument
+  143:7   error  Unsafe argument of type `any` assigned to a parameter of type `IOutputFormatter`                  @typescript-eslint/no-unsafe-argument
+  144:7   error  Unsafe argument of type `any` assigned to a parameter of type `IOutputFormatter`                  @typescript-eslint/no-unsafe-argument
+  162:13  error  Switch is not exhaustive. Cases not matched: ErrorType.OUTPUT_ERROR | ErrorType.VALIDATION_ERROR  @typescript-eslint/switch-exhaustiveness-check
+
+✖ 22 problems (22 errors, 0 warnings)
+
