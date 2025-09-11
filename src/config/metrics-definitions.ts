@@ -1,13 +1,14 @@
 // CLAUDE.md準拠メトリクス定義（AWS公式準拠 + DRY原則 + any型完全排除）
 
-import { MetricConfig } from '../types/metrics';
-import { 
+import type { 
   CloudFormationResource, 
   RDSDBInstance, 
-  DynamoDBTable,
+  DynamoDBTable} from '../types/cloudformation';
+import {
   RDSProperties,
   DynamoDBProperties
 } from '../types/cloudformation';
+import type { MetricConfig } from '../types/metrics';
 
 // =============================================================================
 // RDS メトリクス定義（25個）- AWS CloudWatch公式準拠
@@ -46,7 +47,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const instanceClass = (rds.Properties as RDSProperties)?.DBInstanceClass || '';
+      const instanceClass = (rds.Properties!)?.DBInstanceClass || '';
       return instanceClass.startsWith('db.t3.') || instanceClass.startsWith('db.t4g.');
     }
   },
@@ -66,7 +67,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const instanceClass = (rds.Properties as RDSProperties)?.DBInstanceClass || '';
+      const instanceClass = (rds.Properties!)?.DBInstanceClass || '';
       return instanceClass.startsWith('db.t3.') || instanceClass.startsWith('db.t4g.');
     }
   },
@@ -238,7 +239,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const engine = (rds.Properties as RDSProperties)?.Engine || '';
+      const engine = (rds.Properties!)?.Engine || '';
       return engine.startsWith('aurora');
     }
   },
@@ -260,7 +261,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const props = rds.Properties as RDSProperties;
+      const props = rds.Properties!;
       return props?.Engine === 'mysql' && (props?.BackupRetentionPeriod || 0) > 0;
     }
   },
@@ -280,7 +281,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const props = rds.Properties as RDSProperties;
+      const props = rds.Properties!;
       return !props?.MultiAZ; // リードレプリカ想定
     }
   },
@@ -300,7 +301,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const engine = (rds.Properties as RDSProperties)?.Engine || '';
+      const engine = (rds.Properties!)?.Engine || '';
       return engine === 'postgresql';
     }
   },
@@ -320,7 +321,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const engine = (rds.Properties as RDSProperties)?.Engine || '';
+      const engine = (rds.Properties!)?.Engine || '';
       return engine === 'postgresql';
     }
   },
@@ -340,7 +341,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const engine = (rds.Properties as RDSProperties)?.Engine || '';
+      const engine = (rds.Properties!)?.Engine || '';
       return engine === 'postgresql';
     }
   },
@@ -360,7 +361,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const engine = (rds.Properties as RDSProperties)?.Engine || '';
+      const engine = (rds.Properties!)?.Engine || '';
       return engine.startsWith('aurora');
     }
   },
@@ -395,7 +396,7 @@ export const RDS_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const rds = resource as RDSDBInstance;
-      const engine = (rds.Properties as RDSProperties)?.Engine || '';
+      const engine = (rds.Properties!)?.Engine || '';
       return engine === 'mysql';
     }
   },
@@ -1426,7 +1427,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const dynamodb = resource as DynamoDBTable;
-      const props = dynamodb.Properties as DynamoDBProperties;
+      const props = dynamodb.Properties!;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
     }
   },
@@ -1446,7 +1447,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const dynamodb = resource as DynamoDBTable;
-      const props = dynamodb.Properties as DynamoDBProperties;
+      const props = dynamodb.Properties!;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
     }
   },
@@ -1466,7 +1467,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const dynamodb = resource as DynamoDBTable;
-      const props = dynamodb.Properties as DynamoDBProperties;
+      const props = dynamodb.Properties!;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
     }
   },
@@ -1486,7 +1487,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const dynamodb = resource as DynamoDBTable;
-      const props = dynamodb.Properties as DynamoDBProperties;
+      const props = dynamodb.Properties!;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
     }
   },

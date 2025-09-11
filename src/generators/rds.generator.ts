@@ -1,10 +1,12 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
-import { BaseMetricsGenerator } from './base.generator';
-import { CloudFormationResource, RDSDBInstance, RDSProperties } from '../types/cloudformation';
-import { MetricConfig } from '../types/metrics';
 import { METRICS_CONFIG_MAP } from '../config/metrics-definitions';
+import type { CloudFormationResource, RDSDBInstance} from '../types/cloudformation';
+import { RDSProperties } from '../types/cloudformation';
+import type { MetricConfig } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
+
+import { BaseMetricsGenerator } from './base.generator';
 
 /**
  * RDS DBInstance用メトリクス生成器
@@ -42,7 +44,7 @@ export class RDSMetricsGenerator extends BaseMetricsGenerator {
    */
   protected getResourceScale(resource: CloudFormationResource): number {
     const rds = resource as RDSDBInstance;
-    const properties = rds.Properties as RDSProperties | undefined;
+    const properties = rds.Properties;
     const instanceClass = properties?.DBInstanceClass || 'db.t3.micro';
     
     // インスタンスクラス別スケール係数（AWS公式準拠）

@@ -1,16 +1,18 @@
 // MetricsAnalyzer統合テスト（実際のGeneratorとの結合）
 // CLAUDE.md準拠: No any types、TDD実践
 
-import { MetricsAnalyzer } from '../../src/core/analyzer';
-import { TemplateParser } from '../../src/core/parser';
-import { JSONOutputFormatter } from '../../src/core/json-formatter';
-import { HTMLOutputFormatter } from '../../src/core/html-formatter';
-import { Logger } from '../../src/utils/logger';
-import { CloudFormationTemplate } from '../../src/types/cloudformation';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
+
 import { dump } from 'js-yaml';
+
+import { MetricsAnalyzer } from '../../src/core/analyzer';
+import { HTMLOutputFormatter } from '../../src/core/html-formatter';
+import { JSONOutputFormatter } from '../../src/core/json-formatter';
+import { TemplateParser } from '../../src/core/parser';
+import type { CloudFormationTemplate } from '../../src/types/cloudformation';
+import { Logger } from '../../src/utils/logger';
 
 describe('MetricsAnalyzer Integration Tests', () => {
   let analyzer: MetricsAnalyzer;

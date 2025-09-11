@@ -1,8 +1,9 @@
 // tests/unit/cdk/template-official.test.ts (新規作成)
-import { CDKOfficialHandlebarsHelpers } from '../../../src/templates/handlebars-official-helpers';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as sns from 'aws-cdk-lib/aws-sns';
+import type * as sns from 'aws-cdk-lib/aws-sns';
 import * as Handlebars from 'handlebars';
+
+import { CDKOfficialHandlebarsHelpers } from '../../../src/templates/handlebars-official-helpers';
 
 describe('CDK Official Handlebars Template', () => {
   beforeEach(() => {

@@ -1,6 +1,6 @@
 // CLAUDE.md準拠Logger（KISS原則、シンプル実装）
 
-import { ILogger } from '../interfaces/logger';
+import type { ILogger } from '../interfaces/logger';
 
 // 型安全なログレベル定義（CLAUDE.md: No any types）
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -92,6 +92,7 @@ export class Logger implements ILogger {
     const coloredMessage = this.useColors ? colors[level as keyof typeof colors](message) : message;
     
     // レベル別出力先（error/warnはstderr、他はstdout）
+    // eslint-disable-next-line no-console
     const outputStream = (level === 'error' || level === 'warn') ? console.error : console.log;
     
     if (args.length > 0) {
@@ -118,6 +119,99 @@ export class Logger implements ILogger {
       useColors: this.useColors
     };
   }
+
+  // CLI専用メソッド群 - プレーンな出力（タイムスタンプなし）
+  
+  // プレーンメッセージ出力（CLIアプリの標準出力用）
+  plain(message: string, ...args: unknown[]): void {
+    // eslint-disable-next-line no-console
+    if (args.length > 0) {
+      console.log(message, ...args);
+    } else {
+      console.log(message);
+    }
+  }
+
+  // 統計情報表示
+  stats(title: string, stats: Record<string, string | number>): void {
+    // eslint-disable-next-line no-console
+    console.log(`\n📊 ${title}:`);
+    Object.entries(stats).forEach(([key, value]) => {
+      // eslint-disable-next-line no-console
+      console.log(`   ${key}: ${value}`);
+    });
+  }
+
+  // リスト表示
+  list(title: string, items: Array<string | { label: string; value: string | number }>): void {
+    // eslint-disable-next-line no-console
+    console.log(`\n${title}:`);
+    items.forEach(item => {
+      if (typeof item === 'string') {
+        // eslint-disable-next-line no-console
+        console.log(`   - ${item}`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(`   ${item.label}: ${item.value}`);
+      }
+    });
+  }
+
+  // エラーリスト表示
+  errorList(title: string, errors: string[]): void {
+    // eslint-disable-next-line no-console
+    console.error(`\n❌ ${title}:`);
+    errors.forEach(error => {
+      // eslint-disable-next-line no-console
+      console.error(`  - ${error}`);
+    });
+  }
+
+  // 警告リスト表示  
+  warnList(title: string, warnings: string[]): void {
+    // eslint-disable-next-line no-console
+    console.warn(`\n⚠️  ${title}:`);
+    warnings.forEach(warning => {
+      // eslint-disable-next-line no-console
+      console.warn(`  - ${warning}`);
+    });
+  }
+
+  // 情報リスト表示
+  infoList(title: string, items: string[]): void {
+    // eslint-disable-next-line no-console
+    console.log(`\n💡 ${title}:`);
+    items.forEach(item => {
+      // eslint-disable-next-line no-console
+      console.log(`  - ${item}`);
+    });
+  }
+
+  // ファイル保存成功
+  fileSaved(filePath: string): void {
+    // eslint-disable-next-line no-console
+    console.log(`✅ Report saved: ${filePath}`);
+  }
+
+  // プレーンエラー出力（CLIエラー処理用）
+  plainError(message: string, error?: Error): void {
+    // eslint-disable-next-line no-console
+    console.error(`❌ ${message}`);
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error('Details:', error.message);
+      if (error.stack) {
+        // eslint-disable-next-line no-console
+        console.error(error.stack);
+      }
+    }
+  }
+
+  // プレーン警告出力
+  plainWarn(message: string): void {
+    // eslint-disable-next-line no-console
+    console.warn(`⚠️  ${message}`);
+  }
 }
 
 // ファクトリー関数（CLAUDE.md: 簡潔性）
@@ -129,3 +223,28 @@ export function createLogger(level: LogLevel = 'info', useColors: boolean = true
 export function isValidLogLevel(level: string): level is LogLevel {
   return ['debug', 'info', 'warn', 'error'].includes(level);
 }
+
+// デフォルトLoggerインスタンス（プロジェクト全体で共用）
+export const logger = new Logger('info', true);
+
+// CLIアプリケーション用のコンビニエンス関数
+export const log = {
+  // 基本ログメソッド
+  debug: (message: string, ...args: unknown[]) => logger.debug(message, ...args),
+  info: (message: string, ...args: unknown[]) => logger.info(message, ...args),
+  warn: (message: string, ...args: unknown[]) => logger.warn(message, ...args),
+  error: (message: string, error?: Error, ...args: unknown[]) => logger.error(message, error, ...args),
+  success: (message: string, ...args: unknown[]) => logger.success(message, ...args),
+  
+  // CLI専用メソッド
+  plain: (message: string, ...args: unknown[]) => logger.plain(message, ...args),
+  stats: (title: string, stats: Record<string, string | number>) => logger.stats(title, stats),
+  list: (title: string, items: Array<string | { label: string; value: string | number }>) => 
+    logger.list(title, items),
+  errorList: (title: string, errors: string[]) => logger.errorList(title, errors),
+  warnList: (title: string, warnings: string[]) => logger.warnList(title, warnings),
+  infoList: (title: string, items: string[]) => logger.infoList(title, items),
+  fileSaved: (filePath: string) => logger.fileSaved(filePath),
+  plainError: (message: string, error?: Error) => logger.plainError(message, error),
+  plainWarn: (message: string) => logger.plainWarn(message)
+};

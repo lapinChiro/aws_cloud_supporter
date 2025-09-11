@@ -2,7 +2,7 @@
 // CLAUDE.md準拠: No any types、TDD実践
 
 import { HTMLOutputFormatter } from '../../../src/core/html-formatter';
-import { AnalysisResult } from '../../../src/types/metrics';
+import type { AnalysisResult } from '../../../src/types/metrics';
 
 describe('HTMLOutputFormatter', () => {
   let formatter: HTMLOutputFormatter;

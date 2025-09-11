@@ -1,15 +1,15 @@
 // T-010 RDS・Lambda Generator統合テスト
 
-import { RDSMetricsGenerator } from '../../../src/generators/rds.generator';
-import { LambdaMetricsGenerator } from '../../../src/generators/lambda.generator';
-import { ECSMetricsGenerator } from '../../../src/generators/ecs.generator';
-import { ALBMetricsGenerator } from '../../../src/generators/alb.generator';
-import { DynamoDBMetricsGenerator } from '../../../src/generators/dynamodb.generator';
-import { APIGatewayMetricsGenerator } from '../../../src/generators/apigateway.generator';
-import { CloudFormationResource, RDSDBInstance, LambdaFunction } from '../../../src/types/cloudformation';
-import { IMetricsGenerator } from '../../../src/interfaces/generator';
-import { ILogger } from '../../../src/interfaces/logger';
 import { METRICS_CONFIG_MAP } from '../../../src/config/metrics-definitions';
+import { ALBMetricsGenerator } from '../../../src/generators/alb.generator';
+import { APIGatewayMetricsGenerator } from '../../../src/generators/apigateway.generator';
+import { DynamoDBMetricsGenerator } from '../../../src/generators/dynamodb.generator';
+import { ECSMetricsGenerator } from '../../../src/generators/ecs.generator';
+import { LambdaMetricsGenerator } from '../../../src/generators/lambda.generator';
+import { RDSMetricsGenerator } from '../../../src/generators/rds.generator';
+import type { IMetricsGenerator } from '../../../src/interfaces/generator';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { CloudFormationResource, RDSDBInstance, LambdaFunction } from '../../../src/types/cloudformation';
 import { createMockLogger } from '../../helpers';
 
 describe('Generators Integration Tests', () => {

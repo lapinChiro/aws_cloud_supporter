@@ -1,15 +1,17 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + 型安全性
 // tasks.md T-004: CLI統合テスト
 
+import * as fs from 'fs/promises';
+import * as os from 'os';
+import * as path from 'path';
+
 import { createCLICommand } from '../../src/cli/commands';
 import { MetricsAnalyzer } from '../../src/core/analyzer';
-import { TemplateParser } from '../../src/core/parser';
-import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { HTMLOutputFormatter } from '../../src/core/html-formatter';
+import { JSONOutputFormatter } from '../../src/core/json-formatter';
+import { TemplateParser } from '../../src/core/parser';
 import { Logger } from '../../src/utils/logger';
-import * as fs from 'fs/promises';
-import * as path from 'path';
-import * as os from 'os';
+
 
 describe('CLI CDK Basic Integration', () => {
   let testOutputDir: string;

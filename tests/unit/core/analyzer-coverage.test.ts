@@ -3,9 +3,9 @@
 
 import { MetricsAnalyzer } from '../../../src/core/analyzer';
 import { TemplateParser } from '../../../src/core/parser';
-import { Logger } from '../../../src/utils/logger';
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 import { CloudSupporterError } from '../../../src/utils/error';
-import { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import { Logger } from '../../../src/utils/logger';
 
 // Mock dependencies
 jest.mock('../../../src/core/parser');

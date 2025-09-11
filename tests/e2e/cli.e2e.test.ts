@@ -2,9 +2,9 @@
 // CLAUDE.md準拠: No any types、TDD実践
 
 import { exec } from 'child_process';
-import { promisify } from 'util';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { promisify } from 'util';
 
 // Type definitions for E2E test results
 interface CliOutputResource {

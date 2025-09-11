@@ -1,8 +1,8 @@
 // CLAUDE.md準拠ResourceExtractorテスト（GREEN段階: パフォーマンス重視 + Type-Driven）
 
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import path from 'path';
 import { tmpdir } from 'os';
+import path from 'path';
 
 // 全テストで使用する一時ディレクトリ
 let tempDir: string;

@@ -1,10 +1,10 @@
 // tests/integration/cdk-official-migration.test.ts (新規作成)
 // M-008: 統合テストと移行検証
 import { CDKOfficialGenerator } from '../../src/generators/cdk-official.generator';
-import { ExtendedAnalysisResult } from '../../src/interfaces/analyzer';
-import { CDKOptions } from '../../src/types/cdk-business';
-import { ResourceWithMetrics, MetricDefinition } from '../../src/types/metrics';
-import { ILogger } from '../../src/interfaces/logger';
+import type { ExtendedAnalysisResult } from '../../src/interfaces/analyzer';
+import type { ILogger } from '../../src/interfaces/logger';
+import type { CDKOptions } from '../../src/types/cdk-business';
+import type { ResourceWithMetrics, MetricDefinition } from '../../src/types/metrics';
 
 // テスト用モックロガー
 const createTestLogger = (): ILogger => ({

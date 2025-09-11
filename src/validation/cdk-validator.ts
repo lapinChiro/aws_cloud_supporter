@@ -2,7 +2,7 @@
 // requirement.md FR-5.1, FR-6.3: TypeScript検証・品質向上
 // tasks.md T-010: TypeScript検証・品質向上
 
-import { ILogger } from '../interfaces/logger';
+import type { ILogger } from '../interfaces/logger';
 
 /**
  * CDK Code Validator
@@ -14,7 +14,7 @@ import { ILogger } from '../interfaces/logger';
  * @requirement FR-6.3 検証機能
  */
 export class CDKValidator {
-  constructor(private logger: ILogger) {}
+  constructor(private readonly logger: ILogger) {}
 
   /**
    * Validate generated CDK code comprehensively
@@ -145,7 +145,7 @@ export class CDKValidator {
     if (alarmConstructs) {
       const constructIds = alarmConstructs.map(match => {
         const idMatch = match.match(/'([^']+)'/);
-        return idMatch && idMatch[1] ? idMatch[1] : '';
+        return idMatch?.[1] ? idMatch[1] : '';
       }).filter(id => id);
 
       // Check for duplicate construct IDs

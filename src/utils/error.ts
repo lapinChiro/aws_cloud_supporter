@@ -1,5 +1,5 @@
 // CLAUDE.md準拠エラーハンドリング（KISS原則、型安全性、シンプル設計）
-import { ErrorDetails, StructuredError } from '../types/common';
+import type { ErrorDetails, StructuredError } from '../types/common';
 
 // シンプルな色付き出力（CLAUDE.md: KISS、外部依存最小化）
 const colors = {
@@ -79,6 +79,7 @@ export class ErrorHandler {
   // 構造化エラー処理（型安全性）
   private static handleCloudSupporterError(error: CloudSupporterError): void {
     // エラーメッセージ（視認性重視）
+    // eslint-disable-next-line no-console
     console.error(colors.red(`❌ ${error.message}`));
     
     // ファイル情報（デバッグ支援）
@@ -86,28 +87,33 @@ export class ErrorHandler {
       const locationInfo = error.lineNumber 
         ? `${error.filePath}:${error.lineNumber}`
         : error.filePath;
+      // eslint-disable-next-line no-console
       console.error(colors.gray(`   File: ${locationInfo}`));
     }
     
     // エラー詳細（開発者支援）
     const detailsString = error.getDetailsString();
     if (detailsString) {
+      // eslint-disable-next-line no-console
       console.error(colors.gray(`   Details: ${detailsString}`));
     }
 
     // 解決提案（ユーザビリティ向上）
     const suggestion = this.getSuggestion(error.type);
     if (suggestion) {
+      // eslint-disable-next-line no-console
       console.error(colors.blue(`💡 ${suggestion}`));
     }
   }
 
   // 予期せぬエラー処理（フォールバック）
   private static handleUnexpectedError(error: Error): void {
+    // eslint-disable-next-line no-console
     console.error(colors.red(`❌ Unexpected error: ${error.message}`));
     
     // 開発時のデバッグ支援
     if (process.env.NODE_ENV === 'development' || process.env.VERBOSE === 'true') {
+      // eslint-disable-next-line no-console
       console.error(colors.gray(`   Stack: ${error.stack}`));
     }
   }
@@ -150,8 +156,10 @@ export class ErrorHandler {
     
     if (error instanceof CloudSupporterError) {
       const structured = error.toStructuredOutput();
+      // eslint-disable-next-line no-console
       console.error(`${timestamp} ${contextStr}CloudSupporterError:`, structured);
     } else {
+      // eslint-disable-next-line no-console
       console.error(`${timestamp} ${contextStr}Error:`, {
         message: error.message,
         stack: error.stack,
@@ -166,6 +174,7 @@ export function logError(error: Error | string, context?: string): void {
   if (typeof error === 'string') {
     const timestamp = new Date().toISOString();
     const contextStr = context ? `[${context}] ` : '';
+    // eslint-disable-next-line no-console
     console.error(`${timestamp} ${contextStr}Error: ${error}`);
   } else {
     ErrorHandler.logError(error, context);

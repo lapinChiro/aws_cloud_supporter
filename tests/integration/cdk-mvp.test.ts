@@ -3,8 +3,8 @@
 
 import { spawn } from 'child_process';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
 
 describe('CDK MVP Integration Tests', () => {
   let testOutputDir: string;
@@ -107,7 +107,7 @@ describe('CDK MVP Integration Tests', () => {
       expect(alarmCountStr).toBeDefined();
       expect(typeof alarmCountStr).toBe('string');
       
-      const reportedAlarmCount = parseInt(alarmCountStr as string, 10);
+      const reportedAlarmCount = parseInt(alarmCountStr!, 10);
       const actualAlarmCount = alarmMatches!.length;
       
       expect(actualAlarmCount).toBe(reportedAlarmCount);

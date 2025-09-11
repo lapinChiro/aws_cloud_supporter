@@ -1,10 +1,11 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
-import { BaseMetricsGenerator } from './base.generator';
-import { CloudFormationResource } from '../types/cloudformation';
-import { MetricConfig } from '../types/metrics';
 import { METRICS_CONFIG_MAP } from '../config/metrics-definitions';
+import type { CloudFormationResource } from '../types/cloudformation';
+import type { MetricConfig } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
+
+import { BaseMetricsGenerator } from './base.generator';
 
 /**
  * DynamoDB Table用メトリクス生成器

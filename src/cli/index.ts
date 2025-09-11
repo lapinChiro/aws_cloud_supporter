@@ -2,12 +2,13 @@
 // CLAUDE.md準拠エントリーポイント（strict mode, no any types）
 // T-016: CLI完全実装・統合
 
-import { createCLICommand } from './commands';
 import { MetricsAnalyzer } from '../core/analyzer';
-import { TemplateParser } from '../core/parser';
-import { JSONOutputFormatter } from '../core/json-formatter';
 import { HTMLOutputFormatter } from '../core/html-formatter';
-import { Logger } from '../utils/logger';
+import { JSONOutputFormatter } from '../core/json-formatter';
+import { TemplateParser } from '../core/parser';
+import { Logger, log } from '../utils/logger';
+
+import { createCLICommand } from './commands';
 
 // UNIX Philosophy: 一つのことをうまくやる
 function main(): void {
@@ -34,12 +35,12 @@ function main(): void {
 
 // エラーハンドリング（CLAUDE.md: 適切なエラー処理）
 process.on('unhandledRejection', (reason: unknown) => {
-  console.error('❌ Unhandled rejection:', reason);
+  log.plainError('Unhandled rejection:', reason as Error);
   process.exit(1);
 });
 
 process.on('uncaughtException', (error: Error) => {
-  console.error('❌ Uncaught exception:', error.message);
+  log.plainError('Uncaught exception:', error);
   process.exit(1);
 });
 

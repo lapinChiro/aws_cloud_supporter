@@ -1,7 +1,7 @@
 // CLAUDE.md準拠: 型安全性・SOLID原則・Interface Segregation
 // requirement.md準拠: MetricsAnalyzer統合インターフェース
 
-import { AnalysisResult } from '../types/metrics';
+import type { AnalysisResult } from '../types/metrics';
 
 /**
  * 分析オプションインターフェース

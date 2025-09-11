@@ -1,20 +1,23 @@
 // src/generators/cdk-official.generator.ts (新規作成)
-import { ResourceWithMetrics, MetricDefinition } from '../types/metrics';
-import { ExtendedAnalysisResult } from '../interfaces/analyzer';
-import { CDKStackDataOfficial, CDKAlarmComplete, CDKSNSConfiguration, CDKOptions } from '../types/cdk-business';
-import { CloudSupporterError, ErrorType } from '../utils/error';
-import { ILogger } from '../interfaces/logger';
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as sns from 'aws-cdk-lib/aws-sns';
-import * as cdk from 'aws-cdk-lib';
-import * as Handlebars from 'handlebars';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+
+import * as cdk from 'aws-cdk-lib';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import type * as sns from 'aws-cdk-lib/aws-sns';
+import * as Handlebars from 'handlebars';
+
+
+import type { ExtendedAnalysisResult } from '../interfaces/analyzer';
+import type { ILogger } from '../interfaces/logger';
 // Security imports
-import { CDKSecuritySanitizer } from '../security/sanitizer';
 import { CDKInputValidator } from '../security/input-validator';
+import { CDKSecuritySanitizer } from '../security/sanitizer';
 // Handlebars helpers
 import { CDKOfficialHandlebarsHelpers } from '../templates/handlebars-official-helpers';
+import type { CDKStackDataOfficial, CDKAlarmComplete, CDKSNSConfiguration, CDKOptions } from '../types/cdk-business';
+import type { ResourceWithMetrics, MetricDefinition } from '../types/metrics';
+import { CloudSupporterError, ErrorType } from '../utils/error';
 
 /**
  * テンプレート用アラーム型（CDKAlarmComplete + テンプレート用プロパティ）
@@ -54,7 +57,7 @@ export class CDKOfficialGenerator {
   private template: HandlebarsTemplateDelegate | null = null;
   private readonly templatePath: string;
 
-  constructor(private logger: ILogger) {
+  constructor(private readonly logger: ILogger) {
     this.templatePath = path.join(__dirname, '../templates/cdk-official.hbs');
   }
 
@@ -127,7 +130,7 @@ export class CDKOfficialGenerator {
       dimensionsMap: this.buildDimensionsForResourceType(
         resource.resource_type,
         resource.logical_id
-      ) as cloudwatch.DimensionsMap,
+      ),
       statistic: metric.statistic,
       period: cdk.Duration.seconds(metric.evaluation_period)
     });
@@ -187,7 +190,7 @@ export class CDKOfficialGenerator {
       );
     }
     
-    if (!options || !options.enabled) {
+    if (!options?.enabled) {
       throw new CloudSupporterError(
         ErrorType.RESOURCE_ERROR,
         'CDK mode must be enabled in options'

@@ -2,10 +2,11 @@
 
 import { readFileSync } from 'fs';
 import path from 'path';
-import { createMockLogger, measureGeneratorPerformance } from '../../helpers';
-import { IMetricsGenerator } from '../../../src/interfaces/generator';
+
 import { BaseMetricsGenerator, validateMetricDefinition, MetricsGenerationMonitor } from '../../../src/generators/base.generator';
+import type { IMetricsGenerator } from '../../../src/interfaces/generator';
 import { createLogger } from '../../../src/utils/logger';
+import { createMockLogger, measureGeneratorPerformance } from '../../helpers';
 
 describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', () => {
 
@@ -318,7 +319,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
   it('should apply resource scale factors to thresholds', async () => {
     // 異なるスケール係数のジェネレータ
     class VariableScaleGenerator extends ThresholdTestGenerator {
-      constructor(private scale: number) {
+      constructor(private readonly scale: number) {
         super();
       }
       
@@ -940,7 +941,7 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
     expect(generatorB).toBeInstanceOf(BaseMetricsGenerator);
     
     // 共通インターフェースとして使用可能
-    const generators: InstanceType<typeof BaseMetricsGenerator>[] = [generatorA, generatorB];
+    const generators: Array<InstanceType<typeof BaseMetricsGenerator>> = [generatorA, generatorB];
     generators.forEach(generator => {
       expect(typeof generator.generate).toBe('function');
       expect(Array.isArray(generator.getSupportedTypes())).toBe(true);

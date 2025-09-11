@@ -1,7 +1,7 @@
 // CLAUDE.md準拠BaseMetricsGenerator最適化テスト（BLUE段階: リファクタリング検証）
 
 import { BaseMetricsGenerator, MetricsGenerationMonitor, validateMetricDefinition } from '../../../src/generators/base.generator';
-import { CloudFormationResource } from '../../../src/types/cloudformation';
+import type { CloudFormationResource } from '../../../src/types/cloudformation';
 import { createLogger } from '../../../src/utils/logger';
 
 describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {

@@ -1,6 +1,6 @@
 import { APIGatewayMetricsGenerator } from '../../../src/generators/apigateway.generator';
-import { CloudFormationResource } from '../../../src/types/cloudformation';
-import { ILogger } from '../../../src/interfaces/logger';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { CloudFormationResource } from '../../../src/types/cloudformation';
 import { createMockLogger, measureGeneratorPerformance, createAPIGateway } from '../../helpers';
 
 describe('APIGatewayMetricsGenerator', () => {

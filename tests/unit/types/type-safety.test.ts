@@ -1,7 +1,8 @@
 // CLAUDE.md準拠 型安全性包括テスト（BLUE段階: リファクタリング検証）
 
+import type { 
+  CloudFormationResource} from '../../../src/types/cloudformation';
 import { 
-  CloudFormationResource, 
   ResourceType,
   isRDSInstance,
   isLambdaFunction,
@@ -9,8 +10,8 @@ import {
   isFargateService,
   isApplicationLoadBalancer
 } from '../../../src/types/cloudformation';
-import { MetricDefinition } from '../../../src/types/metrics';
-import { ErrorDetails } from '../../../src/types/common';
+import type { ErrorDetails } from '../../../src/types/common';
+import type { MetricDefinition } from '../../../src/types/metrics';
 
 describe('型安全性包括テスト（CLAUDE.md BLUE段階）', () => {
 

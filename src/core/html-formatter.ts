@@ -1,8 +1,8 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 // T-016: HTMLフォーマッター実装
 
-import { IOutputFormatter } from '../interfaces/formatter';
-import { AnalysisResult } from '../types/metrics';
+import type { IOutputFormatter } from '../interfaces/formatter';
+import type { AnalysisResult } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 
 /**
@@ -96,6 +96,7 @@ export class HTMLOutputFormatter implements IOutputFormatter {
 
       const duration = performance.now() - startTime;
       if (duration > 3000) {
+        // eslint-disable-next-line no-console
         console.warn(`⚠️  HTML formatting slow: ${duration.toFixed(0)}ms`);
       }
 

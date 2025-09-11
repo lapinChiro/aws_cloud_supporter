@@ -1,7 +1,7 @@
 // CLAUDE.md準拠: Interface Segregation Principle
 // Output formatter interface
 
-import { AnalysisResult } from '../types/metrics';
+import type { AnalysisResult } from '../types/metrics';
 
 /**
  * Output formatter interface

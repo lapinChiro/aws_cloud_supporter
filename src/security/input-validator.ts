@@ -2,8 +2,9 @@
 // requirement.md FR-4.2: 入力検証
 // tasks.md T-009: セキュリティ機能実装
 
-import { CloudSupporterError, ErrorType } from '../utils/error';
 import * as path from 'path';
+
+import { CloudSupporterError, ErrorType } from '../utils/error';
 
 /**
  * CDK Input Validator

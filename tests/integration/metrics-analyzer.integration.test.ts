@@ -1,14 +1,15 @@
 // MetricsAnalyzer統合テスト - 20パターン実装
 // CLAUDE.md準拠: No any types、TDD実践、Zero type errors
 
-import { MetricsAnalyzer } from '../../src/core/analyzer';
-import { TemplateParser } from '../../src/core/parser';
-import { JSONOutputFormatter } from '../../src/core/json-formatter';
-import { HTMLOutputFormatter } from '../../src/core/html-formatter';
-import { Logger } from '../../src/utils/logger';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
+
+import { MetricsAnalyzer } from '../../src/core/analyzer';
+import { HTMLOutputFormatter } from '../../src/core/html-formatter';
+import { JSONOutputFormatter } from '../../src/core/json-formatter';
+import { TemplateParser } from '../../src/core/parser';
+import { Logger } from '../../src/utils/logger';
 
 // カスタムマッチャー型定義
 declare global {

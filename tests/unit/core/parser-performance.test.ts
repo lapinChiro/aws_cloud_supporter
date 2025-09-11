@@ -1,9 +1,10 @@
 // CLAUDE.md準拠TemplateParserパフォーマンス最適化テスト（BLUE段階）
 
-import { TemplateParser } from '../../../src/core/parser';
 import { writeFileSync, mkdirSync } from 'fs';
-import path from 'path';
 import { tmpdir } from 'os';
+import path from 'path';
+
+import { TemplateParser } from '../../../src/core/parser';
 import { CloudSupporterError } from '../../../src/utils/error';
 
 describe('TemplateParser最適化（CLAUDE.md: BLUE段階）', () => {

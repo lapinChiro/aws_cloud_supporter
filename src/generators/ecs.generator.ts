@@ -1,11 +1,12 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
-import { BaseMetricsGenerator } from './base.generator';
-import { CloudFormationResource, ECSService, ECSServiceProperties } from '../types/cloudformation';
-import { MetricConfig, MetricDefinition } from '../types/metrics';
 import { METRICS_CONFIG_MAP } from '../config/metrics-definitions';
+import type { CloudFormationResource, ECSService} from '../types/cloudformation';
+import { ECSServiceProperties , isFargateService } from '../types/cloudformation';
+import type { MetricConfig, MetricDefinition } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
-import { isFargateService } from '../types/cloudformation';
+
+import { BaseMetricsGenerator } from './base.generator';
 
 /**
  * ECS Service用メトリクス生成器（Fargate特化）
@@ -49,7 +50,7 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
    */
   protected getResourceScale(resource: CloudFormationResource): number {
     const ecs = resource as ECSService;
-    const properties = ecs.Properties as ECSServiceProperties | undefined;
+    const properties = ecs.Properties;
     const desiredCount = properties?.DesiredCount || 1;
     
     // DesiredCountベースのスケール計算
@@ -91,7 +92,7 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
     }
     
     const ecs = resource as ECSService;
-    const properties = ecs.Properties as ECSServiceProperties | undefined;
+    const properties = ecs.Properties;
     
     // CLAUDE.md準拠: 型安全性（スプレッド演算子による不変性）
     return baseConfigs.map(config => {

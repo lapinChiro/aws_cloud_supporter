@@ -122,7 +122,7 @@ export class JsonSchemaValidator {
       });
     }
     
-    if (typeof meta.generated_at !== 'string' || !this.isValidISO8601(meta.generated_at as string)) {
+    if (typeof meta.generated_at !== 'string' || !this.isValidISO8601(meta.generated_at)) {
       errors.push({
         path: `${path}.generated_at`,
         message: 'generated_at must be a valid ISO-8601 date string',

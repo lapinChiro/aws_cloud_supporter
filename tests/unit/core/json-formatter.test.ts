@@ -2,7 +2,7 @@
 // CLAUDE.md準拠: No any types、TDD実践
 
 import { JSONOutputFormatter } from '../../../src/core/json-formatter';
-import { AnalysisResult } from '../../../src/types/metrics';
+import type { AnalysisResult } from '../../../src/types/metrics';
 import { validateMetricsOutput } from '../../../src/utils/schema-validator';
 
 // Mock schema validator

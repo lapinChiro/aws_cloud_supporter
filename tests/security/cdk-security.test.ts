@@ -1,12 +1,14 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + セキュリティ重視
 // tasks.md T-009: セキュリティ機能テスト
 
-import { CDKSecuritySanitizer } from '../../src/security/sanitizer';
-import { CDKInputValidator } from '../../src/security/input-validator';
-import { CloudSupporterError } from '../../src/utils/error';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
+
+import { CDKInputValidator } from '../../src/security/input-validator';
+import { CDKSecuritySanitizer } from '../../src/security/sanitizer';
+import { CloudSupporterError } from '../../src/utils/error';
+
 
 describe('CDK Security Features', () => {
   describe('Sensitive Data Sanitization', () => {
@@ -120,10 +122,10 @@ describe('CDK Security Features', () => {
       ];
       
       for (const maliciousPath of maliciousPaths) {
-        expect(() => CDKInputValidator.validateFilePath(maliciousPath))
+        expect(() => { CDKInputValidator.validateFilePath(maliciousPath); })
           .toThrow(CloudSupporterError);
           
-        expect(() => CDKInputValidator.validateFilePath(maliciousPath))
+        expect(() => { CDKInputValidator.validateFilePath(maliciousPath); })
           .toThrow(/Invalid file path.*malicious pattern|Absolute file path outside project/);
       }
     });
@@ -137,7 +139,7 @@ describe('CDK Security Features', () => {
       ];
       
       for (const safePath of safePaths) {
-        expect(() => CDKInputValidator.validateFilePath(safePath)).not.toThrow();
+        expect(() => { CDKInputValidator.validateFilePath(safePath); }).not.toThrow();
       }
     });
 
@@ -152,7 +154,7 @@ describe('CDK Security Features', () => {
       ];
       
       for (const invalidName of invalidFileNames) {
-        expect(() => CDKInputValidator.validateFilePath(invalidName))
+        expect(() => { CDKInputValidator.validateFilePath(invalidName); })
           .toThrow(CloudSupporterError);
       }
     });
@@ -168,7 +170,7 @@ describe('CDK Security Features', () => {
       ];
       
       for (const validArn of validARNs) {
-        expect(() => CDKInputValidator.validateSNSTopicArn(validArn)).not.toThrow();
+        expect(() => { CDKInputValidator.validateSNSTopicArn(validArn); }).not.toThrow();
       }
     });
 
@@ -184,10 +186,10 @@ describe('CDK Security Features', () => {
       ];
       
       for (const { arn, expectedError } of invalidARNs) {
-        expect(() => CDKInputValidator.validateSNSTopicArn(arn))
+        expect(() => { CDKInputValidator.validateSNSTopicArn(arn); })
           .toThrow(CloudSupporterError);
           
-        expect(() => CDKInputValidator.validateSNSTopicArn(arn))
+        expect(() => { CDKInputValidator.validateSNSTopicArn(arn); })
           .toThrow(new RegExp(expectedError));
       }
     });
@@ -204,7 +206,7 @@ describe('CDK Security Features', () => {
       ];
       
       for (const validName of validStackNames) {
-        expect(() => CDKInputValidator.validateStackName(validName)).not.toThrow();
+        expect(() => { CDKInputValidator.validateStackName(validName); }).not.toThrow();
       }
     });
 
@@ -222,7 +224,7 @@ describe('CDK Security Features', () => {
       ];
       
       for (const invalidName of invalidStackNames) {
-        expect(() => CDKInputValidator.validateStackName(invalidName))
+        expect(() => { CDKInputValidator.validateStackName(invalidName); })
           .toThrow(CloudSupporterError);
       }
     });
@@ -233,17 +235,17 @@ describe('CDK Security Features', () => {
       const smallTemplate = 'AWSTemplateFormatVersion: "2010-09-09"\nResources: {}';
       const mediumTemplate = 'x'.repeat(1024 * 1024); // 1MB
       
-      expect(() => CDKInputValidator.validateTemplateSize(smallTemplate)).not.toThrow();
-      expect(() => CDKInputValidator.validateTemplateSize(mediumTemplate)).not.toThrow();
+      expect(() => { CDKInputValidator.validateTemplateSize(smallTemplate); }).not.toThrow();
+      expect(() => { CDKInputValidator.validateTemplateSize(mediumTemplate); }).not.toThrow();
     });
 
     it('should reject oversized templates', () => {
       const oversizedTemplate = 'x'.repeat(11 * 1024 * 1024); // 11MB (over 10MB limit)
       
-      expect(() => CDKInputValidator.validateTemplateSize(oversizedTemplate))
+      expect(() => { CDKInputValidator.validateTemplateSize(oversizedTemplate); })
         .toThrow(CloudSupporterError);
         
-      expect(() => CDKInputValidator.validateTemplateSize(oversizedTemplate))
+      expect(() => { CDKInputValidator.validateTemplateSize(oversizedTemplate); })
         .toThrow(/Template file too large.*exceeds limit/);
     });
 
@@ -251,7 +253,7 @@ describe('CDK Security Features', () => {
       const template = 'x'.repeat(2 * 1024); // 2KB
       const customLimit = 1024; // 1KB limit
       
-      expect(() => CDKInputValidator.validateTemplateSize(template, customLimit))
+      expect(() => { CDKInputValidator.validateTemplateSize(template, customLimit); })
         .toThrow(CloudSupporterError);
     });
   });
@@ -268,7 +270,7 @@ describe('CDK Security Features', () => {
         }
       `;
       
-      expect(() => CDKInputValidator.validateGeneratedCode(safeCdkCode)).not.toThrow();
+      expect(() => { CDKInputValidator.validateGeneratedCode(safeCdkCode); }).not.toThrow();
     });
 
     it('should reject code with security risks', () => {
@@ -280,7 +282,7 @@ describe('CDK Security Features', () => {
       ];
       
       for (const dangerousCode of dangerousCodeExamples) {
-        expect(() => CDKInputValidator.validateGeneratedCode(dangerousCode))
+        expect(() => { CDKInputValidator.validateGeneratedCode(dangerousCode); })
           .toThrow(CloudSupporterError);
       }
     });
@@ -292,7 +294,7 @@ describe('CDK Security Features', () => {
         }
       `;
       
-      expect(() => CDKInputValidator.validateGeneratedCode(codeWithSensitiveData))
+      expect(() => { CDKInputValidator.validateGeneratedCode(codeWithSensitiveData); })
         .toThrow(CloudSupporterError);
     });
   });
@@ -305,7 +307,7 @@ describe('CDK Security Features', () => {
         snsTopicArn: 'arn:aws:sns:us-east-1:123456789012:my-topic'
       };
       
-      expect(() => CDKInputValidator.validateCDKOptions(validOptions)).not.toThrow();
+      expect(() => { CDKInputValidator.validateCDKOptions(validOptions); }).not.toThrow();
     });
 
     it('should reject invalid option combinations', () => {
@@ -328,7 +330,7 @@ describe('CDK Security Features', () => {
       ];
       
       for (const invalidOption of invalidOptions) {
-        expect(() => CDKInputValidator.validateCDKOptions(invalidOption))
+        expect(() => { CDKInputValidator.validateCDKOptions(invalidOption); })
           .toThrow(CloudSupporterError);
       }
     });
@@ -410,7 +412,7 @@ describe('CDK Security Features', () => {
       const sanitized = CDKSecuritySanitizer.sanitizeForCDK(potentiallyDangerous);
       
       // Should not throw - sanitization should be effective
-      expect(() => CDKSecuritySanitizer.validateSanitization(sanitized)).not.toThrow();
+      expect(() => { CDKSecuritySanitizer.validateSanitization(sanitized); }).not.toThrow();
     });
   });
 });
@@ -466,7 +468,7 @@ describe('CDK Security File Operations', () => {
       ];
       
       for (const relativePath of relativePaths) {
-        expect(() => CDKInputValidator.validateFilePath(relativePath)).not.toThrow();
+        expect(() => { CDKInputValidator.validateFilePath(relativePath); }).not.toThrow();
       }
     });
   });

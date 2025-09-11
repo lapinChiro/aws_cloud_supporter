@@ -1,9 +1,10 @@
 // CLAUDE.md準拠TemplateParser実テンプレート統合テスト（BLUE段階）
 
-import { TemplateParser } from '../../../src/core/parser';
 import { writeFileSync, mkdirSync } from 'fs';
-import path from 'path';
 import { tmpdir } from 'os';
+import path from 'path';
+
+import { TemplateParser } from '../../../src/core/parser';
 
 describe('TemplateParser実テンプレート統合（CLAUDE.md: 実用性確認）', () => {
   let parser: TemplateParser;

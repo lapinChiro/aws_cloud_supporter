@@ -1,19 +1,21 @@
 // CLAUDE.md準拠: 型安全性・SOLID原則・DRY原則
 // T-016: CLI完全実装（GREEN段階）
 
-import { Command } from 'commander';
 import { writeFileSync } from 'fs';
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { IMetricsAnalyzer } from '../interfaces/analyzer';
-import { ITemplateParser } from '../interfaces/parser';
-import { IOutputFormatter } from '../interfaces/formatter';
-import { ILogger } from '../interfaces/logger';
-import { CloudSupporterError, ErrorType } from '../utils/error';
-import { ExtendedAnalysisResult } from '../interfaces/analyzer';
-// CDK imports (Official Types Only - M-009)
+
+import { Command } from 'commander';
+
 import { CDKOfficialGenerator } from '../generators/cdk-official.generator';
-import { CDKOptions } from '../types/cdk-business';
+import type { IMetricsAnalyzer , ExtendedAnalysisResult } from '../interfaces/analyzer';
+import type { IOutputFormatter } from '../interfaces/formatter';
+import type { ILogger } from '../interfaces/logger';
+import type { ITemplateParser } from '../interfaces/parser';
+import type { CDKOptions } from '../types/cdk-business';
+import { CloudSupporterError, ErrorType } from '../utils/error';
+import { log } from '../utils/logger';
+// CDK imports (Official Types Only - M-009)
 // CDK validation imports (T-010)
 import { CDKValidator } from '../validation/cdk-validator';
 
@@ -186,13 +188,13 @@ export function createCLICommand(dependencies: CLIDependencies): Command {
         // 出力処理
         if (options.file) {
           writeFileSync(options.file, formattedOutput, 'utf8');
-          console.log(`✅ Report saved: ${options.file}`);
+          log.fileSaved(options.file);
           
           if (options.verbose) {
             logger.success(`Analysis completed successfully in ${Date.now() - startTime}ms`);
           }
         } else {
-          console.log(formattedOutput);
+          log.plain(formattedOutput);
         }
         
         // Verboseモードで統計情報表示
@@ -203,14 +205,14 @@ export function createCLICommand(dependencies: CLIDependencies): Command {
       } catch (error) {
         // エラーハンドリング
         if (error instanceof CloudSupporterError) {
-          console.error(`❌ Error: ${error.message}`);
+          log.plainError(`Error: ${error.message}`);
           if (options.verbose && error.details) {
-            console.error('Details:', error.details);
+            log.plain('Details:', error.details);
           }
         } else {
-          console.error(`❌ Unexpected error: ${(error as Error).message}`);
+          log.plainError(`Unexpected error: ${(error as Error).message}`);
           if (options.verbose) {
-            console.error((error as Error).stack);
+            log.plain((error as Error).stack ?? 'No stack trace available');
           }
         }
         
@@ -233,36 +235,39 @@ function displayStatistics(
   const stats = analyzer.getAnalysisStatistics();
   
   if (stats) {
-    console.log('\n📊 Analysis Statistics:');
-    console.log(`   Total Resources: ${stats.totalResources}`);
-    console.log(`   Supported: ${stats.supportedResources}`);
-    console.log(`   Unsupported: ${stats.unsupportedResources}`);
-    console.log(`   Processing Time: ${stats.processingTimeMs}ms`);
-    console.log(`   Memory Usage: ${stats.memoryUsageMB.toFixed(1)}MB`);
+    log.stats('Analysis Statistics', {
+      'Total Resources': stats.totalResources,
+      'Supported': stats.supportedResources,
+      'Unsupported': stats.unsupportedResources,
+      'Processing Time': `${stats.processingTimeMs}ms`,
+      'Memory Usage': `${stats.memoryUsageMB.toFixed(1)}MB`
+    });
     
     if (Object.keys(stats.resourcesByType).length > 0) {
-      console.log('\n📈 Resources by Type:');
-      Object.entries(stats.resourcesByType).forEach(([type, count]) => {
-        console.log(`   ${type}: ${count}`);
-      });
+      const resourceItems = Object.entries(stats.resourcesByType).map(([type, count]) => ({
+        label: type,
+        value: count
+      }));
+      log.list('📈 Resources by Type', resourceItems);
     }
   }
   
   // パフォーマンスメトリクス表示
   if (result.performanceMetrics) {
-    console.log('\n⚡ Performance Metrics:');
-    console.log(`   Parse Time: ${result.performanceMetrics.parseTime}ms`);
-    console.log(`   Generator Time: ${result.performanceMetrics.generatorTime}ms`);
-    console.log(`   Total Time: ${result.performanceMetrics.totalTime}ms`);
-    console.log(`   Concurrent Tasks: ${result.performanceMetrics.concurrentTasks}`);
+    log.stats('⚡ Performance Metrics', {
+      'Parse Time': `${result.performanceMetrics.parseTime}ms`,
+      'Generator Time': `${result.performanceMetrics.generatorTime}ms`,
+      'Total Time': `${result.performanceMetrics.totalTime}ms`,
+      'Concurrent Tasks': result.performanceMetrics.concurrentTasks
+    });
   }
   
   // エラー情報表示
   if (result.errors && result.errors.length > 0) {
-    console.log('\n⚠️  Errors encountered:');
-    result.errors.forEach(err => {
-      console.log(`   - ${err.resourceId} (${err.resourceType}): ${err.error}`);
-    });
+    const errorItems = result.errors.map(err => 
+      `${err.resourceId} (${err.resourceType}): ${err.error}`
+    );
+    log.warnList('Errors encountered', errorItems);
   }
 }
 
@@ -351,25 +356,23 @@ async function handleCDKGeneration(
 
       // Display validation results
       if (validationResult.errors.length > 0) {
-        console.error('\n❌ CDK Validation Errors:');
-        validationResult.errors.forEach(error => console.error(`  - ${error}`));
+        log.errorList('CDK Validation Errors', validationResult.errors);
       }
 
       if (validationResult.warnings.length > 0) {
-        console.warn('\n⚠️  CDK Validation Warnings:');
-        validationResult.warnings.forEach(warning => console.warn(`  - ${warning}`));
+        log.warnList('CDK Validation Warnings', validationResult.warnings);
       }
 
       if (validationResult.suggestions.length > 0 && options.verbose) {
-        console.log('\n💡 CDK Suggestions:');
-        validationResult.suggestions.forEach(suggestion => console.log(`  - ${suggestion}`));
+        log.infoList('CDK Suggestions', validationResult.suggestions);
       }
 
       // Display metrics
-      console.log('\n📊 CDK Code Metrics:');
-      console.log(`  Code Length: ${validationResult.metrics.codeLength} characters`);
-      console.log(`  Alarms Generated: ${validationResult.metrics.alarmCount}`);
-      console.log(`  Imports: ${validationResult.metrics.importCount}`);
+      log.stats('CDK Code Metrics', {
+        'Code Length': `${validationResult.metrics.codeLength} characters`,
+        'Alarms Generated': validationResult.metrics.alarmCount,
+        'Imports': validationResult.metrics.importCount
+      });
 
       if (!validationResult.isValid) {
         throw new CloudSupporterError(
@@ -378,7 +381,7 @@ async function handleCDKGeneration(
           { validationResult }
         );
       } else {
-        console.log('\n✅ CDK validation passed successfully');
+        log.success('CDK validation passed successfully');
       }
     }
     
@@ -405,7 +408,7 @@ async function handleCDKGeneration(
         logger.warn(`Could not set file permissions for ${filePath}: ${(chmodError as Error).message}`);
       }
       
-      console.log(`✅ CDK Stack generated: ${filePath}`);
+      log.success(`CDK Stack generated: ${filePath}`);
       
       if (options.verbose) {
         logger.success(`CDK generation completed successfully`);
@@ -413,20 +416,20 @@ async function handleCDKGeneration(
       }
     } else {
       // Stdout output mode
-      console.log(cdkCode);
+      log.plain(cdkCode);
     }
     
   } catch (error) {
     // CDK-specific error handling
     if (error instanceof CloudSupporterError) {
-      console.error(`❌ CDK Generation Error: ${error.message}`);
+      log.plainError(`CDK Generation Error: ${error.message}`);
       if (options.verbose && error.details) {
-        console.error('Details:', error.details);
+        log.plain('Details:', error.details);
       }
     } else {
-      console.error(`❌ Unexpected CDK error: ${(error as Error).message}`);
+      log.plainError(`Unexpected CDK error: ${(error as Error).message}`);
       if (options.verbose) {
-        console.error((error as Error).stack);
+        log.plain((error as Error).stack ?? 'No stack trace available');
       }
     }
     
