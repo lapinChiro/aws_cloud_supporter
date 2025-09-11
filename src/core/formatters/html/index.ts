@@ -1,10 +1,11 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 // T-016: HTMLフォーマッター実装 - ファサードパターンによる統合
 
-import type { IHTMLOutputFormatter } from './interfaces';
 import type { AnalysisResult } from '../../../types/metrics';
+import type { Logger } from '../../../utils/logger';
+
 import { BaseHTMLFormatter } from './base-formatter';
-import { Logger } from '../../../utils/logger';
+import type { IHTMLOutputFormatter } from './interfaces';
 
 /**
  * HTMLOutputFormatterクラス（ファサードパターン）
@@ -13,8 +14,8 @@ import { Logger } from '../../../utils/logger';
  * 内部実装は分割されたモジュールに委譲する
  */
 export class HTMLOutputFormatter implements IHTMLOutputFormatter {
-  private logger?: Logger;
-  private baseFormatter: BaseHTMLFormatter;
+  private readonly logger?: Logger;
+  private readonly baseFormatter: BaseHTMLFormatter;
 
   constructor(logger?: Logger) {
     if (logger) {

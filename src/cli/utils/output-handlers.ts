@@ -3,12 +3,13 @@
 
 import { writeFileSync } from 'fs';
 import * as path from 'path';
-import type { AnalysisResult } from '../../types/metrics';
+
 import type { IOutputFormatter } from '../../interfaces/formatter';
 import type { ILogger } from '../../interfaces/logger';
-import type { IStandardOutputHandler, IFileOutputHandler } from '../interfaces/handler.interface';
+import type { AnalysisResult } from '../../types/metrics';
 import { CloudSupporterError, ErrorType } from '../../utils/error';
 import { log } from '../../utils/logger';
+import type { IStandardOutputHandler, IFileOutputHandler } from '../interfaces/handler.interface';
 
 /**
  * 標準出力ハンドラー実装

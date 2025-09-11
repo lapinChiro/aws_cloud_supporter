@@ -1,5 +1,5 @@
-import type { MetricConfig } from './types';
 import { METRICS_CONFIG_MAP } from './config-map';
+import type { MetricConfig } from './types';
 
 // 型安全なメトリクス取得関数（CLAUDE.md: Type-Driven Development）
 export function getMetricsForResourceType(resourceType: string): MetricConfig[] {

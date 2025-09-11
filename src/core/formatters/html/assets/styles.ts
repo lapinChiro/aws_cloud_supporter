@@ -2,6 +2,7 @@
 // T-016: HTMLフォーマッター実装 - スタイルアセット
 
 import type { IHTMLAssetProvider } from '../interfaces';
+
 import { getEmbeddedJS } from './scripts';
 
 /**

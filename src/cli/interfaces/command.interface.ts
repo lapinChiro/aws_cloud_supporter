@@ -2,6 +2,7 @@
 // T-016: CLI型定義 - コマンドインターフェース
 
 import type { Command } from 'commander';
+
 import type { IMetricsAnalyzer } from '../../interfaces/analyzer';
 import type { IOutputFormatter } from '../../interfaces/formatter';
 import type { ILogger } from '../../interfaces/logger';

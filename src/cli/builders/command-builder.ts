@@ -2,6 +2,7 @@
 // T-016: CLIコマンド構築 - コマンドビルダー実装
 
 import { Command } from 'commander';
+
 import type { CLIDependencies, ICommandBuilder, ICommandOptionsBuilder } from '../interfaces/command.interface';
 
 /**
@@ -9,7 +10,7 @@ import type { CLIDependencies, ICommandBuilder, ICommandOptionsBuilder } from '.
  * Single Responsibility: Commandインスタンスの構築のみ
  */
 export class CommandBuilder implements ICommandBuilder {
-  private optionsBuilder: ICommandOptionsBuilder;
+  private readonly optionsBuilder: ICommandOptionsBuilder;
 
   constructor() {
     this.optionsBuilder = new CommandOptionsBuilder();

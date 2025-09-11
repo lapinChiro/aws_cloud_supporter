@@ -3,8 +3,7 @@
 
 import type { AnalysisResult } from '../../types/metrics';
 import type { ExtendedAnalysisResult } from '../../interfaces/analyzer';
-import type { CDKOptions } from '../../types/cdk-business';
-import type { CLIDependencies, CLIOptions } from './command.interface';
+
 
 /**
  * CDKハンドラーインターフェース
@@ -174,7 +173,10 @@ export interface IFileOutputHandler {
 }
 
 // 必要な型のインポート（実際のコードベースに合わせて調整）
+import type { IOutputFormatter } from '../../interfaces/formatter';
 import type { ILogger } from '../../interfaces/logger';
 import type { ITemplateParser } from '../../interfaces/parser';
-import type { IOutputFormatter } from '../../interfaces/formatter';
+import type { CDKOptions } from '../../types/cdk-business';
 import type { CloudFormationTemplate } from '../../types/cloudformation';
+
+import type { CLIDependencies, CLIOptions } from './command.interface';

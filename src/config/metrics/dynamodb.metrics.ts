@@ -1,5 +1,6 @@
-import type { MetricConfig } from './types';
 import type { CloudFormationResource, DynamoDBTable } from '../../types/cloudformation';
+
+import type { MetricConfig } from './types';
 
 export const DYNAMODB_METRICS: MetricConfig[] = [
   // 読み取り系メトリクス（6個）

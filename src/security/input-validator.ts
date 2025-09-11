@@ -66,7 +66,7 @@ export class CDKInputValidator {
     if (filePath.startsWith('/') && !filePath.startsWith(process.cwd())) {
       // Check if path is in safe temporary directories
       const tempDirs = ['/tmp/', '/temp/', process.env.TMPDIR, process.env.TMP].filter(Boolean);
-      const isTempPath = tempDirs.some(tmpDir => filePath.startsWith(tmpDir as string));
+      const isTempPath = tempDirs.some(tmpDir => filePath.startsWith(tmpDir!));
       
       // Only allow temp paths or when explicitly in test environment AND path looks like a test temp path
       const isTestTempPath = process.env.NODE_ENV === 'test' && 

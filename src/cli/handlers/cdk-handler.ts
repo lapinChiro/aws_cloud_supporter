@@ -1,11 +1,16 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 // T-016: CDKハンドラー - CDK生成処理の分割実装
 
-import * as path from 'path';
 import * as fs from 'fs/promises';
-import type { AnalysisResult } from '../../types/metrics';
+import * as path from 'path';
+
+import { CDKOfficialGenerator } from '../../generators/cdk-official.generator';
 import type { ExtendedAnalysisResult } from '../../interfaces/analyzer';
 import type { CDKOptions } from '../../types/cdk-business';
+import type { AnalysisResult } from '../../types/metrics';
+import { CloudSupporterError, ErrorType } from '../../utils/error';
+import { log } from '../../utils/logger';
+import { CDKValidator } from '../../validation/cdk-validator';
 import type { CLIDependencies, CLIOptions } from '../interfaces/command.interface';
 import type { 
   ICDKHandler, 
@@ -13,11 +18,8 @@ import type {
   ICDKCodeGenerator, 
   ICDKOutputHandler 
 } from '../interfaces/handler.interface';
+
 import { CDKOptionsValidator } from './validation';
-import { CloudSupporterError, ErrorType } from '../../utils/error';
-import { CDKOfficialGenerator } from '../../generators/cdk-official.generator';
-import { CDKValidator } from '../../validation/cdk-validator';
-import { log } from '../../utils/logger';
 
 /**
  * CDKハンドラー実装
@@ -25,8 +27,8 @@ import { log } from '../../utils/logger';
  * 複雑度: handleCDKGenerationは25 → 5以下に削減
  */
 export class CDKHandler implements ICDKHandler {
-  private validator: CDKOptionsValidator;
-  private outputHandler: CDKOutputHandler;
+  private readonly validator: CDKOptionsValidator;
+  private readonly outputHandler: CDKOutputHandler;
 
   constructor() {
     this.validator = new CDKOptionsValidator();
@@ -267,7 +269,7 @@ export class CDKOutputHandler implements ICDKOutputHandler {
   ): Promise<void> {
     // ファイル出力モード
     if (options.cdkOutputDir) {
-      await this.writeFiles(options.cdkOutputDir!, files, options, logger);
+      await this.writeFiles(options.cdkOutputDir, files, options, logger);
     } else {
       // 標準出力モード
       const cdkCode = Object.values(files)[0];

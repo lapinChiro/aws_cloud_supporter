@@ -2,9 +2,10 @@
 // T-016: CLIバリデーション - CDKオプション検証
 
 import * as path from 'path';
+
+import { CloudSupporterError, ErrorType } from '../../utils/error';
 import type { CLIDependencies, CLIOptions } from '../interfaces/command.interface';
 import type { ICDKOptionsValidator } from '../interfaces/handler.interface';
-import { CloudSupporterError, ErrorType } from '../../utils/error';
 
 /**
  * CDKオプションバリデーター実装
@@ -45,7 +46,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
     // 絶対パスの検証（セキュリティ上安全な場所は許可）
     if (path.isAbsolute(options.cdkOutputDir)) {
       const tempDirs = ['/tmp/', '/temp/', process.env.TMPDIR, process.env.TMP].filter(Boolean);
-      const isSafePath = tempDirs.some(tmpDir => options.cdkOutputDir?.startsWith(tmpDir as string)) ||
+      const isSafePath = tempDirs.some(tmpDir => options.cdkOutputDir?.startsWith(tmpDir!)) ||
                         options.cdkOutputDir.startsWith(process.cwd()) ||
                         process.env.NODE_ENV === 'test'; // テスト環境では柔軟に対応
       

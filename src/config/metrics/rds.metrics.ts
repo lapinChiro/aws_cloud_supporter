@@ -1,6 +1,6 @@
+import type { CloudFormationResource , RDSDBInstance } from '../../types/cloudformation';
+
 import type { MetricConfig } from './types';
-import type { CloudFormationResource } from '../../types/cloudformation';
-import type { RDSDBInstance } from '../../types/cloudformation';
 
 export const RDS_METRICS: MetricConfig[] = [
   // パフォーマンス系メトリクス（10個）

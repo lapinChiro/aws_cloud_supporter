@@ -1,10 +1,10 @@
-import type { MetricConfig } from './types';
-import { RDS_METRICS } from './rds.metrics';
-import { LAMBDA_METRICS } from './lambda.metrics';
-import { ECS_METRICS } from './ecs.metrics';
 import { ALB_METRICS } from './alb.metrics';
-import { DYNAMODB_METRICS } from './dynamodb.metrics';
 import { API_GATEWAY_METRICS } from './api-gateway.metrics';
+import { DYNAMODB_METRICS } from './dynamodb.metrics';
+import { ECS_METRICS } from './ecs.metrics';
+import { LAMBDA_METRICS } from './lambda.metrics';
+import { RDS_METRICS } from './rds.metrics';
+import type { MetricConfig } from './types';
 
 // =============================================================================
 // メトリクス定義マップ（CLAUDE.md: DRY原則）

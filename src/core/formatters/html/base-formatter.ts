@@ -3,19 +3,19 @@
 
 import type { AnalysisResult } from '../../../types/metrics';
 import { CloudSupporterError, ErrorType } from '../../../utils/error';
-import type { IHTMLGenerator, IResourceHTMLGenerator, IUnsupportedHTMLGenerator, IHTMLAssetProvider } from './interfaces';
-import { ResourceHTMLGenerator } from './html-generators';
-import { UnsupportedHTMLGenerator } from './html-generators';
+
 import { HTMLAssetProvider } from './assets/styles';
+import { ResourceHTMLGenerator , UnsupportedHTMLGenerator } from './html-generators';
+import type { IHTMLGenerator, IResourceHTMLGenerator, IUnsupportedHTMLGenerator, IHTMLAssetProvider } from './interfaces';
 
 /**
  * HTML形式のベースフォーマッタークラス
  * Single Responsibility: HTML全体構造の生成のみ
  */
 export class BaseHTMLFormatter implements IHTMLGenerator {
-  private resourceHTMLGenerator: IResourceHTMLGenerator;
-  private unsupportedHTMLGenerator: IUnsupportedHTMLGenerator;
-  private assetProvider: IHTMLAssetProvider;
+  private readonly resourceHTMLGenerator: IResourceHTMLGenerator;
+  private readonly unsupportedHTMLGenerator: IUnsupportedHTMLGenerator;
+  private readonly assetProvider: IHTMLAssetProvider;
 
   constructor() {
     this.resourceHTMLGenerator = new ResourceHTMLGenerator();

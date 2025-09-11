@@ -2,16 +2,17 @@
 // T-016: HTMLフォーマッター実装 - HTML生成
 
 import type { ResourceWithMetrics, MetricDefinition } from '../../../types/metrics';
-import type { IResourceHTMLGenerator, IMetricHTMLGenerator, IUnsupportedHTMLGenerator, IHTMLUtility } from './interfaces';
+
 import { HTMLUtility } from './formatter-utils';
+import type { IResourceHTMLGenerator, IMetricHTMLGenerator, IUnsupportedHTMLGenerator, IHTMLUtility } from './interfaces';
 
 /**
  * リソースHTML生成クラス
  * Single Responsibility: リソース表示用HTML生成のみ
  */
 export class ResourceHTMLGenerator implements IResourceHTMLGenerator {
-  private metricHTMLGenerator: IMetricHTMLGenerator;
-  private utility: IHTMLUtility;
+  private readonly metricHTMLGenerator: IMetricHTMLGenerator;
+  private readonly utility: IHTMLUtility;
 
   constructor() {
     this.metricHTMLGenerator = new MetricHTMLGenerator();
@@ -59,7 +60,7 @@ export class ResourceHTMLGenerator implements IResourceHTMLGenerator {
  * Single Responsibility: メトリクス表示用HTML生成のみ
  */
 export class MetricHTMLGenerator implements IMetricHTMLGenerator {
-  private utility: IHTMLUtility;
+  private readonly utility: IHTMLUtility;
 
   constructor() {
     this.utility = new HTMLUtility();
@@ -133,7 +134,7 @@ export class MetricHTMLGenerator implements IMetricHTMLGenerator {
  * Single Responsibility: サポート外リソース表示用HTML生成のみ
  */
 export class UnsupportedHTMLGenerator implements IUnsupportedHTMLGenerator {
-  private utility: IHTMLUtility;
+  private readonly utility: IHTMLUtility;
 
   constructor() {
     this.utility = new HTMLUtility();
