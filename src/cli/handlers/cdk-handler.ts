@@ -6,11 +6,13 @@ import * as path from 'path';
 
 import { CDKOfficialGenerator } from '../../generators/cdk-official.generator';
 import type { ExtendedAnalysisResult, IMetricsAnalyzer } from '../../interfaces/analyzer';
+import type { ILogger } from '../../interfaces/logger';
 import type { CDKOptions } from '../../types/cdk-business';
 import type { AnalysisResult } from '../../types/metrics';
 import { CloudSupporterError, ErrorType } from '../../utils/error';
 import { log } from '../../utils/logger';
-import { CDKValidator, CDKValidationResult } from '../../validation/cdk-validator';
+import type { CDKValidationResult } from '../../validation/cdk-validator';
+import { CDKValidator } from '../../validation/cdk-validator';
 import type { CLIDependencies, CLIOptions } from '../interfaces/command.interface';
 import type { 
   ICDKHandler, 
@@ -18,7 +20,6 @@ import type {
   ICDKCodeGenerator, 
   ICDKOutputHandler 
 } from '../interfaces/handler.interface';
-import type { ILogger } from '../../interfaces/logger';
 
 import { CDKOptionsValidator } from './validation';
 

@@ -3,10 +3,10 @@
 
 import type { Command } from 'commander';
 
-import type { ILogger } from '../interfaces/logger';
-import type { IOutputFormatter } from '../interfaces/formatter';
-import type { AnalysisResult } from '../types/metrics';
 import type { IMetricsAnalyzer, ExtendedAnalysisResult } from '../interfaces/analyzer';
+import type { IOutputFormatter } from '../interfaces/formatter';
+import type { ILogger } from '../interfaces/logger';
+import type { AnalysisResult } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 import { log } from '../utils/logger';
 

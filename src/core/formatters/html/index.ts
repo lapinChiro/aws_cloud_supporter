@@ -4,10 +4,10 @@
 import type { AnalysisResult } from '../../../types/metrics';
 import type { Logger } from '../../../utils/logger';
 
+import { getEmbeddedJS } from './assets/scripts';
+import { HTMLAssetProvider } from './assets/styles';
 import { BaseHTMLFormatter } from './base-formatter';
 import type { IHTMLOutputFormatter } from './interfaces';
-import { HTMLAssetProvider } from './assets/styles';
-import { getEmbeddedJS } from './assets/scripts';
 
 /**
  * HTMLOutputFormatterクラス（ファサードパターン）
