@@ -88,7 +88,7 @@ export class CDKOfficialGenerator {
       
       // 5. テンプレート適用
       await this.loadTemplate();
-      const generatedCode = this.template!(templateData);
+      const generatedCode = this.template?.(templateData) || '';
       
       // 6. フォーマット
       const formattedCode = this.formatCode(generatedCode);
@@ -230,8 +230,9 @@ export class CDKOfficialGenerator {
     );
 
     if (options.resourceTypeFilters && options.resourceTypeFilters.length > 0) {
+      const filters = options.resourceTypeFilters;
       filteredResources = filteredResources.filter(r =>
-        options.resourceTypeFilters!.includes(r.resource_type)
+        filters.includes(r.resource_type)
       );
     }
 

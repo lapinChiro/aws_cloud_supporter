@@ -371,7 +371,7 @@ export function isSupportedResource(resource: CloudFormationResource): resource 
 export function isFargateService(resource: CloudFormationResource): boolean {
   if (!isECSService(resource)) return false;
   
-  const props = resource.Properties!;
+  const props = resource.Properties;
   if (!props) return false;
   
   // LaunchType直接指定
@@ -392,7 +392,7 @@ export function isFargateService(resource: CloudFormationResource): boolean {
 export function isApplicationLoadBalancer(resource: CloudFormationResource): boolean {
   if (!isALB(resource)) return false;
   
-  const props = resource.Properties!;
+  const props = resource.Properties;
   if (!props) return true; // デフォルトはApplication
   
   return !props.Type || props.Type === 'application';
