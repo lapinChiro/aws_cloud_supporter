@@ -320,35 +320,35 @@ export enum ResourceType {
 
 // リソース識別ヘルパー（型安全性確保）
 export function isRDSInstance(resource: CloudFormationResource): resource is RDSDBInstance {
-  return resource.Type === ResourceType.RDS_DB_INSTANCE;
+  return resource.Type === ResourceType.RDS_DB_INSTANCE as string;
 }
 
 export function isLambdaFunction(resource: CloudFormationResource): resource is LambdaFunction {
-  return resource.Type === ResourceType.LAMBDA_FUNCTION;
+  return resource.Type === ResourceType.LAMBDA_FUNCTION as string;
 }
 
 export function isServerlessFunction(resource: CloudFormationResource): resource is ServerlessFunction {
-  return resource.Type === ResourceType.SERVERLESS_FUNCTION;
+  return resource.Type === ResourceType.SERVERLESS_FUNCTION as string;
 }
 
 export function isECSService(resource: CloudFormationResource): resource is ECSService {
-  return resource.Type === ResourceType.ECS_SERVICE;
+  return resource.Type === ResourceType.ECS_SERVICE as string;
 }
 
 export function isALB(resource: CloudFormationResource): resource is ApplicationLoadBalancer {
-  return resource.Type === ResourceType.ALB;
+  return resource.Type === ResourceType.ALB as string;
 }
 
 export function isDynamoDBTable(resource: CloudFormationResource): resource is DynamoDBTable {
-  return resource.Type === ResourceType.DYNAMODB_TABLE;
+  return resource.Type === ResourceType.DYNAMODB_TABLE as string;
 }
 
 export function isAPIGateway(resource: CloudFormationResource): resource is APIGatewayRestAPI {
-  return resource.Type === ResourceType.API_GATEWAY;
+  return resource.Type === ResourceType.API_GATEWAY as string;
 }
 
 export function isServerlessAPI(resource: CloudFormationResource): resource is ServerlessAPI {
-  return resource.Type === ResourceType.SERVERLESS_API;
+  return resource.Type === ResourceType.SERVERLESS_API as string;
 }
 
 // 型安全なリソース判定（CLAUDE.md: Type-Driven Development）
