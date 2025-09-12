@@ -6,6 +6,7 @@ import * as path from 'path';
 import { CloudSupporterError, ErrorType } from '../../utils/error';
 import type { CLIDependencies, CLIOptions } from '../interfaces/command.interface';
 import type { ICDKOptionsValidator } from '../interfaces/handler.interface';
+import type { ILogger } from '../../interfaces/logger';
 
 /**
  * CDKオプションバリデーター実装
@@ -38,7 +39,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
    * 出力ディレクトリの検証
    * 複雑度: 2
    */
-  private validateOutputDir(options: CLIOptions, logger: any): void {
+  private validateOutputDir(options: CLIOptions, logger: ILogger): void {
     if (!options.cdkOutputDir) {
       return; // オプショナルなので未指定は許可
     }
@@ -66,7 +67,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
    * SNSオプションの検証
    * 複雑度: 3
    */
-  private validateSNSOptions(options: CLIOptions, logger: any): void {
+  private validateSNSOptions(options: CLIOptions, logger: ILogger): void {
     // SNS ARNとenable-snsの両方が指定された場合のエラー
     if (options.cdkEnableSns && options.cdkSnsTopicArn) {
       const error = new CloudSupporterError(
@@ -94,7 +95,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
    * スタック名の検証
    * 複雑度: 2
    */
-  private validateStackName(options: CLIOptions, logger: any): void {
+  private validateStackName(options: CLIOptions, logger: ILogger): void {
     if (!options.cdkStackName) {
       return; // デフォルト値があるので未指定は許可
     }

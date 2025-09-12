@@ -4,6 +4,9 @@
 import type { Command } from 'commander';
 
 import type { ILogger } from '../interfaces/logger';
+import type { IOutputFormatter } from '../interfaces/formatter';
+import type { AnalysisResult } from '../types/metrics';
+import type { IMetricsAnalyzer, ExtendedAnalysisResult } from '../interfaces/analyzer';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 import { log } from '../utils/logger';
 
@@ -86,9 +89,9 @@ function setupLogging(options: CLIOptions, logger: ILogger): void {
 async function executeAnalysis(
   templatePath: string,
   options: CLIOptions,
-  analyzer: any,
+  analyzer: IMetricsAnalyzer,
   logger: ILogger
-): Promise<any> {
+): Promise<ExtendedAnalysisResult> {
   logger.info(`Starting analysis of ${templatePath}`);
   
   // フィルタリング設定
@@ -101,7 +104,7 @@ async function executeAnalysis(
     outputFormat: options.output,
     includeUnsupported: options.includeUnsupported,
     includeLowImportance: options.includeLow,
-    resourceTypes: resourceTypeFilter,
+    ...(resourceTypeFilter && { resourceTypes: resourceTypeFilter }),
     concurrency: options.performanceMode ? 10 : 6,
     verbose: options.verbose
   });
@@ -117,10 +120,10 @@ async function executeAnalysis(
  * 複雑度: 3
  */
 async function handleOutput(
-  result: any,
+  result: AnalysisResult,
   options: CLIOptions,
-  jsonFormatter: any,
-  htmlFormatter: any,
+  jsonFormatter: IOutputFormatter,
+  htmlFormatter: IOutputFormatter,
   logger: ILogger
 ): Promise<void> {
   if (options.file) {

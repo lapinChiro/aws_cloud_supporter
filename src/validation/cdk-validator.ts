@@ -206,7 +206,7 @@ export class CDKValidator {
       });
 
       let stderr = '';
-      compileProcess.stderr?.on('data', (data) => {
+      compileProcess.stderr?.on('data', (data: Buffer | string) => {
         stderr += data.toString();
       });
 

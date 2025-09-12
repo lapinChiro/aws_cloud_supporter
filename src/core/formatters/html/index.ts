@@ -6,6 +6,8 @@ import type { Logger } from '../../../utils/logger';
 
 import { BaseHTMLFormatter } from './base-formatter';
 import type { IHTMLOutputFormatter } from './interfaces';
+import { HTMLAssetProvider } from './assets/styles';
+import { getEmbeddedJS } from './assets/scripts';
 
 /**
  * HTMLOutputFormatterクラス（ファサードパターン）
@@ -51,7 +53,6 @@ export class HTMLOutputFormatter implements IHTMLOutputFormatter {
    * @returns CSS文字列
    */
   static getEmbeddedCSS(): string {
-    const { HTMLAssetProvider } = require('./assets/styles');
     const provider = new HTMLAssetProvider();
     return provider.getEmbeddedCSS();
   }
@@ -62,7 +63,6 @@ export class HTMLOutputFormatter implements IHTMLOutputFormatter {
    * @returns JavaScript文字列
    */
   static getEmbeddedJS(): string {
-    const { getEmbeddedJS } = require('./assets/scripts');
     return getEmbeddedJS();
   }
 }

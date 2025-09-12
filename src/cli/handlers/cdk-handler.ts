@@ -5,12 +5,12 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 import { CDKOfficialGenerator } from '../../generators/cdk-official.generator';
-import type { ExtendedAnalysisResult } from '../../interfaces/analyzer';
+import type { ExtendedAnalysisResult, IMetricsAnalyzer } from '../../interfaces/analyzer';
 import type { CDKOptions } from '../../types/cdk-business';
 import type { AnalysisResult } from '../../types/metrics';
 import { CloudSupporterError, ErrorType } from '../../utils/error';
 import { log } from '../../utils/logger';
-import { CDKValidator } from '../../validation/cdk-validator';
+import { CDKValidator, CDKValidationResult } from '../../validation/cdk-validator';
 import type { CLIDependencies, CLIOptions } from '../interfaces/command.interface';
 import type { 
   ICDKHandler, 
@@ -18,6 +18,7 @@ import type {
   ICDKCodeGenerator, 
   ICDKOutputHandler 
 } from '../interfaces/handler.interface';
+import type { ILogger } from '../../interfaces/logger';
 
 import { CDKOptionsValidator } from './validation';
 
@@ -80,7 +81,7 @@ export class CDKHandler implements ICDKHandler {
   private async executeAnalysis(
     templatePath: string,
     options: CLIOptions,
-    analyzer: any
+    analyzer: IMetricsAnalyzer
   ): Promise<ExtendedAnalysisResult> {
     return await analyzer.analyze(templatePath, {
       outputFormat: 'json',
@@ -120,7 +121,7 @@ export class CDKHandler implements ICDKHandler {
     analysisResult: ExtendedAnalysisResult,
     cdkOptions: CDKOptions,
     options: CLIOptions,
-    logger: any
+    logger: ILogger
   ): Promise<string> {
     const cdkGenerator = new CDKOfficialGenerator(logger);
     
@@ -141,7 +142,7 @@ export class CDKHandler implements ICDKHandler {
   /**
    * CDKコード検証（複雑度: 4）
    */
-  private async validateCDKCode(cdkCode: string, options: CLIOptions, logger: any): Promise<void> {
+  private async validateCDKCode(cdkCode: string, options: CLIOptions, logger: ILogger): Promise<void> {
     const validator = new CDKValidator(logger);
     const validationResult = await validator.validateGeneratedCode(cdkCode, {
       compileCheck: true,
@@ -167,7 +168,7 @@ export class CDKHandler implements ICDKHandler {
   /**
    * バリデーション結果表示（複雑度: 3）
    */
-  private displayValidationResults(validationResult: any, options: CLIOptions): void {
+  private displayValidationResults(validationResult: CDKValidationResult, options: CLIOptions): void {
     if (validationResult.errors.length > 0) {
       log.errorList('CDK Validation Errors', validationResult.errors);
     }
@@ -216,7 +217,7 @@ export class CDKTypeDeterminer implements ICDKTypeDeterminer {
   determineCDKType(
     _result: AnalysisResult | ExtendedAnalysisResult,
     _options: CLIOptions,
-    _logger: any
+    _logger: ILogger
   ): 'official' | 'classic' {
     // M-009: Default to Official Types
     return 'official';
@@ -265,7 +266,7 @@ export class CDKOutputHandler implements ICDKOutputHandler {
     files: Record<string, string>,
     _message: string,
     options: CLIOptions,
-    logger: any
+    logger: ILogger
   ): Promise<void> {
     // ファイル出力モード
     if (options.cdkOutputDir) {
@@ -286,7 +287,7 @@ export class CDKOutputHandler implements ICDKOutputHandler {
     outputDir: string,
     files: Record<string, string>,
     options: CLIOptions,
-    logger: any
+    logger: ILogger
   ): Promise<void> {
     // ディレクトリ作成
     await fs.mkdir(outputDir, { recursive: true });
@@ -314,7 +315,7 @@ export class CDKOutputHandler implements ICDKOutputHandler {
   private async setSecurePermissions(
     filePath: string,
     options: CLIOptions,
-    logger: any
+    logger: ILogger
   ): Promise<void> {
     try {
       await fs.chmod(filePath, 0o600);
