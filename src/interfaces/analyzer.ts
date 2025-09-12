@@ -8,7 +8,7 @@ import type { AnalysisResult } from '../types/metrics';
  * requirement.md 4.3節準拠
  */
 export interface AnalysisOptions {
-  outputFormat: 'json' | 'html';
+  outputFormat: 'json' | 'html' | 'yaml' | 'cdk';
   includeUnsupported?: boolean;
   includeLowImportance?: boolean;  // 低重要度メトリクスを含める
   resourceTypes?: string[];  // フィルタリング対象のリソースタイプ

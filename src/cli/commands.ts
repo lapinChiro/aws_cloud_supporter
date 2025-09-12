@@ -104,7 +104,7 @@ async function executeAnalysis(
     outputFormat: options.output,
     includeUnsupported: options.includeUnsupported,
     includeLowImportance: options.includeLow,
-    resourceTypes: resourceTypeFilter,
+    ...(resourceTypeFilter && { resourceTypes: resourceTypeFilter }),
     concurrency: options.performanceMode ? 10 : 6,
     verbose: options.verbose
   });

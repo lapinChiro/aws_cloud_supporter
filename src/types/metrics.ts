@@ -115,7 +115,7 @@ export interface ExtractResult {
 // 出力フォーマッタ型
 // =============================================================================
 
-export type OutputFormat = 'json' | 'html' | 'yaml';
+export type OutputFormat = 'json' | 'html' | 'yaml' | 'cdk';
 
 export interface JSONOutputData {
   metadata: AnalysisMetadata;

@@ -141,7 +141,7 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
   // CLAUDE.md: No any types検証
   it('should not use any types in metrics definitions', () => {
     const metricsCode = readFileSync(
-      path.join(__dirname, '../../../src/config/metrics-definitions.ts'),
+      path.join(__dirname, '../../../src/config/metrics/index.ts'),
       'utf8'
     );
     expect(metricsCode).toHaveNoAnyTypes();
@@ -153,7 +153,7 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
       RDS_METRICS, 
       LAMBDA_METRICS,
       METRICS_CONFIG_MAP 
-    } = require('../../../src/config/metrics-definitions');
+    } = require('../../../src/config/metrics');
     
     // メトリクス配列が複数箇所で定義されていない（DRY原則）
     expect(METRICS_CONFIG_MAP['AWS::RDS::DBInstance']).toBe(RDS_METRICS);
