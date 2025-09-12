@@ -203,7 +203,7 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       
       if (jsonStart >= 0 && jsonEnd > jsonStart) {
         const jsonPart = stdout.slice(jsonStart, jsonEnd);
-        const result = JSON.parse(jsonPart);
+        const result = JSON.parse(jsonPart) as CliOutputResult;
         expect(result.metadata.version).toBe('1.0.0');
       }
     });
@@ -218,7 +218,7 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       );
       const duration = Date.now() - startTime;
 
-      const result = JSON.parse(stdout);
+      const result = JSON.parse(stdout) as CliOutputResult;
       expect(result.resources.length).toBeGreaterThan(300);
       expect(duration).toBeLessThan(30000); // Should complete within 30 seconds
       
