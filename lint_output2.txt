@@ -1,0 +1,1289 @@
+
+> aws-cloud-supporter@1.0.0 lint
+> eslint src tests
+
+
+/home/kyohei/aws_cloud_supporter/src/cli/builders/command-builder.ts
+  16:31  error  'CommandOptionsBuilder' was used before it was defined  @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/src/cli/commands.ts
+   32:11  error  'handleCLIAction' was used before it was defined                                                  @typescript-eslint/no-use-before-define
+   51:5   error  'setupLogging' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+   61:26  error  'executeAnalysis' was used before it was defined                                                  @typescript-eslint/no-use-before-define
+   64:11  error  'handleOutput' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+   67:5   error  'handleError' was used before it was defined                                                      @typescript-eslint/no-use-before-define
+  165:13  error  Switch is not exhaustive. Cases not matched: ErrorType.OUTPUT_ERROR | ErrorType.VALIDATION_ERROR  @typescript-eslint/switch-exhaustiveness-check
+
+/home/kyohei/aws_cloud_supporter/src/cli/handlers/cdk-handler.ts
+   37:30  error  'CDKOutputHandler' was used before it was defined                                                                    @typescript-eslint/no-use-before-define
+   67:30  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator            @typescript-eslint/prefer-nullish-coalescing
+  105:39  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator            @typescript-eslint/prefer-nullish-coalescing
+  252:40  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator            @typescript-eslint/prefer-nullish-coalescing
+  265:3   error  Promise-returning method provided where a void return was expected by extended/implemented type 'ICDKOutputHandler'  @typescript-eslint/no-misused-promises
+
+/home/kyohei/aws_cloud_supporter/src/cli/handlers/validation.ts
+  50:83  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/home/kyohei/aws_cloud_supporter/src/cli/interfaces/handler.interface.ts
+  4:1  error  `../../types/metrics` type import should occur after type import of `../../types/cloudformation`  import/order
+  5:1  error  There should be no empty line within import group                                                 import/order
+
+/home/kyohei/aws_cloud_supporter/src/cli/utils/output-handlers.ts
+   55:13  error    Switch is not exhaustive. Cases not matched: "yaml"               @typescript-eslint/switch-exhaustiveness-check
+  154:13  error    Switch is not exhaustive. Cases not matched: "yaml"               @typescript-eslint/switch-exhaustiveness-check
+  217:29  warning  Invalid type "number | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+
+/home/kyohei/aws_cloud_supporter/src/config/metrics/dynamodb.metrics.ts
+  113:5   error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  115:21  error  Forbidden non-null assertion     @typescript-eslint/no-non-null-assertion
+  133:5   error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  135:21  error  Forbidden non-null assertion     @typescript-eslint/no-non-null-assertion
+  153:5   error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  155:21  error  Forbidden non-null assertion     @typescript-eslint/no-non-null-assertion
+  173:5   error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  175:21  error  Forbidden non-null assertion     @typescript-eslint/no-non-null-assertion
+
+/home/kyohei/aws_cloud_supporter/src/config/metrics/rds.metrics.ts
+   36:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+   38:30  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+   38:64  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   56:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+   58:30  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+   58:64  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  228:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+  230:23  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  230:48  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  250:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+  252:21  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  253:73  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  270:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+  272:21  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  290:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+  292:23  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  292:48  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  310:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+  312:23  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  312:48  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  330:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+  332:23  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  332:48  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  350:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+  352:23  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  352:48  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  385:5   error  Missing return type on function                                                                            @typescript-eslint/explicit-module-boundary-types
+  387:23  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  387:48  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/core/analyzer.ts
+  194:46  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  214:47  warning  Invalid type "number | undefined" of template literal expression                                           @typescript-eslint/restrict-template-expressions
+  215:68  warning  Invalid type "number | undefined" of template literal expression                                           @typescript-eslint/restrict-template-expressions
+  296:45  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  329:77  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  391:54  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/core/extractor.ts
+  41:37  warning  Always prefer const x: T = { ... }  @typescript-eslint/consistent-type-assertions
+
+/home/kyohei/aws_cloud_supporter/src/core/formatters/html/assets/scripts.ts
+  8:8  error  Function 'getEmbeddedJS' has too many lines (226). Maximum allowed is 150  max-lines-per-function
+
+/home/kyohei/aws_cloud_supporter/src/core/formatters/html/assets/styles.ts
+  17:3  error  Method 'getEmbeddedCSS' has too many lines (322). Maximum allowed is 150  max-lines-per-function
+
+/home/kyohei/aws_cloud_supporter/src/core/formatters/html/base-formatter.ts
+  30:3   error    Async method 'formatHTML' has no 'await' expression               @typescript-eslint/require-await
+  63:51  warning  Invalid type "number | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+
+/home/kyohei/aws_cloud_supporter/src/core/formatters/html/formatter-utils.ts
+  41:37  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/core/formatters/html/html-generators.ts
+  18:36  error  'MetricHTMLGenerator' was used before it was defined  @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/src/core/json-formatter.ts
+  31:3  error  Async method 'formatJSON' has no 'await' expression  @typescript-eslint/require-await
+
+/home/kyohei/aws_cloud_supporter/src/core/parser.ts
+   90:32  warning  Invalid type "string | undefined" of template literal expression                                           @typescript-eslint/restrict-template-expressions
+  192:62  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/generators/base.generator.ts
+   40:3  error  Async method 'generate' has no 'await' expression                                  @typescript-eslint/require-await
+  237:8  error  Function 'validateMetricDefinition' has a complexity of 21. Maximum allowed is 20  complexity
+
+/home/kyohei/aws_cloud_supporter/src/generators/cdk-official.generator.ts
+   91:29  error    Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  234:9   error    Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  341:41  error    Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  406:21  warning  Always prefer const x: T = { ... }                                                                         @typescript-eslint/consistent-type-assertions
+
+/home/kyohei/aws_cloud_supporter/src/generators/dynamodb.generator.ts
+  73:67   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  74:69   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  84:64   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  84:106  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/generators/ecs.generator.ts
+   35:71  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   54:51  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  102:39  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/generators/lambda.generator.ts
+  32:47  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/generators/rds.generator.ts
+   48:55  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  122:36  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/interfaces/logger.ts
+  27:42  error  'unknown' overrides all other types in this union type  @typescript-eslint/no-redundant-type-constituents
+
+/home/kyohei/aws_cloud_supporter/src/security/input-validator.ts
+   69:70  error    Forbidden non-null assertion                                      @typescript-eslint/no-non-null-assertion
+  142:55  warning  Invalid type "string | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+  150:58  warning  Invalid type "string | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+  158:52  warning  Invalid type "string | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+
+/home/kyohei/aws_cloud_supporter/src/templates/handlebars-official-helpers.ts
+   58:55  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   78:57  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  135:14  error  'error' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+
+/home/kyohei/aws_cloud_supporter/src/types/cdk-business.ts
+  72:11  error  'constructId' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  72:24  error  'severity' is assigned a value but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  72:34  error  'resourceLogicalId' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  72:53  error  'resourceType' is assigned a value but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+
+/home/kyohei/aws_cloud_supporter/src/types/cloudformation.ts
+  123:5    error  "db.t3.micro" is overridden by string in this union type      @typescript-eslint/no-redundant-type-constituents
+  123:21   error  "db.t3.small" is overridden by string in this union type      @typescript-eslint/no-redundant-type-constituents
+  123:37   error  "db.t3.medium" is overridden by string in this union type     @typescript-eslint/no-redundant-type-constituents
+  123:54   error  "db.t3.large" is overridden by string in this union type      @typescript-eslint/no-redundant-type-constituents
+  123:70   error  "db.t3.xlarge" is overridden by string in this union type     @typescript-eslint/no-redundant-type-constituents
+  123:87   error  "db.t3.2xlarge" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  125:5    error  "db.m5.large" is overridden by string in this union type      @typescript-eslint/no-redundant-type-constituents
+  125:21   error  "db.m5.xlarge" is overridden by string in this union type     @typescript-eslint/no-redundant-type-constituents
+  125:38   error  "db.m5.2xlarge" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  125:56   error  "db.m5.4xlarge" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  125:74   error  "db.m5.8xlarge" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  125:92   error  "db.m5.12xlarge" is overridden by string in this union type   @typescript-eslint/no-redundant-type-constituents
+  125:111  error  "db.m5.16xlarge" is overridden by string in this union type   @typescript-eslint/no-redundant-type-constituents
+  125:130  error  "db.m5.24xlarge" is overridden by string in this union type   @typescript-eslint/no-redundant-type-constituents
+  127:5    error  "db.r5.large" is overridden by string in this union type      @typescript-eslint/no-redundant-type-constituents
+  127:21   error  "db.r5.xlarge" is overridden by string in this union type     @typescript-eslint/no-redundant-type-constituents
+  127:38   error  "db.r5.2xlarge" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  127:56   error  "db.r5.4xlarge" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  127:74   error  "db.r5.8xlarge" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  127:92   error  "db.r5.12xlarge" is overridden by string in this union type   @typescript-eslint/no-redundant-type-constituents
+  127:111  error  "db.r5.16xlarge" is overridden by string in this union type   @typescript-eslint/no-redundant-type-constituents
+  127:130  error  "db.r5.24xlarge" is overridden by string in this union type   @typescript-eslint/no-redundant-type-constituents
+  129:5    error  "db.r6g.large" is overridden by string in this union type     @typescript-eslint/no-redundant-type-constituents
+  129:22   error  "db.r6g.xlarge" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  129:40   error  "db.r6g.2xlarge" is overridden by string in this union type   @typescript-eslint/no-redundant-type-constituents
+  129:59   error  "db.r6g.4xlarge" is overridden by string in this union type   @typescript-eslint/no-redundant-type-constituents
+  185:5    error  "nodejs18.x" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+  185:20   error  "nodejs20.x" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+  187:5    error  "python3.9" is overridden by string in this union type        @typescript-eslint/no-redundant-type-constituents
+  187:19   error  "python3.10" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+  187:34   error  "python3.11" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+  187:49   error  "python3.12" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+  189:5    error  "java8.al2" is overridden by string in this union type        @typescript-eslint/no-redundant-type-constituents
+  189:19   error  "java11" is overridden by string in this union type           @typescript-eslint/no-redundant-type-constituents
+  189:30   error  "java17" is overridden by string in this union type           @typescript-eslint/no-redundant-type-constituents
+  189:41   error  "java21" is overridden by string in this union type           @typescript-eslint/no-redundant-type-constituents
+  191:5    error  "dotnet6" is overridden by string in this union type          @typescript-eslint/no-redundant-type-constituents
+  191:17   error  "dotnet8" is overridden by string in this union type          @typescript-eslint/no-redundant-type-constituents
+  193:5    error  "go1.x" is overridden by string in this union type            @typescript-eslint/no-redundant-type-constituents
+  195:5    error  "ruby3.2" is overridden by string in this union type          @typescript-eslint/no-redundant-type-constituents
+  197:5    error  "provided.al2" is overridden by string in this union type     @typescript-eslint/no-redundant-type-constituents
+  197:22   error  "provided.al2023" is overridden by string in this union type  @typescript-eslint/no-redundant-type-constituents
+  374:17   error  Forbidden non-null assertion                                  @typescript-eslint/no-non-null-assertion
+  395:17   error  Forbidden non-null assertion                                  @typescript-eslint/no-non-null-assertion
+
+/home/kyohei/aws_cloud_supporter/src/types/common.ts
+   8:5   error  "us-east-1" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+   8:19  error  "us-east-2" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+   8:33  error  "us-west-1" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+   8:47  error  "us-west-2" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+   9:5   error  "eu-west-1" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+   9:19  error  "eu-west-2" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+   9:33  error  "eu-west-3" is overridden by string in this union type       @typescript-eslint/no-redundant-type-constituents
+   9:47  error  "eu-central-1" is overridden by string in this union type    @typescript-eslint/no-redundant-type-constituents
+  10:5   error  "ap-southeast-1" is overridden by string in this union type  @typescript-eslint/no-redundant-type-constituents
+  10:24  error  "ap-southeast-2" is overridden by string in this union type  @typescript-eslint/no-redundant-type-constituents
+  10:43  error  "ap-northeast-1" is overridden by string in this union type  @typescript-eslint/no-redundant-type-constituents
+  10:62  error  "ap-northeast-2" is overridden by string in this union type  @typescript-eslint/no-redundant-type-constituents
+
+/home/kyohei/aws_cloud_supporter/src/utils/error.ts
+  117:46  warning  Invalid type "string | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+
+/home/kyohei/aws_cloud_supporter/src/utils/logger.ts
+  129:7  error  Unexpected console statement     no-console
+  131:7  error  Unexpected console statement     no-console
+  233:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  234:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  235:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  236:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  237:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  240:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  241:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  242:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  244:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  245:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  246:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  247:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  248:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+  249:3  error  Missing return type on function  @typescript-eslint/explicit-module-boundary-types
+
+/home/kyohei/aws_cloud_supporter/src/utils/schema-validator.ts
+  481:44  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  482:51  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  483:52  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/src/validation/cdk-validator.ts
+   73:3   error  Async method 'validateBasicSyntax' has no 'await' expression                                               @typescript-eslint/require-await
+  123:58  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  131:59  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  148:16  error  Prefer using nullish coalescing operator (`??`) instead of a ternary expression, as it is simpler to read  @typescript-eslint/prefer-nullish-coalescing
+  215:34  error  Prefer using an optional chain expression instead, as it's more concise and easier to read                 @typescript-eslint/prefer-optional-chain
+  235:16  error  'cleanupError' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+  253:50  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  260:46  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  268:26  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/tests/__mocks__/src/generators/alb.generator.ts
+  13:3  error  Async method 'generate' has no 'await' expression  @typescript-eslint/require-await
+
+/home/kyohei/aws_cloud_supporter/tests/__mocks__/src/generators/apigateway.generator.ts
+  13:3  error  Async method 'generate' has no 'await' expression  @typescript-eslint/require-await
+
+/home/kyohei/aws_cloud_supporter/tests/__mocks__/src/generators/dynamodb.generator.ts
+  13:3  error  Async method 'generate' has no 'await' expression  @typescript-eslint/require-await
+
+/home/kyohei/aws_cloud_supporter/tests/__mocks__/src/generators/ecs.generator.ts
+  13:3  error  Async method 'generate' has no 'await' expression  @typescript-eslint/require-await
+
+/home/kyohei/aws_cloud_supporter/tests/__mocks__/src/generators/lambda.generator.ts
+  13:3  error  Async method 'generate' has no 'await' expression  @typescript-eslint/require-await
+
+/home/kyohei/aws_cloud_supporter/tests/__mocks__/src/generators/rds.generator.ts
+  13:3  error  Async method 'generate' has no 'await' expression  @typescript-eslint/require-await
+
+/home/kyohei/aws_cloud_supporter/tests/e2e/cli.e2e.test.ts
+   82:14  error    Forbidden non-null assertion                       @typescript-eslint/no-non-null-assertion
+   83:14  error    Forbidden non-null assertion                       @typescript-eslint/no-non-null-assertion
+  180:14  error    Forbidden non-null assertion                       @typescript-eslint/no-non-null-assertion
+  181:9   error    Forbidden non-null assertion                       @typescript-eslint/no-non-null-assertion
+  206:15  error    Unsafe assignment of an `any` value                @typescript-eslint/no-unsafe-assignment
+  207:23  error    Unsafe member access .metadata on an `any` value   @typescript-eslint/no-unsafe-member-access
+  221:13  error    Unsafe assignment of an `any` value                @typescript-eslint/no-unsafe-assignment
+  222:21  error    Unsafe member access .resources on an `any` value  @typescript-eslint/no-unsafe-member-access
+  225:44  warning  Invalid type "any" of template literal expression  @typescript-eslint/restrict-template-expressions
+  225:51  error    Unsafe member access .resources on an `any` value  @typescript-eslint/no-unsafe-member-access
+  279:14  error    Forbidden non-null assertion                       @typescript-eslint/no-non-null-assertion
+
+/home/kyohei/aws_cloud_supporter/tests/fixtures/templates/large-template-generator.ts
+    7:1   error  Function 'generateLargeTemplate' has too many lines (159). Maximum allowed is 150                          max-lines-per-function
+    7:1   error  Function 'generateLargeTemplate' has a complexity of 23. Maximum allowed is 20                             complexity
+    8:19  error  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+   31:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+   46:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+   63:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+   79:16  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+   89:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  106:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  119:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  132:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  145:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  155:14  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  165:12  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  172:12  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  181:12  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  192:9   error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  193:32  error  Unsafe argument of type `any` assigned to a parameter of type `string | ArrayBufferView<ArrayBufferLike>`  @typescript-eslint/no-unsafe-argument
+  193:32  error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  193:37  error  Unsafe member access .stringify on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  195:3   error  Unexpected console statement                                                                               no-console
+  195:60  error  Unsafe argument of type `any` assigned to a parameter of type `{}`                                         @typescript-eslint/no-unsafe-argument
+  195:69  error  Unsafe member access .Resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+
+/home/kyohei/aws_cloud_supporter/tests/helpers/test-helpers.ts
+   35:51  error  Type parameter T is used only once in the function signature                                               @typescript-eslint/no-unnecessary-type-parameters
+   80:23  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+   94:23  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  108:23  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/tests/integration/analyzer-integration.test.ts
+   17:47  error  Arrow function has too many lines (352). Maximum allowed is 300                                            max-lines-per-function
+   21:22  error  Async arrow function has no 'await' expression                                                             @typescript-eslint/require-await
+  143:81  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  312:15  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  313:23  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  314:23  error  Unsafe member access .resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  315:23  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+
+/home/kyohei/aws_cloud_supporter/tests/integration/cdk-full-features.test.ts
+    9:43   error  Arrow function has too many lines (423). Maximum allowed is 300                                            max-lines-per-function
+   21:14   error  'error' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+   41:86   error  'path' is already declared in the upper scope on line 7 column 13                                          @typescript-eslint/no-shadow
+   42:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+   55:14   error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+   62:40   error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+   78:30   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+   87:75   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  101:30   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  116:75   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  117:110  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  129:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  159:30   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  176:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  188:73   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  203:30   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  209:28   error  'extractJSONFromOutput' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+  210:15   error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  214:23   error  Unsafe member access .resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  215:23   error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  222:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  254:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  279:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  285:73   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  293:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  316:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  333:67   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  334:64   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  345:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  374:71   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  375:72   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  386:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  394:73   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  409:28   error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  447:17   error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  447:22   error  Unsafe member access .toString on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  451:17   error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  451:22   error  Unsafe member access .toString on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  456:24   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/tests/integration/cdk-mvp.test.ts
+    9:39  error  Arrow function has too many lines (407). Maximum allowed is 300                                            max-lines-per-function
+   21:14  error  'error' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+   28:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+   46:14  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+   47:14  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+   62:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+   75:35  error  'runCommand' was used before it was defined                                                                @typescript-eslint/no-use-before-define
+   88:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  110:43  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  111:32  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  122:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  140:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  158:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  171:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  182:38  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  189:35  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  200:89  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  201:83  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  210:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  230:35  error  'runCommand' was used before it was defined                                                                @typescript-eslint/no-use-before-define
+  244:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  267:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  276:26  error  'extractJSONFromOutput' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+  277:13  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  280:21  error  Unsafe member access .resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  281:21  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  287:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  305:32  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  312:31  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  322:26  error  'extractJSONFromOutput' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+  323:13  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  324:13  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  324:28  error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  324:37  error  Unsafe member access .resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  324:58  error  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  324:68  error  Unsafe member access .resource_type on an `any` value                                                      @typescript-eslint/no-unsafe-member-access
+  326:27  error  Unsafe member access .length on an `any` value                                                             @typescript-eslint/no-unsafe-member-access
+  329:13  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  329:28  error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  329:41  error  Unsafe member access .reduce on an `any` value                                                             @typescript-eslint/no-unsafe-member-access
+  329:72  error  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+  329:80  error  Unsafe return of a value of type `any`                                                                     @typescript-eslint/no-unsafe-return
+  329:95  error  Unsafe member access .metrics on an `any` value                                                            @typescript-eslint/no-unsafe-member-access
+  336:49  error  Unsafe argument of type `any` assigned to a parameter of type `number | bigint`                            @typescript-eslint/no-unsafe-argument
+  343:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  354:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  364:35  error  'runCommand' was used before it was defined                                                                @typescript-eslint/no-use-before-define
+  378:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  393:28  error  'runCLICommand' was used before it was defined                                                             @typescript-eslint/no-use-before-define
+  400:26  error  'extractJSONFromOutput' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+  401:13  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  403:21  error  Unsafe member access .resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  408:32  error  'runCommand' was used before it was defined                                                                @typescript-eslint/no-use-before-define
+  428:17  error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  428:22  error  Unsafe member access .toString on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  432:17  error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  432:22  error  Unsafe member access .toString on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  437:24  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  466:17  error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  466:22  error  Unsafe member access .toString on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  470:17  error  Unsafe call of a(n) `any` typed value                                                                      @typescript-eslint/no-unsafe-call
+  470:22  error  Unsafe member access .toString on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  475:24  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  501:1   error  File has too many lines (505). Maximum allowed is 500                                                      max-lines
+
+/home/kyohei/aws_cloud_supporter/tests/integration/cdk-official-migration.test.ts
+   28:28  error  'createRDSAnalysis' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+   37:14  error  'extractAlarmCount' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+   41:28  error  'createMultiResourceAnalysis' was used before it was defined                                               @typescript-eslint/no-use-before-define
+   46:14  error  'extractAlarmCount' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+   47:14  error  'extractResourceTypes' was used before it was defined                                                      @typescript-eslint/no-use-before-define
+   49:49  error  'extractAlarmCount' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+   53:28  error  'createAnalysisWithSNS' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+   59:14  error  'extractSNSTopicCount' was used before it was defined                                                      @typescript-eslint/no-use-before-define
+   60:14  error  'extractSNSActionCount' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+   70:29  error  'createLargeAnalysis' was used before it was defined                                                       @typescript-eslint/no-use-before-define
+   78:14  error  'extractAlarmCount' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+   81:74  error  'extractAlarmCount' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+   85:33  error  'createVeryLargeAnalysis' was used before it was defined                                                   @typescript-eslint/no-use-before-define
+   91:26  error  'extractAlarmCount' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+  102:28  error  'createAnalysisWithSNS' was used before it was defined                                                     @typescript-eslint/no-use-before-define
+  114:28  error  'createMultiResourceAnalysis' was used before it was defined                                               @typescript-eslint/no-use-before-define
+  119:14  error  'extractAlarmCount' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+  120:14  error  'extractStackClass' was used before it was defined                                                         @typescript-eslint/no-use-before-define
+  127:51  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  141:21  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  145:44  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  149:46  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  156:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  172:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  173:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  174:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  190:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  206:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  207:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  208:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  209:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  210:7   error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  239:22  error  'createTestResourceWithMetrics' was used before it was defined                                             @typescript-eslint/no-use-before-define
+  262:7   error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+  263:7   error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+  264:7   error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+  268:7   error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+  269:7   error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+  270:7   error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+  274:7   error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+  275:7   error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+  279:18  error  'createTestMetricDefinition' was used before it was defined                                                @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/tests/integration/cli-cdk-basic.test.ts
+   40:14  error    'error' is defined but never used                                 @typescript-eslint/no-unused-vars
+   46:52  error    Async arrow function has no 'await' expression                    @typescript-eslint/require-await
+   57:61  error    Async arrow function has no 'await' expression                    @typescript-eslint/require-await
+   71:13  error    Unsafe assignment of an `any` value                               @typescript-eslint/no-unsafe-assignment
+   71:91  error    Unsafe member access .CDKOfficialGenerator on an `any` value      @typescript-eslint/no-unsafe-member-access
+   72:59  error    Unsafe member access .prototype on an `any` value                 @typescript-eslint/no-unsafe-member-access
+  205:58  warning  Invalid type "number | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+
+/home/kyohei/aws_cloud_supporter/tests/integration/metrics-analyzer.integration.test.ts
+   29:61  error  Arrow function has too many lines (598). Maximum allowed is 300                                            max-lines-per-function
+  113:90  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  226:51  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  272:56  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  400:58  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  417:13  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  420:21  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  421:21  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  422:21  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  423:21  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  424:21  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  425:21  error  Unsafe member access .metadata on an `any` value                                                           @typescript-eslint/no-unsafe-member-access
+  428:35  error  Unsafe member access .resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  429:18  error  Unsafe member access .resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  430:15  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  430:33  error  Unsafe member access .resources on an `any` value                                                          @typescript-eslint/no-unsafe-member-access
+  437:22  error  Unsafe member access .metrics on an `any` value                                                            @typescript-eslint/no-unsafe-member-access
+  438:17  error  Unsafe assignment of an `any` value                                                                        @typescript-eslint/no-unsafe-assignment
+  438:35  error  Unsafe member access .metrics on an `any` value                                                            @typescript-eslint/no-unsafe-member-access
+  445:25  error  Unsafe member access .recommended_threshold on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  446:25  error  Unsafe member access .recommended_threshold on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  496:73  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  497:67  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  501:1   error  File has too many lines (659). Maximum allowed is 500                                                      max-lines
+  504:9   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/tests/integration/performance.test.ts
+  127:22  error    Forbidden non-null assertion                                      @typescript-eslint/no-non-null-assertion
+  128:24  error    Forbidden non-null assertion                                      @typescript-eslint/no-non-null-assertion
+  184:38  warning  Invalid type "string | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+  185:36  warning  Invalid type "string | undefined" of template literal expression  @typescript-eslint/restrict-template-expressions
+  216:20  error    Unsafe return of a value of type `any`                            @typescript-eslint/no-unsafe-return
+
+/home/kyohei/aws_cloud_supporter/tests/security/cdk-security.test.ts
+   13:35  error  Arrow function has too many lines (408). Maximum allowed is 300  max-lines-per-function
+   66:40  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   66:45  error  Unsafe member access .Host on an `any` value                     @typescript-eslint/no-unsafe-member-access
+   67:40  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   67:45  error  Unsafe member access .Password on an `any` value                 @typescript-eslint/no-unsafe-member-access
+   68:40  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   68:45  error  Unsafe member access .Port on an `any` value                     @typescript-eslint/no-unsafe-member-access
+   70:35  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   70:40  error  Unsafe member access .BaseUrl on an `any` value                  @typescript-eslint/no-unsafe-member-access
+   71:35  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   71:40  error  Unsafe member access .ApiKey on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  405:32  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  405:37  error  Unsafe member access .Level2 on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  433:14  error  'error' is defined but never used                                @typescript-eslint/no-unused-vars
+  464:67  error  Async arrow function has no 'await' expression                   @typescript-eslint/require-await
+
+/home/kyohei/aws_cloud_supporter/tests/setup.ts
+  87:3  error  Unexpected console statement  no-console
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/business-types.test.ts
+  39:40  error  'createTestAlarmComplete' was used before it was defined  @typescript-eslint/no-use-before-define
+  48:40  error  'createTestAlarmComplete' was used before it was defined  @typescript-eslint/no-use-before-define
+  58:10  error  'createTestAlarmComplete' was used before it was defined  @typescript-eslint/no-use-before-define
+  68:40  error  'createTestAlarmComplete' was used before it was defined  @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/cdk-official-generator-adapted.test.ts
+   30:30  error  'createMockAnalysisResultWithRDS' was used before it was defined                        @typescript-eslint/no-use-before-define
+   49:14  error  Forbidden non-null assertion                                                            @typescript-eslint/no-non-null-assertion
+   63:30  error  'createMockAnalysisResultWithRDS' was used before it was defined                        @typescript-eslint/no-use-before-define
+   76:30  error  'createMockAnalysisResultWithComplexMetrics' was used before it was defined             @typescript-eslint/no-use-before-define
+   89:30  error  'createMockAnalysisResultWithMixedImportance' was used before it was defined            @typescript-eslint/no-use-before-define
+  103:30  error  'createMockAnalysisResultWithMixedImportance' was used before it was defined            @typescript-eslint/no-use-before-define
+  122:28  error  Unsafe argument of type `any` assigned to a parameter of type `ExtendedAnalysisResult`  @typescript-eslint/no-unsafe-argument
+  122:36  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  127:30  error  'createMockAnalysisResultWithRDS' was used before it was defined                        @typescript-eslint/no-use-before-define
+  136:13  error  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+  139:12  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  143:28  error  Unsafe argument of type `any` assigned to a parameter of type `ExtendedAnalysisResult`  @typescript-eslint/no-unsafe-argument
+  150:30  error  'createMockAnalysisResultWithMultipleTypes' was used before it was defined              @typescript-eslint/no-use-before-define
+  178:9   error  'createMockMetric' was used before it was defined                                       @typescript-eslint/no-use-before-define
+  179:9   error  'createMockMetric' was used before it was defined                                       @typescript-eslint/no-use-before-define
+  204:9   error  'createMockMetric' was used before it was defined                                       @typescript-eslint/no-use-before-define
+  205:9   error  'createMockMetric' was used before it was defined                                       @typescript-eslint/no-use-before-define
+  226:9   error  'createMockMetric' was used before it was defined                                       @typescript-eslint/no-use-before-define
+  227:9   error  'createMockMetric' was used before it was defined                                       @typescript-eslint/no-use-before-define
+  248:19  error  'createMockMetric' was used before it was defined                                       @typescript-eslint/no-use-before-define
+  254:19  error  'createMockMetric' was used before it was defined                                       @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/cdk-official-generator-advanced.test.ts
+   32:48  error  'createTestAnalysisResult' was used before it was defined                   @typescript-eslint/no-use-before-define
+   51:48  error  'createTestAnalysisResult' was used before it was defined                   @typescript-eslint/no-use-before-define
+   69:48  error  'createTestAnalysisResult' was used before it was defined                   @typescript-eslint/no-use-before-define
+   74:16  error  'error' is defined but never used                                           @typescript-eslint/no-unused-vars
+   85:48  error  'createTestAnalysisResult' was used before it was defined                   @typescript-eslint/no-use-before-define
+  103:48  error  'createTestAnalysisResultWithSensitiveData' was used before it was defined  @typescript-eslint/no-use-before-define
+  111:16  error  'error' is defined but never used                                           @typescript-eslint/no-unused-vars
+  128:48  error  'createTestAnalysisResultWithLowImportance' was used before it was defined  @typescript-eslint/no-use-before-define
+  138:16  error  'error' is defined but never used                                           @typescript-eslint/no-unused-vars
+  144:48  error  'createTestAnalysisResultWithLowImportance' was used before it was defined  @typescript-eslint/no-use-before-define
+  154:16  error  'error' is defined but never used                                           @typescript-eslint/no-unused-vars
+  183:7   error  'createTestResourceWithMetrics' was used before it was defined              @typescript-eslint/no-use-before-define
+  208:11  error  'createTestMetricDefinition' was used before it was defined                 @typescript-eslint/no-use-before-define
+  231:11  error  'createTestMetricDefinition' was used before it was defined                 @typescript-eslint/no-use-before-define
+  232:11  error  'createTestMetricDefinition' was used before it was defined                 @typescript-eslint/no-use-before-define
+  253:7   error  'createTestMetricDefinition' was used before it was defined                 @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/cdk-official-generator.test.ts
+   35:53  error  'createTestAnalysisResult' was used before it was defined                               @typescript-eslint/no-use-before-define
+   53:28  error  Unsafe argument of type `any` assigned to a parameter of type `ExtendedAnalysisResult`  @typescript-eslint/no-unsafe-argument
+   53:36  error  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+   58:53  error  'createTestAnalysisResult' was used before it was defined                               @typescript-eslint/no-use-before-define
+   67:24  error  'createTestAnalysisResult' was used before it was defined                               @typescript-eslint/no-use-before-define
+   76:24  error  'createTestAnalysisResult' was used before it was defined                               @typescript-eslint/no-use-before-define
+  152:7   error  'createTestResourceWithMetrics' was used before it was defined                          @typescript-eslint/no-use-before-define
+  153:7   error  'createTestResourceWithMetrics' was used before it was defined                          @typescript-eslint/no-use-before-define
+  172:7   error  'createTestMetricDefinition' was used before it was defined                             @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/cdk-official-template-integration.test.ts
+   31:48  error  'createTestAnalysisResult' was used before it was defined                       @typescript-eslint/no-use-before-define
+   50:48  error  'createTestAnalysisResultWithMultipleResources' was used before it was defined  @typescript-eslint/no-use-before-define
+   75:48  error  'createTestAnalysisResultWithSensitiveData' was used before it was defined      @typescript-eslint/no-use-before-define
+  108:48  error  'createTestAnalysisResult' was used before it was defined                       @typescript-eslint/no-use-before-define
+  123:7   error  'createTestResourceWithMetrics' was used before it was defined                  @typescript-eslint/no-use-before-define
+  139:7   error  'createTestResourceWithMetrics' was used before it was defined                  @typescript-eslint/no-use-before-define
+  140:7   error  'createTestResourceWithMetrics' was used before it was defined                  @typescript-eslint/no-use-before-define
+  165:11  error  'createTestMetricDefinition' was used before it was defined                     @typescript-eslint/no-use-before-define
+  186:7   error  'createTestMetricDefinition' was used before it was defined                     @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/official-types-compatibility.test.ts
+  38:55  warning  Always prefer const x: T = { ... }  @typescript-eslint/consistent-type-assertions
+  39:52  warning  Always prefer const x: T = { ... }  @typescript-eslint/consistent-type-assertions
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/resource-types-adapted.test.ts
+   40:28  error  'createMockAnalysisWithResource' was used before it was defined                                            @typescript-eslint/no-use-before-define
+   55:25  error  'getTestLogicalId' was used before it was defined                                                          @typescript-eslint/no-use-before-define
+   60:33  error  'getExpectedDimension' was used before it was defined                                                      @typescript-eslint/no-use-before-define
+   74:28  error  'createMockAnalysisWithResource' was used before it was defined                                            @typescript-eslint/no-use-before-define
+   85:28  error  'createMockAnalysisWithMixedResourceTypes' was used before it was defined                                  @typescript-eslint/no-use-before-define
+  101:28  error  'createMockAnalysisWithMixedResourceTypes' was used before it was defined                                  @typescript-eslint/no-use-before-define
+  109:14  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  144:24  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  151:17  error  'createMockMetric' was used before it was defined                                                          @typescript-eslint/no-use-before-define
+  171:19  error  'createMockMetric' was used before it was defined                                                          @typescript-eslint/no-use-before-define
+  177:19  error  'createMockMetric' was used before it was defined                                                          @typescript-eslint/no-use-before-define
+  183:19  error  'createMockMetric' was used before it was defined                                                          @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/sns-integration-adapted.test.ts
+   29:28  error  'createMockAnalysisWithRDS' was used before it was defined                   @typescript-eslint/no-use-before-define
+   54:28  error  'createMockAnalysisWithRDS' was used before it was defined                   @typescript-eslint/no-use-before-define
+   71:28  error  'createMockAnalysisWithRDS' was used before it was defined                   @typescript-eslint/no-use-before-define
+   93:28  error  'createMockAnalysisWithRDS' was used before it was defined                   @typescript-eslint/no-use-before-define
+  109:28  error  'createMockAnalysisWithMultipleRDSResources' was used before it was defined  @typescript-eslint/no-use-before-define
+  120:14  error  Forbidden non-null assertion                                                 @typescript-eslint/no-non-null-assertion
+  125:14  error  Forbidden non-null assertion                                                 @typescript-eslint/no-non-null-assertion
+  131:28  error  'createMockAnalysisWithRDS' was used before it was defined                   @typescript-eslint/no-use-before-define
+  152:9   error  'createMockMetric' was used before it was defined                            @typescript-eslint/no-use-before-define
+  153:9   error  'createMockMetric' was used before it was defined                            @typescript-eslint/no-use-before-define
+  175:11  error  'createMockMetric' was used before it was defined                            @typescript-eslint/no-use-before-define
+  176:11  error  'createMockMetric' was used before it was defined                            @typescript-eslint/no-use-before-define
+  184:11  error  'createMockMetric' was used before it was defined                            @typescript-eslint/no-use-before-define
+  185:11  error  'createMockMetric' was used before it was defined                            @typescript-eslint/no-use-before-define
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/template-adapted.test.ts
+   63:13  error  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   63:24  error  'createTestStackData' was used before it was defined                 @typescript-eslint/no-use-before-define
+   74:13  error  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   74:24  error  'createTestStackDataWithSNS' was used before it was defined          @typescript-eslint/no-use-before-define
+   84:13  error  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   84:24  error  'createTestStackDataWithExistingSNS' was used before it was defined  @typescript-eslint/no-use-before-define
+   94:13  error  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   94:24  error  'createTestStackDataEmpty' was used before it was defined            @typescript-eslint/no-use-before-define
+  106:33  error  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  139:40  error  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  140:9   error  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+  154:48  error  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+  155:9   error  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+  166:38  error  Unexpected any. Specify a different type                             @typescript-eslint/no-explicit-any
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cdk/template-official.test.ts
+  88:9   error  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+  89:9   error  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+  90:9   error  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+  91:9   error  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+  92:19  error  Unsafe assignment of an `any` value  @typescript-eslint/no-unsafe-assignment
+
+/home/kyohei/aws_cloud_supporter/tests/unit/cli/commands.test.ts
+   22:24  error  Unsafe return of a value of type `any`                                           @typescript-eslint/no-unsafe-return
+   27:34  error  Arrow function has too many lines (487). Maximum allowed is 300                  max-lines-per-function
+   74:7   error  Unsafe argument of type `any` assigned to a parameter of type `ITemplateParser`  @typescript-eslint/no-unsafe-argument
+   74:13  error  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+   75:7   error  Unsafe argument of type `any` assigned to a parameter of type `ILogger`          @typescript-eslint/no-unsafe-argument
+   75:13  error  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+  213:11  error  Unsafe assignment of an `any` value                                              @typescript-eslint/no-unsafe-assignment
+  346:38  error  Unexpected any. Specify a different type                                         @typescript-eslint/no-explicit-any
+  444:11  error  Unsafe assignment of an `any` value                                              @typescript-eslint/no-unsafe-assignment
+  446:15  error  Unsafe assignment of an `any` value                                              @typescript-eslint/no-unsafe-assignment
+  501:1   error  File has too many lines (513). Maximum allowed is 500                            max-lines
+  501:11  error  Unsafe assignment of an `any` value                                              @typescript-eslint/no-unsafe-assignment
+  503:15  error  Unsafe assignment of an `any` value                                              @typescript-eslint/no-unsafe-assignment
+
+/home/kyohei/aws_cloud_supporter/tests/unit/config/metrics-definitions.test.ts
+  152:11  error  Unsafe assignment of an `any` value                                                                             @typescript-eslint/no-unsafe-assignment
+  153:7   error  'RDS_METRICS' is already declared in the upper scope on line 7 column 3                                         @typescript-eslint/no-shadow
+  154:7   error  'LAMBDA_METRICS' is already declared in the upper scope on line 8 column 3                                      @typescript-eslint/no-shadow
+  155:7   error  'METRICS_CONFIG_MAP' is already declared in the upper scope on line 14 column 3                                 @typescript-eslint/no-shadow
+  159:31  error  Unsafe member access ['AWS::RDS::DBInstance'] on an `any` value                                                 @typescript-eslint/no-unsafe-member-access
+  160:31  error  Unsafe member access ['AWS::Lambda::Function'] on an `any` value                                                @typescript-eslint/no-unsafe-member-access
+  161:31  error  Unsafe member access ['AWS::Serverless::Function'] on an `any` value                                            @typescript-eslint/no-unsafe-member-access
+  164:38  error  Unsafe argument of type `any` assigned to a parameter of type `{ [s: string]: unknown; } | ArrayLike<unknown>`  @typescript-eslint/no-unsafe-argument
+  202:54  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  213:60  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  218:12  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+  226:76  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  238:53  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  254:57  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  265:59  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  272:12  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+  276:53  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  283:12  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+  284:12  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+  288:56  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  302:54  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  313:61  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  321:12  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+  325:53  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  341:54  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  352:56  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  359:12  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+  363:53  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  379:59  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  390:71  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  402:58  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  452:66  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  466:58  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  479:79  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  491:61  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  501:1   error  File has too many lines (526). Maximum allowed is 500                                                           max-lines
+  507:14  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+  512:71  error  Async arrow function has no 'await' expression                                                                  @typescript-eslint/require-await
+  522:22  error  Forbidden non-null assertion                                                                                    @typescript-eslint/no-non-null-assertion
+
+/home/kyohei/aws_cloud_supporter/tests/unit/core/analyzer-coverage.test.ts
+  17:44  error  Arrow function has too many lines (317). Maximum allowed is 300  max-lines-per-function
+  60:13  error  Unsafe assignment of an `any` value                              @typescript-eslint/no-unsafe-assignment
+  66:13  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  67:23  error  Unsafe member access .rss on an `any` value                      @typescript-eslint/no-unsafe-member-access
+  68:7   error  Unsafe assignment of an `any` value                              @typescript-eslint/no-unsafe-assignment
+
+/home/kyohei/aws_cloud_supporter/tests/unit/core/extractor.test.ts
+   20:3   error    'createExtractionTestFixtures' was used before it was defined                               @typescript-eslint/no-use-before-define
+  101:16  warning  Always prefer const x: T = { ... }                                                          @typescript-eslint/consistent-type-assertions
+  214:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  216:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  216:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  219:29  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  220:22  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  225:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  226:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  228:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  228:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  229:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  229:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  232:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  232:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  232:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  235:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  235:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  235:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  239:19  error    Unsafe member access .totalCount on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  240:19  error    Unsafe member access .extractionTimeMs on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  245:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  246:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  248:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  248:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  249:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  249:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  252:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  252:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  252:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  253:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  253:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  253:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  256:19  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  257:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  258:19  error    Unsafe member access .totalCount on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  263:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  264:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  266:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  266:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  267:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  267:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  270:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  270:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  270:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  271:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  271:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  271:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  274:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  275:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  276:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  277:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  278:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  283:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  284:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  286:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  286:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  287:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  287:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  290:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  290:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  290:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  291:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  291:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  291:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  294:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  294:29  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  294:36  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  294:57  error    Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  294:67  error    Unsafe member access .Type on an `any` value                                                @typescript-eslint/no-unsafe-member-access
+  295:28  error    Unsafe member access .length on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  298:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  303:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  304:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  306:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  306:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  307:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  307:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  310:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  310:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  310:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  311:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  311:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  311:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  314:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  314:26  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  314:33  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  314:54  error    Unexpected any. Specify a different type                                                    @typescript-eslint/no-explicit-any
+  315:9   error    Unsafe member access .Type on an `any` value                                                @typescript-eslint/no-unsafe-member-access
+  317:25  error    Unsafe member access .length on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  320:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  321:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  326:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  327:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  329:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  329:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  330:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  330:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  333:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  333:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  333:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  334:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  334:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  334:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  336:19  error    Unsafe member access .extractionTimeMs on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  337:26  error    Unsafe member access .extractionTimeMs on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  338:19  error    Unsafe member access .extractionTimeMs on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  343:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  344:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  346:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  346:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  347:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  347:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  350:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  350:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  350:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  351:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  351:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  351:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  359:33  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  360:33  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  361:26  error    Unsafe member access .totalCount on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  362:26  error    Unsafe member access .extractionTimeMs on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  379:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  380:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  380:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  384:91  error    Unsafe member access [name] on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  397:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  398:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  400:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  400:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  401:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  401:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  404:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  404:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  404:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  406:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  406:25  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  406:54  error    Unsafe member access .measureExtractionPerformance on an `any` value                        @typescript-eslint/no-unsafe-member-access
+  408:24  error    Unsafe member access .result on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  409:24  error    Unsafe member access .result on an `any` value                                              @typescript-eslint/no-unsafe-member-access
+  410:24  error    Unsafe member access .performanceGrade on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  415:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  416:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  418:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  418:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  419:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  419:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  422:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  422:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  422:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  426:7   error    Unsafe return of a value of type `any`                                                      @typescript-eslint/no-unsafe-return
+  426:7   error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  426:17  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  433:21  error    Unsafe member access .totalCount on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  434:21  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  440:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  441:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  443:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  443:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  444:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  444:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  447:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  447:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  447:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  453:7   error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  453:17  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  463:66  error    Async arrow function has no 'await' expression                                              @typescript-eslint/require-await
+  464:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  467:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  467:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  475:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  475:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  475:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  476:19  error    Unsafe member access .extractionTimeMs on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  484:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  485:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  490:12  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  495:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  495:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  500:62  error    Async arrow function has no 'await' expression                                              @typescript-eslint/require-await
+  501:1   error    File has too many lines (802). Maximum allowed is 500                                       max-lines
+  501:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  503:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  503:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  512:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  512:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  512:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  515:19  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  516:5   error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  516:12  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  525:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  526:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  528:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  528:20  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  529:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  529:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  531:11  error    'tempDir' is already declared in the upper scope on line 8 column 5                         @typescript-eslint/no-shadow
+  535:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  535:28  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  535:35  error    Unsafe member access .parse on an `any` value                                               @typescript-eslint/no-unsafe-member-access
+  536:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  536:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  536:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  539:21  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  540:12  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  540:19  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  545:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  547:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  547:23  error    Unsafe construction of a(n) `any` typed value                                               @typescript-eslint/no-unsafe-call
+  555:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  555:20  error    Unsafe call of a(n) `any` typed value                                                       @typescript-eslint/no-unsafe-call
+  555:30  error    Unsafe member access .extract on an `any` value                                             @typescript-eslint/no-unsafe-member-access
+  558:19  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  559:19  error    Unsafe member access .unsupported on an `any` value                                         @typescript-eslint/no-unsafe-member-access
+  560:19  error    Unsafe member access .totalCount on an `any` value                                          @typescript-eslint/no-unsafe-member-access
+  561:19  error    Unsafe member access .extractionTimeMs on an `any` value                                    @typescript-eslint/no-unsafe-member-access
+  564:16  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  565:13  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  565:31  error    Unsafe member access .supported on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  566:23  error    Unsafe member access .LogicalId on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  567:23  error    Unsafe member access .Type on an `any` value                                                @typescript-eslint/no-unsafe-member-access
+  574:7   error    'tempDir' is already declared in the upper scope on line 8 column 5                         @typescript-eslint/no-shadow
+  585:5   error    'createExtractionTestFixtures' was used before it was defined                               @typescript-eslint/no-use-before-define
+  588:12  error    'createExtractionTestFixtures' is already declared in the upper scope on line 23 column 10  @typescript-eslint/no-shadow
+  666:18  warning  Always prefer const x: T = { ... }                                                          @typescript-eslint/consistent-type-assertions
+  771:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  773:20  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  774:24  error    Unsafe argument of type `any` assigned to a parameter of type `{}`                          @typescript-eslint/no-unsafe-argument
+  774:32  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  779:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  781:20  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  782:24  error    Unsafe argument of type `any` assigned to a parameter of type `{}`                          @typescript-eslint/no-unsafe-argument
+  782:32  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  787:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  789:20  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  790:20  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  791:20  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  796:11  error    Unsafe assignment of an `any` value                                                         @typescript-eslint/no-unsafe-assignment
+  798:20  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  799:20  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  800:20  error    Unsafe member access .Resources on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+
+/home/kyohei/aws_cloud_supporter/tests/unit/core/html-formatter.test.ts
+    7:33  error  Arrow function has too many lines (319). Maximum allowed is 300   max-lines-per-function
+  303:46  error  '_' is already declared in the upper scope on line 299 column 47  @typescript-eslint/no-shadow
+
+/home/kyohei/aws_cloud_supporter/tests/unit/core/json-formatter.test.ts
+   12:33  error  Arrow function has too many lines (348). Maximum allowed is 300     max-lines-per-function
+  114:20  error  Unsafe return of a value of type `any`                              @typescript-eslint/no-unsafe-return
+  116:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  123:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  125:21  error  Unsafe member access .metadata on an `any` value                    @typescript-eslint/no-unsafe-member-access
+  126:21  error  Unsafe member access .metadata on an `any` value                    @typescript-eslint/no-unsafe-member-access
+  127:21  error  Unsafe member access .metadata on an `any` value                    @typescript-eslint/no-unsafe-member-access
+  128:21  error  Unsafe member access .metadata on an `any` value                    @typescript-eslint/no-unsafe-member-access
+  129:21  error  Unsafe member access .metadata on an `any` value                    @typescript-eslint/no-unsafe-member-access
+  130:21  error  Unsafe member access .metadata on an `any` value                    @typescript-eslint/no-unsafe-member-access
+  131:21  error  Unsafe member access .metadata on an `any` value                    @typescript-eslint/no-unsafe-member-access
+  136:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  138:21  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  141:21  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  142:21  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  143:21  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  146:21  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  147:21  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  148:21  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  153:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  155:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  155:29  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  156:21  error  Unsafe member access .metric_name on an `any` value                 @typescript-eslint/no-unsafe-member-access
+  157:21  error  Unsafe member access .namespace on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  158:21  error  Unsafe member access .unit on an `any` value                        @typescript-eslint/no-unsafe-member-access
+  159:21  error  Unsafe member access .description on an `any` value                 @typescript-eslint/no-unsafe-member-access
+  160:21  error  Unsafe member access .statistic on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  161:21  error  Unsafe member access .recommended_threshold on an `any` value       @typescript-eslint/no-unsafe-member-access
+  162:21  error  Unsafe member access .recommended_threshold on an `any` value       @typescript-eslint/no-unsafe-member-access
+  163:21  error  Unsafe member access .evaluation_period on an `any` value           @typescript-eslint/no-unsafe-member-access
+  164:21  error  Unsafe member access .category on an `any` value                    @typescript-eslint/no-unsafe-member-access
+  165:21  error  Unsafe member access .importance on an `any` value                  @typescript-eslint/no-unsafe-member-access
+  170:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  172:21  error  Unsafe member access .unsupported_resources on an `any` value       @typescript-eslint/no-unsafe-member-access
+  173:21  error  Unsafe member access .unsupported_resources on an `any` value       @typescript-eslint/no-unsafe-member-access
+  184:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  186:21  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  187:21  error  Unsafe member access .unsupported_resources on an `any` value       @typescript-eslint/no-unsafe-member-access
+  239:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  241:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  241:29  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  242:21  error  Unsafe member access .dimensions on an `any` value                  @typescript-eslint/no-unsafe-member-access
+  262:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  264:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  264:28  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  265:20  error  Unsafe member access .MasterUserPassword on an `any` value          @typescript-eslint/no-unsafe-member-access
+  266:20  error  Unsafe member access .DBPassword on an `any` value                  @typescript-eslint/no-unsafe-member-access
+  267:20  error  Unsafe member access .SecretString on an `any` value                @typescript-eslint/no-unsafe-member-access
+  268:20  error  Unsafe member access .DBInstanceClass on an `any` value             @typescript-eslint/no-unsafe-member-access
+  295:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  297:13  error  Unsafe assignment of an `any` value                                 @typescript-eslint/no-unsafe-assignment
+  297:28  error  Unsafe member access .resources on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  298:27  error  Unsafe member access .TableName on an `any` value                   @typescript-eslint/no-unsafe-member-access
+  299:27  error  Unsafe member access .StreamEnabled on an `any` value               @typescript-eslint/no-unsafe-member-access
+  300:20  error  Unsafe member access .StreamEnabled on an `any` value               @typescript-eslint/no-unsafe-member-access
+  301:20  error  Unsafe member access .PointInTimeRecoveryEnabled on an `any` value  @typescript-eslint/no-unsafe-member-access
+  302:34  error  Unsafe member access .Tags on an `any` value                        @typescript-eslint/no-unsafe-member-access
+  303:27  error  Unsafe member access .ProvisionedThroughput on an `any` value       @typescript-eslint/no-unsafe-member-access
+  318:43  error  '_' is already declared in the upper scope on line 309 column 47    @typescript-eslint/no-shadow
+  322:46  error  '_' is already declared in the upper scope on line 309 column 47    @typescript-eslint/no-shadow
+  347:20  error  Unsafe return of a value of type `any`                              @typescript-eslint/no-unsafe-return
+
+/home/kyohei/aws_cloud_supporter/tests/unit/core/parser-integration.test.ts
+  60:11  error  Unsafe assignment of an `any` value    @typescript-eslint/no-unsafe-assignment
+  67:11  error  Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+
+/home/kyohei/aws_cloud_supporter/tests/unit/core/parser-performance.test.ts
+   40:11  error    Unsafe assignment of an `any` value    @typescript-eslint/no-unsafe-assignment
+   42:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   43:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   44:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   46:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   47:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   48:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   49:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   51:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   52:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+   53:12  error    Unsafe call of a(n) `any` typed value  @typescript-eslint/no-unsafe-call
+  124:18  warning  Always prefer const x: T = { ... }     @typescript-eslint/consistent-type-assertions
+
+/home/kyohei/aws_cloud_supporter/tests/unit/core/parser.test.ts
+   22:3   error  'createTestFixtures' was used before it was defined                               @typescript-eslint/no-use-before-define
+  140:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  141:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  141:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  144:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  144:28  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  144:35  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  147:21  error  Unsafe member access .AWSTemplateFormatVersion on an `any` value                  @typescript-eslint/no-unsafe-member-access
+  148:21  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  149:21  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  150:21  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  155:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  156:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  156:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  159:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  159:28  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  159:35  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  162:21  error  Unsafe member access .AWSTemplateFormatVersion on an `any` value                  @typescript-eslint/no-unsafe-member-access
+  163:21  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  164:21  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  165:21  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  170:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  171:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  172:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  172:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  176:18  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  176:25  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  179:13  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  179:20  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  182:14  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  192:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  193:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  193:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  196:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  196:19  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  196:33  error  Unsafe member access .statSync on an `any` value                                  @typescript-eslint/no-unsafe-member-access
+  200:15  error  Unsafe member access .size on an `any` value                                      @typescript-eslint/no-unsafe-member-access
+  201:20  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  201:27  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  204:13  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  204:30  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  204:37  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  206:23  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  213:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  214:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  214:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  219:11  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  219:18  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  227:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  228:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  228:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  241:18  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  241:25  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  244:13  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  244:20  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  248:14  error  The two values in this comparison do not have a shared enum type                  @typescript-eslint/no-unsafe-enum-comparison
+  248:46  error  The two values in this comparison do not have a shared enum type                  @typescript-eslint/no-unsafe-enum-comparison
+  257:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  258:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  259:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  259:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  263:18  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  263:25  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  266:13  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  266:20  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  269:14  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  278:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  279:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  279:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  283:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  283:28  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  283:35  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  287:21  error  Unsafe member access .AWSTemplateFormatVersion on an `any` value                  @typescript-eslint/no-unsafe-member-access
+  288:21  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  289:28  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  290:24  error  Unsafe argument of type `any` assigned to a parameter of type `{}`                @typescript-eslint/no-unsafe-argument
+  290:33  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  293:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  293:29  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  296:19  error  Unsafe member access .Type on an `any` value                                      @typescript-eslint/no-unsafe-member-access
+  297:19  error  Unsafe member access .Properties on an `any` value                                @typescript-eslint/no-unsafe-member-access
+  314:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  315:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  315:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  318:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  318:28  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  318:35  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  321:28  error  Unsafe member access .AWSTemplateFormatVersion on an `any` value                  @typescript-eslint/no-unsafe-member-access
+  322:28  error  Unsafe member access .Description on an `any` value                               @typescript-eslint/no-unsafe-member-access
+  323:28  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  326:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  326:29  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  328:19  error  Unsafe member access .Type on an `any` value                                      @typescript-eslint/no-unsafe-member-access
+  336:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  337:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  337:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  342:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  342:28  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  342:35  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  351:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  354:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  354:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  358:13  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  358:30  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  358:37  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  359:23  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  374:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  375:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  375:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  382:7   error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  382:14  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  383:7   error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  383:14  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  384:7   error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  384:14  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  385:7   error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  385:14  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  392:23  error  Unsafe member access .Resources on an `any` value                                 @typescript-eslint/no-unsafe-member-access
+  401:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  402:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  402:13  error  'CloudSupporterError' is already declared in the upper scope on line 7 column 10  @typescript-eslint/no-shadow
+  403:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  403:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  408:13  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  408:20  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  413:45  error  Unsafe member access .FILE_ERROR on an `any` value                                @typescript-eslint/no-unsafe-member-access
+  427:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  428:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  428:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  433:13  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  433:20  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  449:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  450:11  error  Unsafe assignment of an `any` value                                               @typescript-eslint/no-unsafe-assignment
+  450:20  error  Unsafe construction of a(n) `any` typed value                                     @typescript-eslint/no-unsafe-call
+  462:13  error  Unsafe call of a(n) `any` typed value                                             @typescript-eslint/no-unsafe-call
+  462:20  error  Unsafe member access .parse on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+
+/home/kyohei/aws_cloud_supporter/tests/unit/generators/apigateway.generator.test.ts
+  99:49  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/tests/unit/generators/base-optimization.test.ts
+    7:56  error  Arrow function has too many lines (481). Maximum allowed is 300                    max-lines-per-function
+  223:11  error  Unsafe assignment of an `any` value                                                @typescript-eslint/no-unsafe-assignment
+  223:13  error  'BaseMetricsGenerator' is already declared in the upper scope on line 3 column 10  @typescript-eslint/no-shadow
+  226:11  error  Unsafe assignment of an `any` value                                                @typescript-eslint/no-unsafe-assignment
+  226:44  error  Unsafe member access .prototype on an `any` value                                  @typescript-eslint/no-unsafe-member-access
+  227:22  error  Unsafe member access .generate on an `any` value                                   @typescript-eslint/no-unsafe-member-access
+  232:9   error  Unsafe call of a(n) `any` typed value                                              @typescript-eslint/no-unsafe-call
+  247:29  error  Unsafe member access .generate on an `any` value                                   @typescript-eslint/no-unsafe-member-access
+  459:11  error  Unsafe assignment of an `any` value                                                @typescript-eslint/no-unsafe-assignment
+  459:13  error  'BaseMetricsGenerator' is already declared in the upper scope on line 3 column 10  @typescript-eslint/no-shadow
+  466:33  error  Unsafe member access .prototype on an `any` value                                  @typescript-eslint/no-unsafe-member-access
+  469:33  error  Unsafe member access .length on an `any` value                                     @typescript-eslint/no-unsafe-member-access
+  476:23  error  Unsafe call of a(n) `any` typed value                                              @typescript-eslint/no-unsafe-call
+
+/home/kyohei/aws_cloud_supporter/tests/unit/generators/base.generator.test.ts
+   92:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  117:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  206:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  213:25  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  233:47  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  233:52  error  Unsafe member access .getMetricsConfig on an `any` value                 @typescript-eslint/no-unsafe-member-access
+  234:47  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  234:52  error  Unsafe member access .getResourceScale on an `any` value                 @typescript-eslint/no-unsafe-member-access
+  309:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  341:22  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  384:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  428:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  473:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  501:1   error  File has too many lines (950). Maximum allowed is 500                    max-lines
+  578:14  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  656:12  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  669:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  688:25  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  707:20  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  776:12  error  Forbidden non-null assertion                                             @typescript-eslint/no-non-null-assertion
+  795:28  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  795:33  error  Unsafe member access [name] on an `any` value                            @typescript-eslint/no-unsafe-member-access
+  848:33  error  Unexpected any. Specify a different type                                 @typescript-eslint/no-explicit-any
+  849:15  error  Unsafe argument of type `any` assigned to a parameter of type `ILogger`  @typescript-eslint/no-unsafe-argument
+
+/home/kyohei/aws_cloud_supporter/tests/unit/generators/dynamodb.generator.test.ts
+  171:50  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/tests/unit/generators/ecs.generator.test.ts
+  123:49  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/home/kyohei/aws_cloud_supporter/tests/unit/generators/integration.test.ts
+  124:31  error  Forbidden non-null assertion                    @typescript-eslint/no-non-null-assertion
+  258:68  error  Async arrow function has no 'await' expression  @typescript-eslint/require-await
+  299:24  error  Forbidden non-null assertion                    @typescript-eslint/no-non-null-assertion
+  302:24  error  Forbidden non-null assertion                    @typescript-eslint/no-non-null-assertion
+
+/home/kyohei/aws_cloud_supporter/tests/unit/types/cloudformation.test.ts
+   36:11  error  Unsafe assignment of an `any` value                          @typescript-eslint/no-unsafe-assignment
+   40:28  error  Unsafe member access .ResourceType on an `any` value         @typescript-eslint/no-unsafe-member-access
+   41:28  error  Unsafe member access .isSupportedResource on an `any` value  @typescript-eslint/no-unsafe-member-access
+   63:11  error  Unsafe assignment of an `any` value                          @typescript-eslint/no-unsafe-assignment
+   71:12  error  Unsafe call of a(n) `any` typed value                        @typescript-eslint/no-unsafe-call
+   71:21  error  Unsafe member access .isSupportedResource on an `any` value  @typescript-eslint/no-unsafe-member-access
+   72:12  error  Unsafe call of a(n) `any` typed value                        @typescript-eslint/no-unsafe-call
+   72:21  error  Unsafe member access .isRDSInstance on an `any` value        @typescript-eslint/no-unsafe-member-access
+   80:12  error  Unsafe call of a(n) `any` typed value                        @typescript-eslint/no-unsafe-call
+   80:21  error  Unsafe member access .isSupportedResource on an `any` value  @typescript-eslint/no-unsafe-member-access
+  160:11  error  Unsafe assignment of an `any` value                          @typescript-eslint/no-unsafe-assignment
+  161:11  error  Unsafe assignment of an `any` value                          @typescript-eslint/no-unsafe-assignment
+  164:31  error  Unsafe member access .MetricStatistic on an `any` value      @typescript-eslint/no-unsafe-member-access
+
+/home/kyohei/aws_cloud_supporter/tests/unit/utils/error.test.ts
+  163:11  error  Unsafe assignment of an `any` value                                           @typescript-eslint/no-unsafe-assignment
+  164:7   error  'createFileError' is already declared in the upper scope on line 10 column 3  @typescript-eslint/no-shadow
+  165:7   error  'isFileError' is already declared in the upper scope on line 11 column 3      @typescript-eslint/no-shadow
+  166:7   error  'isParseError' is already declared in the upper scope on line 13 column 3     @typescript-eslint/no-shadow
+  167:7   error  'isResourceError' is already declared in the upper scope on line 15 column 3  @typescript-eslint/no-shadow
+  168:7   error  'isOutputError' is already declared in the upper scope on line 17 column 3    @typescript-eslint/no-shadow
+  171:11  error  Unsafe assignment of an `any` value                                           @typescript-eslint/no-unsafe-assignment
+  171:23  error  Unsafe call of a(n) `any` typed value                                         @typescript-eslint/no-unsafe-call
+  173:12  error  Unsafe call of a(n) `any` typed value                                         @typescript-eslint/no-unsafe-call
+  174:12  error  Unsafe call of a(n) `any` typed value                                         @typescript-eslint/no-unsafe-call
+  175:12  error  Unsafe call of a(n) `any` typed value                                         @typescript-eslint/no-unsafe-call
+  176:12  error  Unsafe call of a(n) `any` typed value                                         @typescript-eslint/no-unsafe-call
+  179:12  error  Unsafe call of a(n) `any` typed value                                         @typescript-eslint/no-unsafe-call
+  180:12  error  Unsafe call of a(n) `any` typed value                                         @typescript-eslint/no-unsafe-call
+  181:12  error  Unsafe call of a(n) `any` typed value                                         @typescript-eslint/no-unsafe-call
+
+/home/kyohei/aws_cloud_supporter/tests/unit/utils/schema-validator.test.ts
+  4:33  error  Arrow function has too many lines (376). Maximum allowed is 300  max-lines-per-function
+
+✖ 1124 problems (1104 errors, 20 warnings)
+

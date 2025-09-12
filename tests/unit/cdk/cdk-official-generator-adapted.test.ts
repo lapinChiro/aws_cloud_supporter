@@ -2,11 +2,11 @@
 // tasks.md M-006: CDK Generator基本クラステスト（公式型適応版）
 
 import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.generator';
-import { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
-import { ResourceWithMetrics, MetricDefinition } from '../../../src/types/metrics';
-import { CDKOptions } from '../../../src/types/cdk-business';
+import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { CDKOptions } from '../../../src/types/cdk-business';
+import type { ResourceWithMetrics, MetricDefinition } from '../../../src/types/metrics';
 import { CloudSupporterError } from '../../../src/utils/error';
-import { ILogger } from '../../../src/interfaces/logger';
 
 // テスト用モックロガー
 const createMockLogger = (): ILogger => ({

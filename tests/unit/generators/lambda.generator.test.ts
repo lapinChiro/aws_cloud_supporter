@@ -1,6 +1,6 @@
 import { LambdaMetricsGenerator } from '../../../src/generators/lambda.generator';
-import { LambdaFunction } from '../../../src/types/cloudformation';
-import { ILogger } from '../../../src/interfaces/logger';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { LambdaFunction } from '../../../src/types/cloudformation';
 import { createMockLogger, measureGeneratorPerformance, createLambdaFunction, createTestResource } from '../../helpers';
 
 describe('LambdaMetricsGenerator', () => {

@@ -1,10 +1,10 @@
-import { ILogger } from '../../../../src/interfaces/logger';
-import { CloudFormationResource } from '../../../../src/types/cloudformation';
-import { MetricDefinition } from '../../../../src/types/metrics';
+import type { ILogger } from '../../../../src/interfaces/logger';
+import type { CloudFormationResource } from '../../../../src/types/cloudformation';
+import type { MetricDefinition } from '../../../../src/types/metrics';
 
 export class LambdaMetricsGenerator {
-  // @ts-ignore
-  constructor(private _logger: ILogger) {}
+  // @ts-expect-error
+  constructor(private readonly _logger: ILogger) {}
   
   getSupportedTypes(): string[] {
     return ['AWS::Lambda::Function'];

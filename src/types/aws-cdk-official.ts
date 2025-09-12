@@ -1,7 +1,7 @@
 // src/types/aws-cdk-official.ts
 // 要件: 独自型定義廃止、公式型使用
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as sns from 'aws-cdk-lib/aws-sns';
+import type * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import type * as sns from 'aws-cdk-lib/aws-sns';
 
 // AWS公式型の直接再エクスポート
 export type { 

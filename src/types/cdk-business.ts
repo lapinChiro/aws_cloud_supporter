@@ -1,6 +1,6 @@
 // src/types/cdk-business.ts (新規作成)
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as sns from 'aws-cdk-lib/aws-sns';
+import type * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import type * as sns from 'aws-cdk-lib/aws-sns';
 
 /**
  * CDK Alarm ビジネスロジック専用プロパティ

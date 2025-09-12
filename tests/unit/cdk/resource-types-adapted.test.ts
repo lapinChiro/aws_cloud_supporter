@@ -2,10 +2,10 @@
 // tasks.md M-006: 全リソースタイプ対応テスト（公式型適応版）
 
 import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.generator';
-import { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
-import { MetricDefinition } from '../../../src/types/metrics';
-import { CDKOptions } from '../../../src/types/cdk-business';
-import { ILogger } from '../../../src/interfaces/logger';
+import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { CDKOptions } from '../../../src/types/cdk-business';
+import type { MetricDefinition } from '../../../src/types/metrics';
 
 // テスト用モックロガー
 const createMockLogger = (): ILogger => ({

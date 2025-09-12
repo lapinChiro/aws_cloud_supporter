@@ -1,11 +1,12 @@
 // tests/unit/cdk/cdk-official-generator-advanced.test.ts (新規作成)
-import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.generator';
-import { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
-import { CDKOptions } from '../../../src/types/cdk-business';
-import { ResourceWithMetrics, MetricDefinition } from '../../../src/types/metrics';
-import { ILogger } from '../../../src/interfaces/logger';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as sns from 'aws-cdk-lib/aws-sns';
+import type * as sns from 'aws-cdk-lib/aws-sns';
+
+import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.generator';
+import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { CDKOptions } from '../../../src/types/cdk-business';
+import type { ResourceWithMetrics, MetricDefinition } from '../../../src/types/metrics';
 
 // テスト用モックロガー
 const createMockLogger = (): ILogger => ({

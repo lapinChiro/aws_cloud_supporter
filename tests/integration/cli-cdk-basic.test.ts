@@ -1,15 +1,17 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + 型安全性
 // tasks.md T-004: CLI統合テスト
 
+import * as fs from 'fs/promises';
+import * as os from 'os';
+import * as path from 'path';
+
 import { createCLICommand } from '../../src/cli/commands';
 import { MetricsAnalyzer } from '../../src/core/analyzer';
-import { TemplateParser } from '../../src/core/parser';
+import { HTMLOutputFormatter } from '../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
-import { HTMLOutputFormatter } from '../../src/core/html-formatter';
+import { TemplateParser } from '../../src/core/parser';
 import { Logger } from '../../src/utils/logger';
-import * as fs from 'fs/promises';
-import * as path from 'path';
-import * as os from 'os';
+
 
 describe('CLI CDK Basic Integration', () => {
   let testOutputDir: string;
@@ -65,9 +67,9 @@ describe('CLI CDK Basic Integration', () => {
 
   describe('CDK Generation Routing', () => {
     it('should route to CDK generation when --output cdk is specified', async () => {
-      // Create a spy on CDKGenerator to verify it's called
-      const CDKGenerator = require('../../src/generators/cdk.generator').CDKGenerator;
-      const generateSpy = jest.spyOn(CDKGenerator.prototype, 'generate');
+      // Create a spy on CDKOfficialGenerator to verify it's called
+      const CDKOfficialGenerator = require('../../src/generators/cdk-official.generator').CDKOfficialGenerator;
+      const generateSpy = jest.spyOn(CDKOfficialGenerator.prototype, 'generate');
       
       // Mock the generate method to avoid actual file operations
       generateSpy.mockResolvedValue('export class TestStack extends cdk.Stack {}');

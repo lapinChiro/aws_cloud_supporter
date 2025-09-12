@@ -1,4 +1,5 @@
-import { JsonSchemaValidator, validateJsonSchema, ValidationError } from '../../../src/utils/schema-validator';
+import type { ValidationError } from '../../../src/utils/schema-validator';
+import { JsonSchemaValidator, validateJsonSchema } from '../../../src/utils/schema-validator';
 
 describe('JsonSchemaValidator', () => {
   let validator: JsonSchemaValidator;

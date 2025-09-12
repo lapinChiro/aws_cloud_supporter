@@ -1,8 +1,8 @@
 // CLAUDE.md準拠BaseMetricsGenerator（SOLID抽象化原則 + Type-Driven Development）
 
-import { CloudFormationResource } from '../types/cloudformation';
-import { MetricDefinition, MetricConfig, IMetricsGenerator } from '../types/metrics';
-import { ILogger } from '../interfaces/logger';
+import type { ILogger } from '../interfaces/logger';
+import type { CloudFormationResource } from '../types/cloudformation';
+import type { MetricDefinition, MetricConfig, IMetricsGenerator } from '../types/metrics';
 import { createResourceError } from '../utils/error';
 
 // Validation result interface

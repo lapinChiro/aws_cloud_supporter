@@ -1,8 +1,8 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 // T-016: JSONフォーマッター実装
 
-import { IOutputFormatter } from '../interfaces/formatter';
-import { AnalysisResult } from '../types/metrics';
+import type { IOutputFormatter } from '../interfaces/formatter';
+import type { AnalysisResult } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 import { validateMetricsOutput } from '../utils/schema-validator';
 
@@ -91,12 +91,14 @@ export class JSONOutputFormatter implements IOutputFormatter {
       
       // パフォーマンス監視（CLAUDE.md: 性能要件）
       if (duration > 2000) {
+        // eslint-disable-next-line no-console
         console.warn(`⚠️  JSON formatting slow: ${duration.toFixed(0)}ms`);
       }
       
       // サイズ監視（5MB制限）
       const sizeInBytes = new TextEncoder().encode(jsonString).length;
       if (sizeInBytes > 5 * 1024 * 1024) {
+        // eslint-disable-next-line no-console
         console.warn(`⚠️  Large JSON output: ${(sizeInBytes / 1024 / 1024).toFixed(1)}MB`);
       }
 

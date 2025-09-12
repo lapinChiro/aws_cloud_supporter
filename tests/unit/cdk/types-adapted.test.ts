@@ -1,8 +1,9 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + 型安全性
 // tasks.md M-006: 型定義の単体テスト（公式型適応版）
 
-import { CDKStackData, CDKAlarmComplete, CDKOptions, CDKGenerationResult, CDKStackMetadata } from '../../../src/types/cdk-business';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
+import type { CDKStackData, CDKAlarmComplete, CDKOptions, CDKGenerationResult, CDKStackMetadata } from '../../../src/types/cdk-business';
 
 describe('CDK Official Types', () => {
   describe('CDKStackData', () => {

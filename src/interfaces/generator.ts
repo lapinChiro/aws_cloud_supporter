@@ -1,8 +1,8 @@
 // CLAUDE.md準拠: Interface Segregation Principle
 // Metrics generator interface
 
-import { CloudFormationResource } from '../types/cloudformation';
-import { MetricDefinition } from '../types/metrics';
+import type { CloudFormationResource } from '../types/cloudformation';
+import type { MetricDefinition } from '../types/metrics';
 
 /**
  * Metrics generator interface

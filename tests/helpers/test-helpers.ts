@@ -1,8 +1,8 @@
 // CLAUDE.md準拠テストヘルパー（DRY原則改善）
 
-import { ILogger } from '../../src/interfaces/logger';
-import { IMetricsGenerator } from '../../src/interfaces/generator';
-import { 
+import type { IMetricsGenerator } from '../../src/interfaces/generator';
+import type { ILogger } from '../../src/interfaces/logger';
+import type { 
   CloudFormationResource,
   RDSDBInstance,
   RDSProperties,
@@ -11,7 +11,7 @@ import {
   ECSService,
   ECSServiceProperties
 } from '../../src/types/cloudformation';
-import { MetricDefinition } from '../../src/types/metrics';
+import type { MetricDefinition } from '../../src/types/metrics';
 
 /**
  * mockLogger統一作成関数

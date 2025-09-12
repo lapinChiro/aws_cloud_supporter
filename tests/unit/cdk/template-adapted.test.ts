@@ -3,9 +3,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Handlebars from 'handlebars';
-import { CDKOfficialHandlebarsHelpers } from '../../../src/templates/handlebars-official-helpers';
+
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as Handlebars from 'handlebars';
+
+import { CDKOfficialHandlebarsHelpers } from '../../../src/templates/handlebars-official-helpers';
 
 describe('CDK Official Template MVP', () => {
   let templateContent: string;

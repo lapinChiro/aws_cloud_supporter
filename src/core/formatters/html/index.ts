@@ -1,0 +1,68 @@
+// CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
+// T-016: HTMLフォーマッター実装 - ファサードパターンによる統合
+
+import type { AnalysisResult } from '../../../types/metrics';
+import type { Logger } from '../../../utils/logger';
+
+import { getEmbeddedJS } from './assets/scripts';
+import { HTMLAssetProvider } from './assets/styles';
+import { BaseHTMLFormatter } from './base-formatter';
+import type { IHTMLOutputFormatter } from './interfaces';
+
+/**
+ * HTMLOutputFormatterクラス（ファサードパターン）
+ * 
+ * 既存のインポートとの互換性を維持しつつ、
+ * 内部実装は分割されたモジュールに委譲する
+ */
+export class HTMLOutputFormatter implements IHTMLOutputFormatter {
+  private readonly logger?: Logger;
+  private readonly baseFormatter: BaseHTMLFormatter;
+
+  constructor(logger?: Logger) {
+    if (logger) {
+      this.logger = logger;
+    }
+    this.baseFormatter = new BaseHTMLFormatter();
+  }
+
+  /**
+   * 結果をHTMLフォーマットで出力
+   * 
+   * @param result - 分析結果
+   * @returns フォーマットされたHTML文字列
+   */
+  async format(result: AnalysisResult): Promise<string> {
+    this.logger?.info('📄 Formatting output as HTML');
+    return this.baseFormatter.formatHTML(result);
+  }
+
+  /**
+   * HTMLフォーマット処理（formatメソッドへの委譲）
+   * 
+   * @param result - 分析結果
+   * @returns フォーマットされたHTML文字列
+   */
+  async formatHTML(result: AnalysisResult): Promise<string> {
+    return this.format(result);
+  }
+
+  /**
+   * 組み込みCSS取得（静的メソッドとして提供）
+   * 
+   * @returns CSS文字列
+   */
+  static getEmbeddedCSS(): string {
+    const provider = new HTMLAssetProvider();
+    return provider.getEmbeddedCSS();
+  }
+
+  /**
+   * 組み込みJS取得（静的メソッドとして提供）
+   * 
+   * @returns JavaScript文字列
+   */
+  static getEmbeddedJS(): string {
+    return getEmbeddedJS();
+  }
+}

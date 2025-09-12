@@ -1,5 +1,5 @@
 import { ALBMetricsGenerator } from '../../../src/generators/alb.generator';
-import { ILogger } from '../../../src/interfaces/logger';
+import type { ILogger } from '../../../src/interfaces/logger';
 import { createMockLogger, measureGeneratorPerformance, createALB, createTestResource } from '../../helpers';
 
 describe('ALBMetricsGenerator', () => {

@@ -1,6 +1,7 @@
 // tests/unit/cdk/official-types-compatibility.test.ts (新規作成)
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import { 
+
+import type { 
   CDKAlarmPropsOfficial, 
   CDKTopicPropsOfficial 
 } from '../../../src/types/aws-cdk-official';

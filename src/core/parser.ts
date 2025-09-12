@@ -1,13 +1,14 @@
 // CLAUDE.md準拠TemplateParser（Don't Reinvent the Wheel + Type-Driven Development）
 
 import { parse as parseYAML, YAMLParseError } from 'yaml';
-import { CloudFormationTemplate } from '../types/cloudformation';
+
+import type { CloudFormationTemplate } from '../types/cloudformation';
+import type { ITemplateParser } from '../types/metrics';
 import { 
   CloudSupporterError, 
   createFileError, 
   createParseError 
 } from '../utils/error';
-import { ITemplateParser } from '../types/metrics';
 
 // UNIX Philosophy: 一つのことをうまくやる（CloudFormation解析のみ）
 export class TemplateParser implements ITemplateParser {
@@ -241,6 +242,7 @@ export class TemplateParser implements ITemplateParser {
 
     // AWSTemplateFormatVersion 警告（必須ではないが推奨）
     if (!cfnTemplate.AWSTemplateFormatVersion) {
+      // eslint-disable-next-line no-console
       console.warn('\x1b[33m⚠️  Missing AWSTemplateFormatVersion, assuming 2010-09-09\x1b[0m');
     }
 

@@ -1,6 +1,6 @@
 import { ECSMetricsGenerator } from '../../../src/generators/ecs.generator';
-import { ECSService } from '../../../src/types/cloudformation';
-import { ILogger } from '../../../src/interfaces/logger';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { ECSService } from '../../../src/types/cloudformation';
 import { createMockLogger, measureGeneratorPerformance, createECSService } from '../../helpers';
 
 describe('ECSMetricsGenerator', () => {

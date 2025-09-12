@@ -1,8 +1,9 @@
 // CLAUDE.md準拠ResourceExtractor最適化テスト（BLUE段階: リファクタリング検証）
 
+import path from 'path';
+
 import { ResourceExtractor, ExtractionPerformanceMonitor } from '../../../src/core/extractor';
 import { TemplateParser } from '../../../src/core/parser';
-import path from 'path';
 
 describe('ResourceExtractor最適化（CLAUDE.md: BLUE段階）', () => {
   let parser: TemplateParser;

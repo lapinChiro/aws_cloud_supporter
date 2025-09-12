@@ -3,8 +3,8 @@
 
 import { spawn } from 'child_process';
 import * as fs from 'fs/promises';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'path';
 
 describe('CDK Full Features Integration', () => {
   let testOutputDir: string;

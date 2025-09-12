@@ -1,21 +1,23 @@
 // CLAUDE.md準拠: TDD - RED段階
 // T-016: CLI完全実装テスト
 
-import { Command } from 'commander';
+import { writeFileSync } from 'fs';
+
+import type { Command } from 'commander';
+
 import { createCLICommand } from '../../../src/cli/commands';
 import { MetricsAnalyzer } from '../../../src/core/analyzer';
-import { TemplateParser } from '../../../src/core/parser';
+import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../../src/core/json-formatter';
-import { HTMLOutputFormatter } from '../../../src/core/html-formatter';
-import { Logger } from '../../../src/utils/logger';
+import { TemplateParser } from '../../../src/core/parser';
 import { CloudSupporterError, ErrorType } from '../../../src/utils/error';
-import { writeFileSync } from 'fs';
+import { Logger } from '../../../src/utils/logger';
 
 // モック
 jest.mock('../../../src/core/analyzer');
 jest.mock('../../../src/core/parser');
 jest.mock('../../../src/core/json-formatter');
-jest.mock('../../../src/core/html-formatter');
+jest.mock('../../../src/core/formatters/html');
 jest.mock('../../../src/utils/logger');
 jest.mock('fs', () => ({
   ...jest.requireActual('fs'),

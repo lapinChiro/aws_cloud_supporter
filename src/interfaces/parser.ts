@@ -1,7 +1,7 @@
 // CLAUDE.md準拠: Interface Segregation Principle
 // CloudFormation template parser interface
 
-import { CloudFormationTemplate } from '../types/cloudformation';
+import type { CloudFormationTemplate } from '../types/cloudformation';
 
 /**
  * CloudFormation template parser interface

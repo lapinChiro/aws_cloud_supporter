@@ -90,20 +90,20 @@ export class CDKSecuritySanitizer {
         continue;
       }
 
-      if (this.isSensitiveProperty(key, value)) {
-        sanitized[key] = this.createRedactedValue(key);
+      if (CDKSecuritySanitizer.isSensitiveProperty(key, value)) {
+        sanitized[key] = CDKSecuritySanitizer.createRedactedValue(key);
       } else if (typeof value === 'object') {
         // Recursively sanitize nested objects
         if (Array.isArray(value)) {
-          sanitized[key] = value.map((item, index) => 
+          sanitized[key] = value.map((item, index): unknown => 
             typeof item === 'object' && item !== null 
-              ? this.sanitizeForCDK(item as Record<string, unknown>)
-              : this.isSensitiveValue(String(item)) 
-                ? this.createRedactedValue(`${key}[${index}]`)
+              ? CDKSecuritySanitizer.sanitizeForCDK(item as Record<string, unknown>)
+              : CDKSecuritySanitizer.isSensitiveValue(String(item)) 
+                ? CDKSecuritySanitizer.createRedactedValue(`${key}[${index}]`)
                 : item
           );
         } else {
-          sanitized[key] = this.sanitizeForCDK(value as Record<string, unknown>);
+          sanitized[key] = CDKSecuritySanitizer.sanitizeForCDK(value as Record<string, unknown>);
         }
       } else {
         sanitized[key] = value;
@@ -122,13 +122,13 @@ export class CDKSecuritySanitizer {
    */
   private static isSensitiveProperty(key: string, value: unknown): boolean {
     // Check property name
-    if (this.isSensitivePropertyName(key)) {
+    if (CDKSecuritySanitizer.isSensitivePropertyName(key)) {
       return true;
     }
 
     // Check value content if it's a string
     if (typeof value === 'string') {
-      return this.isSensitiveValue(value);
+      return CDKSecuritySanitizer.isSensitiveValue(value);
     }
 
     return false;
@@ -143,7 +143,7 @@ export class CDKSecuritySanitizer {
   private static isSensitivePropertyName(propertyName: string): boolean {
     const lowerKey = propertyName.toLowerCase();
     
-    return this.SENSITIVE_PROPERTY_NAMES.some(pattern => 
+    return CDKSecuritySanitizer.SENSITIVE_PROPERTY_NAMES.some(pattern => 
       lowerKey.includes(pattern)
     );
   }
@@ -159,7 +159,7 @@ export class CDKSecuritySanitizer {
       return false;
     }
 
-    return this.SENSITIVE_PATTERNS.some(pattern => pattern.test(value));
+    return CDKSecuritySanitizer.SENSITIVE_PATTERNS.some(pattern => pattern.test(value));
   }
 
   /**

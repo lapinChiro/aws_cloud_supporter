@@ -1,7 +1,9 @@
 // tests/unit/cdk/business-types.test.ts (新規作成)
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import { 
-  CDKAlarmComplete,
+
+import type { 
+  CDKAlarmComplete} from '../../../src/types/cdk-business';
+import {
   extractOfficialAlarmProps,
   extractBusinessProps
 } from '../../../src/types/cdk-business';

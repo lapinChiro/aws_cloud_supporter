@@ -1,7 +1,8 @@
 // CLAUDE.md準拠エラーユーザビリティテスト（BLUE段階: 最適化）
 
+import type { 
+  CloudSupporterError} from '../../../src/utils/error';
 import { 
-  CloudSupporterError, 
   ErrorType,
   createFileError,
   createParseError,

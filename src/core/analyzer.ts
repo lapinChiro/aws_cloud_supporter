@@ -2,21 +2,22 @@
 // requirement.md準拠: MetricsAnalyzer統合実装
 
 import { performance } from 'perf_hooks';
-import { ITemplateParser } from '../interfaces/parser';
-import { ILogger } from '../interfaces/logger';
-import { IMetricsAnalyzer, AnalysisOptions, AnalysisStatistics, ExtendedAnalysisResult, AnalysisError } from '../interfaces/analyzer';
-import { IMetricsGenerator } from '../interfaces/generator';
-import { CloudFormationTemplate, CloudFormationResource } from '../types/cloudformation';
-import { ResourceWithMetrics } from '../types/metrics';
+
+import { ALBMetricsGenerator } from '../generators/alb.generator';
+import { APIGatewayMetricsGenerator } from '../generators/apigateway.generator';
+import { DynamoDBMetricsGenerator } from '../generators/dynamodb.generator';
+import { ECSMetricsGenerator } from '../generators/ecs.generator';
+import { LambdaMetricsGenerator } from '../generators/lambda.generator';
+import { RDSMetricsGenerator } from '../generators/rds.generator';
+import type { IMetricsAnalyzer, AnalysisOptions, AnalysisStatistics, ExtendedAnalysisResult, AnalysisError } from '../interfaces/analyzer';
+import type { IMetricsGenerator } from '../interfaces/generator';
+import type { ILogger } from '../interfaces/logger';
+import type { ITemplateParser } from '../interfaces/parser';
+import type { CloudFormationTemplate, CloudFormationResource } from '../types/cloudformation';
+import type { ResourceWithMetrics } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 
 // Generators
-import { RDSMetricsGenerator } from '../generators/rds.generator';
-import { LambdaMetricsGenerator } from '../generators/lambda.generator';
-import { ECSMetricsGenerator } from '../generators/ecs.generator';
-import { ALBMetricsGenerator } from '../generators/alb.generator';
-import { DynamoDBMetricsGenerator } from '../generators/dynamodb.generator';
-import { APIGatewayMetricsGenerator } from '../generators/apigateway.generator';
 
 /**
  * MetricsAnalyzer実装
@@ -24,13 +25,13 @@ import { APIGatewayMetricsGenerator } from '../generators/apigateway.generator';
  * requirement.md: Phase 4統合実装
  */
 export class MetricsAnalyzer implements IMetricsAnalyzer {
-  private generators: Map<string, IMetricsGenerator> = new Map();
+  private readonly generators: Map<string, IMetricsGenerator> = new Map();
   private lastAnalysisStats: AnalysisStatistics | null = null;
   private memoryMonitorInterval: NodeJS.Timeout | null = null;
   
   constructor(
-    private parser: ITemplateParser,
-    private logger: ILogger
+    private readonly parser: ITemplateParser,
+    private readonly logger: ILogger
   ) {
     this.initializeGenerators();
   }
