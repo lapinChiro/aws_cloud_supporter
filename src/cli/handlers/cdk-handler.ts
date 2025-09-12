@@ -18,6 +18,7 @@ import type {
   ICDKCodeGenerator, 
   ICDKOutputHandler 
 } from '../interfaces/handler.interface';
+import type { ILogger } from '../../interfaces/logger';
 
 import { CDKOptionsValidator } from './validation';
 
@@ -120,7 +121,7 @@ export class CDKHandler implements ICDKHandler {
     analysisResult: ExtendedAnalysisResult,
     cdkOptions: CDKOptions,
     options: CLIOptions,
-    logger: any
+    logger: ILogger
   ): Promise<string> {
     const cdkGenerator = new CDKOfficialGenerator(logger);
     
@@ -141,7 +142,7 @@ export class CDKHandler implements ICDKHandler {
   /**
    * CDKコード検証（複雑度: 4）
    */
-  private async validateCDKCode(cdkCode: string, options: CLIOptions, logger: any): Promise<void> {
+  private async validateCDKCode(cdkCode: string, options: CLIOptions, logger: ILogger): Promise<void> {
     const validator = new CDKValidator(logger);
     const validationResult = await validator.validateGeneratedCode(cdkCode, {
       compileCheck: true,
@@ -216,7 +217,7 @@ export class CDKTypeDeterminer implements ICDKTypeDeterminer {
   determineCDKType(
     _result: AnalysisResult | ExtendedAnalysisResult,
     _options: CLIOptions,
-    _logger: any
+    _logger: ILogger
   ): 'official' | 'classic' {
     // M-009: Default to Official Types
     return 'official';
@@ -265,7 +266,7 @@ export class CDKOutputHandler implements ICDKOutputHandler {
     files: Record<string, string>,
     _message: string,
     options: CLIOptions,
-    logger: any
+    logger: ILogger
   ): Promise<void> {
     // ファイル出力モード
     if (options.cdkOutputDir) {
@@ -286,7 +287,7 @@ export class CDKOutputHandler implements ICDKOutputHandler {
     outputDir: string,
     files: Record<string, string>,
     options: CLIOptions,
-    logger: any
+    logger: ILogger
   ): Promise<void> {
     // ディレクトリ作成
     await fs.mkdir(outputDir, { recursive: true });
@@ -314,7 +315,7 @@ export class CDKOutputHandler implements ICDKOutputHandler {
   private async setSecurePermissions(
     filePath: string,
     options: CLIOptions,
-    logger: any
+    logger: ILogger
   ): Promise<void> {
     try {
       await fs.chmod(filePath, 0o600);

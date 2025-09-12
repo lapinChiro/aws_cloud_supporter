@@ -4,6 +4,8 @@
 import type { Command } from 'commander';
 
 import type { ILogger } from '../interfaces/logger';
+import type { IOutputFormatter } from '../interfaces/formatter';
+import type { AnalysisResult } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 import { log } from '../utils/logger';
 
@@ -117,10 +119,10 @@ async function executeAnalysis(
  * 複雑度: 3
  */
 async function handleOutput(
-  result: any,
+  result: AnalysisResult,
   options: CLIOptions,
-  jsonFormatter: any,
-  htmlFormatter: any,
+  jsonFormatter: IOutputFormatter,
+  htmlFormatter: IOutputFormatter,
   logger: ILogger
 ): Promise<void> {
   if (options.file) {
