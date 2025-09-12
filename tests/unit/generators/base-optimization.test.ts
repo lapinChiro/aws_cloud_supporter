@@ -4,6 +4,51 @@ import { BaseMetricsGenerator, MetricsGenerationMonitor, validateMetricDefinitio
 import type { CloudFormationResource } from '../../../src/types/cloudformation';
 import { createLogger } from '../../../src/utils/logger';
 
+// ヘルパー関数：テスト用ジェネレーター作成
+function createOptimizedTestGenerator() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  class OptimizedTestGenerator extends BaseMetricsGenerator {
+    constructor() {
+      super(createLogger('error'));
+    }
+
+    getSupportedTypes(): string[] {
+      return ['AWS::Optimized::Resource'];
+    }
+
+    protected getMetricsConfig() {
+      return Array.from({ length: 10 }, (_, i) => ({
+        name: `OptimizedMetric${i}`,
+        namespace: 'AWS/Optimized',
+        unit: 'Count',
+        description: `Optimized metric ${i}`,
+        statistic: 'Average' as const,
+        evaluationPeriod: 300 as const,
+        category: 'Performance' as const,
+        importance: 'High' as const,
+        threshold: {
+          base: 100 + i * 10,
+          warningMultiplier: 1.0,
+          criticalMultiplier: 2.0
+        }
+      }));
+    }
+
+    protected getResourceScale() {
+      return 1.0;
+    }
+  }
+
+  return new OptimizedTestGenerator();
+}
+
+// ヘルパー関数：テストリソース作成
+const createTestResource = (): CloudFormationResource => ({
+  Type: 'AWS::Optimized::Resource',
+  Properties: {},
+  LogicalId: 'OptimizedTestResource'
+});
+
 describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
 
   // リファクタリング後のパフォーマンス改善確認
@@ -41,12 +86,8 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
       }
     }
 
-    const optimizedGenerator = new OptimizedTestGenerator();
-    const testResource = {
-      Type: 'AWS::Optimized::Resource',
-      Properties: {},
-      LogicalId: 'OptimizedTestResource'
-    };
+    const optimizedGenerator = createOptimizedTestGenerator();
+    const testResource = createTestResource();
 
     const result = await MetricsGenerationMonitor.measureGenerationPerformance(optimizedGenerator, testResource);
     
@@ -220,11 +261,14 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
 
   // SOLID原則準拠の確認（全5原則）
   it('should demonstrate SOLID principles compliance', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
+    // 静的importで型安全なアクセス
+    type BaseGeneratorPrototype = {
+      generate?: () => unknown;
+    };
 
     // S: Single Responsibility - メトリクス生成のみ
-    const prototype = BaseMetricsGenerator.prototype;
-    expect(prototype.generate).toBeDefined();
+    const basePrototype = BaseMetricsGenerator.prototype as unknown as BaseGeneratorPrototype;
+    expect(basePrototype.generate).toBeDefined();
 
     // O: Open/Closed - 拡張開放、変更閉鎖
     class ExtensionTestGenerator extends BaseMetricsGenerator {
@@ -244,7 +288,7 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
     expect(baseGenerators[0]).toBeInstanceOf(BaseMetricsGenerator);
 
     // I: Interface Segregation - 必要最小限インターフェース
-    expect(typeof prototype.generate).toBe('function');
+    expect(typeof extensionTest.generate).toBe('function');
 
     // D: Dependency Inversion - 抽象化への依存（ILogger）
     expect(extensionTest).toBeDefined();
@@ -456,14 +500,18 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
 
   // CLAUDE.md準拠度の総合確認
   it('should fully comply with CLAUDE.md principles', () => {
-    const { BaseMetricsGenerator } = require('../../../src/generators/base.generator');
+    // 静的importで型安全なアクセス
+    type BaseGeneratorPrototype = {
+      generate?: () => unknown;
+    };
     
     // Zero type errors: ビルド成功済み ✅
     // No any types: コード内確認済み ✅
     // Build success: 実行成功 ✅
     
     // UNIX Philosophy: 単一責任（メトリクス生成のみ）
-    expect(BaseMetricsGenerator.prototype.generate).toBeDefined();
+    const basePrototype = BaseMetricsGenerator.prototype as unknown as BaseGeneratorPrototype;
+    expect(basePrototype.generate).toBeDefined();
     
     // Don't Reinvent the Wheel: ILogger活用、既存型システム活用
     expect(BaseMetricsGenerator.length).toBe(1); // constructor引数1個（ILogger）
