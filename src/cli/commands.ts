@@ -6,6 +6,7 @@ import type { Command } from 'commander';
 import type { ILogger } from '../interfaces/logger';
 import type { IOutputFormatter } from '../interfaces/formatter';
 import type { AnalysisResult } from '../types/metrics';
+import type { IMetricsAnalyzer, ExtendedAnalysisResult } from '../interfaces/analyzer';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 import { log } from '../utils/logger';
 
@@ -88,9 +89,9 @@ function setupLogging(options: CLIOptions, logger: ILogger): void {
 async function executeAnalysis(
   templatePath: string,
   options: CLIOptions,
-  analyzer: any,
+  analyzer: IMetricsAnalyzer,
   logger: ILogger
-): Promise<any> {
+): Promise<ExtendedAnalysisResult> {
   logger.info(`Starting analysis of ${templatePath}`);
   
   // フィルタリング設定
