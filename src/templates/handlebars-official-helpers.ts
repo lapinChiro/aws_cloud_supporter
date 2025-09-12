@@ -44,21 +44,25 @@ export class CDKOfficialHandlebarsHelpers {
    * TreatMissingDataをコード文字列として表現
    */
   static renderTreatMissingData(treatMissingData: cloudwatch.TreatMissingData): string {
-    // Convert enum value to match CDK's actual enum values
+    // Type-safe enum handling
     const treatMissingDataMap: Record<string, string> = {
       'notBreaching': 'NOT_BREACHING',
       'breaching': 'BREACHING',  
       'missing': 'MISSING',
       'ignore': 'IGNORE'
     };
-    return `cloudwatch.TreatMissingData.${treatMissingDataMap[treatMissingData as string] || treatMissingData}`;
+    
+    const enumKey = String(treatMissingData);
+    const mappedValue = treatMissingDataMap[enumKey];
+    
+    return `cloudwatch.TreatMissingData.${mappedValue || enumKey}`;
   }
 
   /**
    * ComparisonOperatorをコード文字列として表現
    */
   static renderComparisonOperator(comparisonOperator: cloudwatch.ComparisonOperator): string {
-    // Convert enum value to match CDK's actual enum values
+    // Type-safe enum handling
     const comparisonOperatorMap: Record<string, string> = {
       'GreaterThanThreshold': 'GREATER_THAN_THRESHOLD',
       'GreaterThanOrEqualToThreshold': 'GREATER_THAN_OR_EQUAL_TO_THRESHOLD',
@@ -67,7 +71,11 @@ export class CDKOfficialHandlebarsHelpers {
       'GreaterThanUpperThreshold': 'GREATER_THAN_UPPER_THRESHOLD',
       'LessThanLowerThreshold': 'LESS_THAN_LOWER_THRESHOLD'
     };
-    return `cloudwatch.ComparisonOperator.${comparisonOperatorMap[comparisonOperator as string] || comparisonOperator}`;
+    
+    const enumKey = String(comparisonOperator);
+    const mappedValue = comparisonOperatorMap[enumKey];
+    
+    return `cloudwatch.ComparisonOperator.${mappedValue || enumKey}`;
   }
 
   /**
@@ -97,24 +105,31 @@ export class CDKOfficialHandlebarsHelpers {
     period: { seconds: number };
   } {
     try {
-      const config = metric.toMetricConfig();
-      const metricStat = (config as any).metricStat;
+      const config: cloudwatch.MetricConfig = metric.toMetricConfig();
       
-      if (metricStat) {
-        // dimensions配列をdimensionsMapに変換
+      // Type-safe access to metricStat
+      if (config.metricStat) {
+        const metricStat: cloudwatch.MetricStatConfig = config.metricStat;
+        
+        // dimensions配列をdimensionsMapに変換（型安全）
         const dimensionsMap: cloudwatch.DimensionsMap = {};
         if (metricStat.dimensions && Array.isArray(metricStat.dimensions)) {
           for (const dim of metricStat.dimensions) {
-            dimensionsMap[dim.name] = dim.value;
+            if (dim && typeof dim.name === 'string' && dim.value != null) {
+              dimensionsMap[dim.name] = String(dim.value);
+            }
           }
         }
+        
+        // Duration から秒数を安全に取得
+        const periodSeconds = metricStat.period?.toSeconds() ?? 300;
         
         return {
           metricName: metricStat.metricName || 'UnknownMetric',
           namespace: metricStat.namespace || 'UnknownNamespace',
           dimensionsMap,
           statistic: metricStat.statistic || 'Average',
-          period: { seconds: metricStat.period?.amount * 60 || 300 } // minutesをsecondsに変換
+          period: { seconds: periodSeconds }
         };
       }
     } catch (error) {
