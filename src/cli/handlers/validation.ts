@@ -47,7 +47,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
     // 絶対パスの検証（セキュリティ上安全な場所は許可）
     if (path.isAbsolute(options.cdkOutputDir)) {
       const tempDirs = ['/tmp/', '/temp/', process.env.TMPDIR, process.env.TMP].filter(Boolean);
-      const isSafePath = tempDirs.some(tmpDir => options.cdkOutputDir?.startsWith(tmpDir!)) ||
+      const isSafePath = tempDirs.some(tmpDir => tmpDir && options.cdkOutputDir?.startsWith(tmpDir)) ||
                         options.cdkOutputDir.startsWith(process.cwd()) ||
                         process.env.NODE_ENV === 'test'; // テスト環境では柔軟に対応
       

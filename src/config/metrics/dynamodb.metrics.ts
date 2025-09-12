@@ -112,7 +112,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const dynamodb = resource as DynamoDBTable;
-      const props = dynamodb.Properties!;
+      const props = dynamodb.Properties;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
     }
   },
@@ -132,7 +132,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const dynamodb = resource as DynamoDBTable;
-      const props = dynamodb.Properties!;
+      const props = dynamodb.Properties;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
     }
   },
@@ -152,7 +152,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const dynamodb = resource as DynamoDBTable;
-      const props = dynamodb.Properties!;
+      const props = dynamodb.Properties;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
     }
   },
@@ -172,7 +172,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
     },
     applicableWhen: (resource: CloudFormationResource) => {
       const dynamodb = resource as DynamoDBTable;
-      const props = dynamodb.Properties!;
+      const props = dynamodb.Properties;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
     }
   },
