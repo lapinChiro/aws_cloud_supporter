@@ -5,12 +5,12 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 import { CDKOfficialGenerator } from '../../generators/cdk-official.generator';
-import type { ExtendedAnalysisResult } from '../../interfaces/analyzer';
+import type { ExtendedAnalysisResult, IMetricsAnalyzer } from '../../interfaces/analyzer';
 import type { CDKOptions } from '../../types/cdk-business';
 import type { AnalysisResult } from '../../types/metrics';
 import { CloudSupporterError, ErrorType } from '../../utils/error';
 import { log } from '../../utils/logger';
-import { CDKValidator } from '../../validation/cdk-validator';
+import { CDKValidator, CDKValidationResult } from '../../validation/cdk-validator';
 import type { CLIDependencies, CLIOptions } from '../interfaces/command.interface';
 import type { 
   ICDKHandler, 
@@ -81,7 +81,7 @@ export class CDKHandler implements ICDKHandler {
   private async executeAnalysis(
     templatePath: string,
     options: CLIOptions,
-    analyzer: any
+    analyzer: IMetricsAnalyzer
   ): Promise<ExtendedAnalysisResult> {
     return await analyzer.analyze(templatePath, {
       outputFormat: 'json',
@@ -168,7 +168,7 @@ export class CDKHandler implements ICDKHandler {
   /**
    * バリデーション結果表示（複雑度: 3）
    */
-  private displayValidationResults(validationResult: any, options: CLIOptions): void {
+  private displayValidationResults(validationResult: CDKValidationResult, options: CLIOptions): void {
     if (validationResult.errors.length > 0) {
       log.errorList('CDK Validation Errors', validationResult.errors);
     }
