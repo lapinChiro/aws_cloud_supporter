@@ -417,3 +417,55 @@
 - ✅ パフォーマンステスト用の大量データ生成の型安全性確保
 
 **コミット**: 7c1a6f7
+
+### T005: Batch 7 ✅ 完了 (2025-09-12)
+
+**修正ファイル**:
+- `tests/unit/types/cloudformation.test.ts` - CloudFormation型定義テストの型安全性改善
+- `tests/unit/utils/error.test.ts` - エラーハンドリングテストの型安全性改善
+
+**修正内容**:
+1. 動的require()を静的importに置換
+   - `const cfnTypes = require(...)` → 静的importと型注釈
+   - 型ガード関数を使用した安全なプロパティアクセス
+2. 型インターフェース定義追加
+   - `CloudFormationTypesModule`, `CommonTypesModule`, `MetricsTypesModule`
+   - 型安全なモジュールアクセスパターン実装
+
+**修正パターン適用**:
+- `require('../../../src/types/cloudformation')` → 静的import + 型アサーション
+- `cfnTypes.isSupportedResource(resource)` → 型ガード使用の安全なアクセス
+
+**検証結果**:
+- ✅ npm run typecheck: エラー0
+- ✅ npm run build: 成功
+- ✅ 動的requireによるunsafeエラー一括削減
+
+**コミット**: 170eaa1
+
+### T005: Batch 8 ✅ 完了 (2025-09-12)
+
+**修正ファイル**:
+- `tests/unit/generators/base-optimization.test.ts` - BaseMetricsGenerator最適化テストの型安全性とmax-lines削減
+
+**修正内容**:
+1. ヘルパー関数作成でmax-lines-per-function解消
+   - `createOptimizedTestGenerator()` - テスト用ジェネレーター作成関数
+   - `createTestResource()` - テストリソース作成関数
+2. 動的require()を静的importに置換（2箇所）
+3. 型アサーションによるunsafeアクセス修正
+   - `BaseMetricsGenerator.prototype as unknown as BaseGeneratorPrototype`
+4. 長い関数の分割によるコード可読性改善
+
+**修正パターン適用**:
+- `require('../../../src/generators/base.generator')` → 静的import
+- `BaseMetricsGenerator.prototype` → 型安全なprototypeアクセス
+- 481行の大型関数を複数の小関数に分割
+
+**検証結果**:
+- ✅ npm run typecheck: 警告のみ（未使用変数）
+- ✅ npm run build: 成功
+- ✅ max-lines-per-functionエラー解消
+- ✅ 13個のunsafeエラー修正
+
+**コミット**: ec27d1e
