@@ -296,21 +296,21 @@ describe('HTMLOutputFormatter', () => {
     test('should complete within performance limits', async () => {
       const largeResult: AnalysisResult = {
         ...mockResult,
-        resources: Array(100).fill(null).map((_, i) => ({
+        resources: Array.from({ length: 100 }, (_, i) => ({
           logical_id: `Resource${i}`,
-          resource_type: 'AWS::Lambda::Function',
+          resource_type: 'AWS::Lambda::Function' as const,
           resource_properties: {},
-          metrics: Array(20).fill(null).map((_, j) => ({
+          metrics: Array.from({ length: 20 }, (_, j) => ({
             metric_name: `Metric${j}`,
             namespace: 'AWS/Lambda',
             unit: 'Count',
             description: 'Test metric',
-            statistic: 'Sum',
+            statistic: 'Sum' as const,
             recommended_threshold: { warning: 5, critical: 10 },
             evaluation_period: 300,
-            category: 'Performance',
-            importance: 'High',
-            dimensions: []
+            category: 'Performance' as const,
+            importance: 'High' as const,
+            dimensions: [] as Array<{ name: string; value: string }>
           }))
         }))
       };

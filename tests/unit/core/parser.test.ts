@@ -1,10 +1,12 @@
 // CLAUDE.md準拠TemplateParserテスト（GREEN段階: Don't Reinvent the Wheel + Type-Driven）
 
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync, statSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 
-import { CloudSupporterError } from '../../../src/utils/error';
+import { CloudSupporterError, isFileError } from '../../../src/utils/error';
+import { TemplateParser } from '../../../src/core/parser';
 
 // テスト全体で使用する一時ディレクトリ
 let tempDir: string;
@@ -45,7 +47,7 @@ Resources:
   writeFileSync(path.join(tempDir, 'valid-template.yaml'), validYamlTemplate, 'utf8');
 
   // 有効なJSONテンプレート
-  const validJsonTemplate = {
+  const validJsonTemplate: CloudFormationTemplate = {
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Test CloudFormation JSON template",
     "Resources": {
@@ -99,7 +101,7 @@ Resources:
   writeFileSync(path.join(tempDir, 'invalid-syntax.json'), invalidJsonTemplate, 'utf8');
 
   // 大きなファイル（50MB超）生成
-  const largeTemplate = {
+  const largeTemplate: CloudFormationTemplate = {
     AWSTemplateFormatVersion: "2010-09-09", 
     Description: "Large template for size testing - this template is intentionally large to test file size limits",
     Resources: {}
@@ -131,13 +133,12 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
   // GREEN段階: TemplateParser実装確認
   it('should implement TemplateParser successfully', () => {
     expect(() => {
-      require('../../../src/core/parser');
+      // TemplateParser is already imported
     }).not.toThrow(); // 実装完了で成功
   });
 
   // YAML解析テスト（GREEN段階: 実装確認）
   it('should parse valid YAML CloudFormation template', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     const yamlPath = path.join(tempDir, 'valid-template.yaml');
@@ -152,7 +153,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
 
   // JSON解析テスト（GREEN段階: 実装確認）
   it('should parse valid JSON CloudFormation template', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     const jsonPath = path.join(tempDir, 'valid-template.json');
@@ -167,8 +167,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
 
   // ファイル存在エラーテスト（CloudSupporterError統合）
   it('should handle file not found error', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
-    const { isFileError } = require('../../../src/utils/error');
     const parser = new TemplateParser();
     
     const nonExistentPath = path.join(tempDir, 'non-existent.yaml');
@@ -189,11 +187,10 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
   it('should reject files larger than 50MB', async () => {
     // 実際に大きなファイルを作成するのは時間がかかるため、
     // 既存ファイルサイズを確認し、実装ロジックをテスト
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     const largePath = path.join(tempDir, 'large-template.json');
-    const stats = require('fs').statSync(largePath);
+    const stats = statSync(largePath);
     
     // ファイルサイズが2MB程度なので、実際は50MB制限に引っかからない
     // 実装のバリデーションロジックが存在することのみ確認
@@ -210,7 +207,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
   // 読み込み時間制限テスト（5秒制限、モック使用）
   it('should timeout file reading after 5 seconds', async () => {
     // 実際の5秒待ちは避けて、モック使用
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     // 通常サイズのファイルは5秒以内で読み込める想定
@@ -224,7 +220,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
 
   // YAML構文エラーハンドリングテスト
   it('should provide detailed YAML syntax error', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     // バイナリデータでYAMLパーサーを確実に失敗させる
@@ -254,7 +249,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
 
   // JSON構文エラーハンドリングテスト
   it('should provide detailed JSON syntax error with position', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const { isParseError } = require('../../../src/utils/error');
     const parser = new TemplateParser();
     
@@ -275,7 +269,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
 
   // CloudFormation構造検証テスト
   it('should validate CloudFormation template structure', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     // 有効なテンプレートの解析
@@ -293,8 +286,8 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
     const testDB = template.Resources.TestDB;
     expect(testDB).toBeDefined();
     expect(typeof testDB).toBe('object');
-    expect(testDB.Type).toBe('AWS::RDS::DBInstance');
-    expect(testDB.Properties).toBeDefined();
+    expect(testDB!.Type).toBe('AWS::RDS::DBInstance');
+    expect(testDB!.Properties).toBeDefined();
   });
 
   // CLAUDE.md: No any types検証
@@ -311,7 +304,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
 
   // 型安全性テスト（CloudFormationTemplate型）
   it('should return properly typed CloudFormationTemplate', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     const yamlPath = path.join(tempDir, 'valid-template.yaml');
@@ -325,7 +317,7 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
     // リソースの型安全性
     const testDB = template.Resources.TestDB;
     expect(testDB).toBeDefined();
-    expect(testDB.Type).toBe('AWS::RDS::DBInstance');
+    expect(testDB!.Type).toBe('AWS::RDS::DBInstance');
   });
 });
 
@@ -333,7 +325,6 @@ describe('TemplateParserパフォーマンステスト（CLAUDE.md: 性能要件
 
   // パフォーマンス要件テスト（通常ファイルは5秒以内）
   it('should parse normal templates within performance limits', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     const yamlPath = path.join(tempDir, 'valid-template.yaml');
@@ -348,7 +339,6 @@ describe('TemplateParserパフォーマンステスト（CLAUDE.md: 性能要件
 
   // メモリ効率テスト（適切なリソース管理）  
   it('should handle files efficiently without memory leaks', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     
     // 複数回の解析でメモリリークがないことを確認
     const parser = new TemplateParser();
@@ -371,7 +361,6 @@ describe('TemplateParserパフォーマンステスト（CLAUDE.md: 性能要件
 
   // 並行解析テスト（型安全性）
   it('should handle concurrent parsing requests safely', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     const yamlPath = path.join(tempDir, 'valid-template.yaml');
@@ -398,7 +387,6 @@ describe('TemplateParserエラーハンドリング統合（CLAUDE.md: 型安全
 
   // CloudSupporterErrorシステム統合確認
   it('should integrate with CloudSupporterError system', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const { CloudSupporterError, ErrorType } = require('../../../src/utils/error');
     const parser = new TemplateParser();
     
@@ -424,7 +412,6 @@ describe('TemplateParserエラーハンドリング統合（CLAUDE.md: 型安全
 
   // エラー提案メッセージテスト（ユーザビリティ）
   it('should provide helpful error suggestions via CloudSupporterError', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     const invalidJsonPath = path.join(tempDir, 'invalid-syntax.json');
@@ -446,7 +433,6 @@ describe('TemplateParserエラーハンドリング統合（CLAUDE.md: 型安全
 
   // 構造化エラー出力テスト（型安全性）
   it('should output structured error information', async () => {
-    const { TemplateParser } = require('../../../src/core/parser');
     const parser = new TemplateParser();
     
     // 空のResourcesセクションでエラー

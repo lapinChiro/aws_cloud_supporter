@@ -13,8 +13,13 @@ interface CliOutputResource {
   metrics: unknown[];
 }
 
+interface CliOutputMetadata {
+  version: string;
+  [key: string]: unknown;
+}
+
 interface CliOutputResult {
-  metadata: unknown;
+  metadata: CliOutputMetadata;
   resources: CliOutputResource[];
   unsupported_resources: unknown[];
 }
@@ -71,11 +76,11 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       expect(stderr).toBe('');
       
       // Parse JSON output
-      const result = JSON.parse(stdout);
+      const result = JSON.parse(stdout) as CliOutputResult;
       expect(result.metadata.version).toBe('1.0.0');
       expect(result.resources).toHaveLength(1);
-      expect(result.resources[0].resource_type).toBe('AWS::Lambda::Function');
-      expect(result.resources[0].metrics.length).toBeGreaterThan(10);
+      expect(result.resources[0]!.resource_type).toBe('AWS::Lambda::Function');
+      expect(result.resources[0]!.metrics.length).toBeGreaterThan(10);
     });
 
     test('1-2: JSON output to file', async () => {
@@ -90,7 +95,7 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       
       // Check file exists and is valid JSON
       const fileContent = await fs.readFile(outputFile, 'utf8');
-      const result = JSON.parse(fileContent);
+      const result = JSON.parse(fileContent) as CliOutputResult;
       expect(result.metadata.version).toBe('1.0.0');
       expect(result.resources).toHaveLength(1);
     });
@@ -146,8 +151,8 @@ describe('CLI E2E Tests - 10 Patterns', () => {
         `node ${CLI_PATH} ${templatePath} --resource-types "AWS::RDS::DBInstance,AWS::Lambda::Function"`
       );
 
-      const result = JSON.parse(stdout);
-      const resourceTypes = result.resources.map((r: any) => r.resource_type);
+      const result = JSON.parse(stdout) as CliOutputResult;
+      const resourceTypes = result.resources.map((r) => r.resource_type);
       
       // Should only contain specified types
       expect(resourceTypes).toContain('AWS::RDS::DBInstance');
@@ -163,17 +168,17 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       const { stdout: stdoutWithout } = await execAsync(
         `node ${CLI_PATH} ${templatePath}`
       );
-      const resultWithout = JSON.parse(stdoutWithout);
+      const resultWithout = JSON.parse(stdoutWithout) as CliOutputResult;
       
       // With --include-low
       const { stdout: stdoutWith } = await execAsync(
         `node ${CLI_PATH} ${templatePath} --include-low`
       );
-      const resultWith = JSON.parse(stdoutWith);
+      const resultWith = JSON.parse(stdoutWith) as CliOutputResult;
       
       // Should have more metrics with low importance included
-      expect(resultWith.resources[0].metrics.length).toBeGreaterThanOrEqual(
-        resultWithout.resources[0].metrics.length
+      expect(resultWith.resources[0]!.metrics.length).toBeGreaterThanOrEqual(
+        resultWithout.resources[0]!.metrics.length
       );
     });
 
@@ -198,7 +203,7 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       
       if (jsonStart >= 0 && jsonEnd > jsonStart) {
         const jsonPart = stdout.slice(jsonStart, jsonEnd);
-        const result = JSON.parse(jsonPart);
+        const result = JSON.parse(jsonPart) as CliOutputResult;
         expect(result.metadata.version).toBe('1.0.0');
       }
     });
@@ -213,7 +218,7 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       );
       const duration = Date.now() - startTime;
 
-      const result = JSON.parse(stdout);
+      const result = JSON.parse(stdout) as CliOutputResult;
       expect(result.resources.length).toBeGreaterThan(300);
       expect(duration).toBeLessThan(30000); // Should complete within 30 seconds
       

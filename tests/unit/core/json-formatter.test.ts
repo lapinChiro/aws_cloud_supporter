@@ -5,6 +5,41 @@ import { JSONOutputFormatter } from '../../../src/core/json-formatter';
 import type { AnalysisResult } from '../../../src/types/metrics';
 import { validateMetricsOutput } from '../../../src/utils/schema-validator';
 
+// Type for JSON.parse output
+interface ParsedAnalysisResult {
+  metadata: {
+    version: string;
+    generated_at: string;
+    template_path: string;
+    total_resources: number;
+    supported_resources: number;
+    processing_time_ms: number;
+    parse_time_ms?: number;
+    extract_time_ms?: number;
+    generator_time_ms?: number;
+    total_time_ms?: number;
+    memory_peak_mb?: number;
+  };
+  resources: Array<{
+    logical_id: string;
+    resource_type: string;
+    resource_properties: Record<string, unknown>;
+    metrics: Array<{
+      metric_name: string;
+      namespace: string;
+      unit: string;
+      description: string;
+      statistic: string;
+      recommended_threshold: { warning: number; critical: number };
+      evaluation_period: number;
+      category: string;
+      importance: string;
+      dimensions?: Array<{ name: string; value: string }>;
+    }>;
+  }>;
+  unsupported_resources: string[];
+}
+
 // Mock schema validator
 jest.mock('../../../src/utils/schema-validator');
 const mockValidateMetricsOutput = validateMetricsOutput as jest.MockedFunction<typeof validateMetricsOutput>;
@@ -113,14 +148,14 @@ describe('JSONOutputFormatter', () => {
       // Should be valid JSON
       expect(() => JSON.parse(json)).not.toThrow();
       
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       expect(parsed).toBeDefined();
       expect(typeof parsed).toBe('object');
     });
 
     test('should include all required metadata fields', async () => {
       const json = await formatter.formatJSON(mockResult);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       expect(parsed.metadata).toBeDefined();
       expect(parsed.metadata.version).toBe('1.0.0');
@@ -133,26 +168,26 @@ describe('JSONOutputFormatter', () => {
 
     test('should include all resources with metrics', async () => {
       const json = await formatter.formatJSON(mockResult);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       expect(parsed.resources).toHaveLength(2);
       
       // First resource
-      expect(parsed.resources[0].logical_id).toBe('MyDatabase');
-      expect(parsed.resources[0].resource_type).toBe('AWS::RDS::DBInstance');
-      expect(parsed.resources[0].metrics).toHaveLength(1);
+      expect(parsed.resources[0]!.logical_id).toBe('MyDatabase');
+      expect(parsed.resources[0]!.resource_type).toBe('AWS::RDS::DBInstance');
+      expect(parsed.resources[0]!.metrics).toHaveLength(1);
       
       // Second resource
-      expect(parsed.resources[1].logical_id).toBe('MyFunction');
-      expect(parsed.resources[1].resource_type).toBe('AWS::Lambda::Function');
-      expect(parsed.resources[1].metrics).toHaveLength(2);
+      expect(parsed.resources[1]!.logical_id).toBe('MyFunction');
+      expect(parsed.resources[1]!.resource_type).toBe('AWS::Lambda::Function');
+      expect(parsed.resources[1]!.metrics).toHaveLength(2);
     });
 
     test('should format metrics correctly', async () => {
       const json = await formatter.formatJSON(mockResult);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
-      const metric = parsed.resources[0].metrics[0];
+      const metric = parsed.resources[0]!.metrics[0]!;
       expect(metric.metric_name).toBe('CPUUtilization');
       expect(metric.namespace).toBe('AWS/RDS');
       expect(metric.unit).toBe('Percent');
@@ -167,7 +202,7 @@ describe('JSONOutputFormatter', () => {
 
     test('should include unsupported resources', async () => {
       const json = await formatter.formatJSON(mockResult);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       expect(parsed.unsupported_resources).toBeDefined();
       expect(parsed.unsupported_resources).toContain('S3Bucket1');
@@ -181,7 +216,7 @@ describe('JSONOutputFormatter', () => {
       };
       
       const json = await formatter.formatJSON(emptyResult);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       expect(parsed.resources).toEqual([]);
       expect(parsed.unsupported_resources).toEqual([]);
@@ -191,7 +226,7 @@ describe('JSONOutputFormatter', () => {
       await formatter.formatJSON(mockResult);
       
       expect(mockValidateMetricsOutput).toHaveBeenCalledTimes(1);
-      expect(mockValidateMetricsOutput).toHaveBeenCalledWith(expect.any(Object));
+      expect(mockValidateMetricsOutput).toHaveBeenCalledWith(expect.any(Object) as ParsedAnalysisResult);
     });
 
     test('should throw error if validation fails', async () => {
@@ -236,9 +271,9 @@ describe('JSONOutputFormatter', () => {
       };
       
       const json = await formatter.formatJSON(resultNoDims);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
-      const metric = parsed.resources[0].metrics[0];
+      const metric = parsed.resources[0]!.metrics[0]!;
       expect(metric.dimensions).toBeUndefined();
     });
 
@@ -259,9 +294,9 @@ describe('JSONOutputFormatter', () => {
       };
       
       const json = await formatter.formatJSON(resultWithSecrets);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
-      const props = parsed.resources[0].resource_properties;
+      const props = parsed.resources[0]!.resource_properties;
       expect(props.MasterUserPassword).toBe('[REDACTED]');
       expect(props.DBPassword).toBe('[REDACTED]');
       expect(props.SecretString).toBe('[REDACTED]');
@@ -292,9 +327,9 @@ describe('JSONOutputFormatter', () => {
       };
       
       const json = await formatter.formatJSON(resultWithTypes);
-      const parsed = JSON.parse(json);
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
-      const props = parsed.resources[0].resource_properties;
+      const props = parsed.resources[0]!.resource_properties;
       expect(typeof props.TableName).toBe('string');
       expect(typeof props.StreamEnabled).toBe('boolean');
       expect(props.StreamEnabled).toBe(true);

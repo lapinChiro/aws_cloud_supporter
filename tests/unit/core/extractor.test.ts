@@ -3,6 +3,9 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import { ResourceExtractor } from '../../../src/core/extractor';
+import { TemplateParser } from '../../../src/core/parser';
 
 // 全テストで使用する一時ディレクトリ
 let tempDir: string;
@@ -205,14 +208,12 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
   // GREEN段階: ResourceExtractor実装確認
   it('should implement ResourceExtractor successfully', () => {
     expect(() => {
-      require('../../../src/core/extractor');
+      // ResourceExtractor is already imported
     }).not.toThrow(); // 実装完了で成功
   });
 
   // O(n)アルゴリズム要件テスト（GREEN段階: 実装確認）
   it('should extract resources with O(n) algorithm', () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    
     const extractor = new ResourceExtractor();
     
     // アルゴリズムの時間計算量がO(n)であることを確認
@@ -222,9 +223,6 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
 
   // 500リソース・3秒以内要件テスト（GREEN段階: パフォーマンス確認）
   it('should process 500 resources within 3 seconds', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
-    
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
     
@@ -242,9 +240,6 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
 
   // 8つのサポート対象リソース判定テスト（GREEN段階: 正確性確認）
   it('should accurately identify 8 supported resource types', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
-    
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
     
@@ -260,8 +255,6 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
 
   // サポート対象外リソース集計テスト（GREEN段階: 機能確認）
   it('should collect unsupported resource logical IDs', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -280,8 +273,6 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
 
   // ECS Fargate判定テスト（GREEN段階: 特殊ケース確認）
   it('should detect ECS Fargate services correctly', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -300,8 +291,6 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
 
   // ALB vs NLB判定テスト（GREEN段階: 判定ロジック確認）
   it('should distinguish ALB from NLB correctly', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -323,8 +312,6 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
 
   // パフォーマンス監視テスト（GREEN段階: メトリクス確認）
   it('should provide extraction time metrics', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -340,8 +327,6 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
 
   // 型安全性テスト（GREEN段階: ExtractResult型確認）
   it('should return type-safe ExtractResult', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -376,12 +361,11 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
 
   // 単一責任原則テスト（GREEN段階: SOLID原則確認）
   it('should follow single responsibility principle', () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
     const extractor = new ResourceExtractor();
     
     // ResourceExtractorは抽出処理のみに特化
     const publicMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(extractor))
-      .filter(name => !name.startsWith('_') && name !== 'constructor' && typeof extractor[name] === 'function');
+      .filter(name => !name.startsWith('_') && name !== 'constructor' && typeof (extractor as any)[name] === 'function');
     
     // 主要メソッドは抽出関連のみ
     expect(publicMethods).toContain('extract');
@@ -395,7 +379,6 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
   // 大量リソース処理テスト（GREEN段階: 500リソース3秒以内）
   it('should handle large templates efficiently', async () => {
     const { ResourceExtractor, ExtractionPerformanceMonitor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -412,8 +395,6 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
 
   // 並行抽出テスト（GREEN段階: 型安全並行処理）
   it('should support concurrent extraction safely', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -437,8 +418,6 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
 
   // メモリ効率テスト（GREEN段階: リークなし確認）
   it('should extract resources without memory leaks', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -461,11 +440,10 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
 
   // パフォーマンス監視テスト（GREEN段階: 警告確認）
   it('should warn when extraction exceeds time limits', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
     
     // 通常の処理では警告は出ない想定
     const extractor = new ResourceExtractor();
-    const smallTemplate = {
+    const smallTemplate: CloudFormationTemplate = {
       AWSTemplateFormatVersion: "2010-09-09",
       Resources: {
         Test: { Type: "AWS::RDS::DBInstance", Properties: {} }
@@ -481,7 +459,6 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
 
   // 型ガード関数統合テスト（GREEN段階: Don't Reinvent the Wheel）
   it('should integrate with existing type guard functions', () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
     const { isSupportedResource, isFargateService, isApplicationLoadBalancer } = require('../../../src/types/cloudformation');
     
     // 既存型ガード関数がResourceExtractorで使用されている確認
@@ -498,10 +475,9 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
 
   // Union型使用テスト（GREEN段階: SupportedResource確認）
   it('should utilize SupportedResource union type', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
     
     const extractor = new ResourceExtractor();
-    const testTemplate = {
+    const testTemplate: CloudFormationTemplate = {
       AWSTemplateFormatVersion: "2010-09-09",
       Resources: {
         TestRDS: { Type: "AWS::RDS::DBInstance", Properties: {} },
@@ -522,8 +498,6 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
 
   // CloudFormationTemplate型統合テスト（GREEN段階: 型推論確認）
   it('should work with CloudFormationTemplate type', async () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
-    const { TemplateParser } = require('../../../src/core/parser');
     
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
@@ -542,10 +516,9 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
 
   // ExtractResult型安全性テスト（GREEN段階: 戻り値型確認）
   it('should return properly typed ExtractResult', () => {
-    const { ResourceExtractor } = require('../../../src/core/extractor');
     
     const extractor = new ResourceExtractor();
-    const testTemplate = {
+    const testTemplate: CloudFormationTemplate = {
       AWSTemplateFormatVersion: "2010-09-09",
       Resources: {
         Test: { Type: "AWS::RDS::DBInstance", Properties: {} }
@@ -562,7 +535,7 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
     
     // 型安全性：supported配列の要素がSupportedResource型
     if (result.supported.length > 0) {
-      const resource = result.supported[0];
+      const resource = result.supported[0]!;
       expect(resource.LogicalId).toBe('Test');
       expect(resource.Type).toBe('AWS::RDS::DBInstance');
     }
@@ -768,7 +741,7 @@ describe('テストヘルパー準備（RED段階）', () => {
   // テストフィクスチャー作成確認
   it('should create mixed resources test fixture', () => {
     const mixedPath = path.join(tempDir, 'mixed-resources.json');
-    const content = JSON.parse(readFileSync(mixedPath, 'utf8'));
+    const content = JSON.parse(readFileSync(mixedPath, 'utf8')) as CloudFormationTemplate;
     
     expect(content.Resources).toBeDefined();
     expect(Object.keys(content.Resources)).toHaveLength(14);
@@ -776,7 +749,7 @@ describe('テストヘルパー準備（RED段階）', () => {
 
   it('should create large resources test fixture', () => {
     const largePath = path.join(tempDir, 'large-resources-500.json');
-    const content = JSON.parse(readFileSync(largePath, 'utf8'));
+    const content = JSON.parse(readFileSync(largePath, 'utf8')) as CloudFormationTemplate;
     
     expect(content.Resources).toBeDefined();
     expect(Object.keys(content.Resources)).toHaveLength(500);
@@ -784,7 +757,7 @@ describe('テストヘルパー準備（RED段階）', () => {
 
   it('should create ECS test cases fixture', () => {
     const ecsPath = path.join(tempDir, 'ecs-test.json');
-    const content = JSON.parse(readFileSync(ecsPath, 'utf8'));
+    const content = JSON.parse(readFileSync(ecsPath, 'utf8')) as CloudFormationTemplate;
     
     expect(content.Resources.FargateService).toBeDefined();
     expect(content.Resources.EC2Service).toBeDefined();
@@ -793,7 +766,7 @@ describe('テストヘルパー準備（RED段階）', () => {
 
   it('should create Load Balancer test cases fixture', () => {
     const lbPath = path.join(tempDir, 'loadbalancer-test.json');
-    const content = JSON.parse(readFileSync(lbPath, 'utf8'));
+    const content = JSON.parse(readFileSync(lbPath, 'utf8')) as CloudFormationTemplate;
     
     expect(content.Resources.ApplicationLB).toBeDefined();
     expect(content.Resources.NetworkLB).toBeDefined();

@@ -1,11 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as yaml from 'yaml';
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 
 /**
  * Generate a large CloudFormation template for performance testing
  */
 function generateLargeTemplate(resourceCount: number = 500): void {
-  const template: any = {
+  const template: CloudFormationTemplate = {
     AWSTemplateFormatVersion: "2010-09-09",
     Description: `Large template with ${resourceCount}+ resources for performance testing`,
     Resources: {}
@@ -76,10 +78,13 @@ function generateLargeTemplate(resourceCount: number = 500): void {
     
     // Add ProvisionedThroughput for PROVISIONED mode
     if (i % 2 !== 0) {
-      template.Resources[`DynamoDBTable${i}`].Properties.ProvisionedThroughput = {
-        ReadCapacityUnits: 5,
-        WriteCapacityUnits: 5
-      };
+      const tableResource = template.Resources[`DynamoDBTable${i}`];
+      if (tableResource?.Properties) {
+        (tableResource.Properties as Record<string, unknown>).ProvisionedThroughput = {
+          ReadCapacityUnits: 5,
+          WriteCapacityUnits: 5
+        };
+      }
     }
   }
 
@@ -189,7 +194,6 @@ function generateLargeTemplate(resourceCount: number = 500): void {
 
   // Save the template
   const outputPath = path.join(__dirname, 'large-template-500-resources.yaml');
-  const yaml = require('yaml');
   fs.writeFileSync(outputPath, yaml.stringify(template));
   
   console.log(`Generated large template with ${Object.keys(template.Resources).length} resources`);
