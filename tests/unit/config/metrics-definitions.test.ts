@@ -199,7 +199,7 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
   // RDS必須メトリクステスト（実装完了）
-  it('should define essential RDS metrics', async () => {
+  it('should define essential RDS metrics', () => {
     const essentialMetrics = ['CPUUtilization', 'DatabaseConnections', 'ReadLatency', 'WriteLatency'];
     
     essentialMetrics.forEach(metricName => {
@@ -210,7 +210,7 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
   });
 
   // RDSエンジン固有メトリクステスト（実装完了）
-  it('should define engine-specific RDS metrics', async () => {
+  it('should define engine-specific RDS metrics', () => {
     
     // MySQL specific metrics
     const binLogMetric = RDS_METRICS.find((m: unknown) => (m as TestMetric).name === 'BinLogDiskUsage');

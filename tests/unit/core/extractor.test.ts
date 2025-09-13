@@ -440,7 +440,7 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
   });
 
   // パフォーマンス監視テスト（GREEN段階: 警告確認）
-  it('should warn when extraction exceeds time limits', async () => {
+  it('should warn when extraction exceeds time limits', () => {
     
     // 通常の処理では警告は出ない想定
     const extractor = new ResourceExtractor();
@@ -475,7 +475,7 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
   });
 
   // Union型使用テスト（GREEN段階: SupportedResource確認）
-  it('should utilize SupportedResource union type', async () => {
+  it('should utilize SupportedResource union type', () => {
     
     const extractor = new ResourceExtractor();
     const testTemplate: CloudFormationTemplate = {

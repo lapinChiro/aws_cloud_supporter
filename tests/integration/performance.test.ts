@@ -203,7 +203,7 @@ describe('Performance Tests', () => {
       // Time JSON generation
       const jsonFormatter = new JSONOutputFormatter();
       const jsonStartTime = performance.now();
-      const jsonOutput = await jsonFormatter.format(analysisResult);
+      const jsonOutput = jsonFormatter.format(analysisResult);
       const jsonTime = performance.now() - jsonStartTime;
       
       // Check performance
@@ -227,7 +227,7 @@ describe('Performance Tests', () => {
       // Time HTML generation
       const htmlFormatter = new HTMLOutputFormatter();
       const htmlStartTime = performance.now();
-      const htmlOutput = await htmlFormatter.format(analysisResult);
+      const htmlOutput = htmlFormatter.format(analysisResult);
       const htmlTime = performance.now() - htmlStartTime;
       
       // Check performance

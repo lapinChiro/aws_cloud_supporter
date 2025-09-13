@@ -461,7 +461,7 @@ describe('CDK Security File Operations', () => {
       }
     });
 
-    it('should validate output directory accessibility', async () => {
+    it('should validate output directory accessibility', () => {
       // Test relative paths that should be allowed
       const relativePaths = [
         './test.ts',
