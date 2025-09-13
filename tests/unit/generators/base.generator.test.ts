@@ -1,6 +1,7 @@
 // CLAUDE.md準拠BaseMetricsGeneratorテスト（RED段階: SOLID抽象化原則 + Type-Driven）
 import { readFileSync } from 'fs';
 import path from 'path';
+
 import { BaseMetricsGenerator, validateMetricDefinition, MetricsGenerationMonitor } from '../../../src/generators/base.generator';
 import type { IMetricsGenerator } from '../../../src/interfaces/generator';
 import type { ILogger } from '../../../src/interfaces/logger';

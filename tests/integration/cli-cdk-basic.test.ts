@@ -10,8 +10,8 @@ import { MetricsAnalyzer } from '../../src/core/analyzer';
 import { HTMLOutputFormatter } from '../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { TemplateParser } from '../../src/core/parser';
-import { Logger } from '../../src/utils/logger';
 import { CDKOfficialGenerator } from '../../src/generators/cdk-official.generator';
+import { Logger } from '../../src/utils/logger';
 
 
 describe('CLI CDK Basic Integration', () => {

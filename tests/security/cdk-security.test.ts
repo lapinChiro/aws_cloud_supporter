@@ -72,12 +72,12 @@ describe('CDK Security Features', () => {
         ApiKey: string;
       }
       
-      const dbConfig = result.DatabaseConfig as unknown as DatabaseConfig;
+      const dbConfig = result.DatabaseConfig as DatabaseConfig;
       expect(dbConfig.Host).toBe('localhost');
       expect(dbConfig.Password).toBe('/* [REDACTED: Password] */');
       expect(dbConfig.Port).toBe(5432);
       
-      const apiConfig = result.ApiConfig as unknown as ApiConfig;
+      const apiConfig = result.ApiConfig as ApiConfig;
       expect(apiConfig.BaseUrl).toBe('https://api.example.com');
       expect(apiConfig.ApiKey).toBe('/* [REDACTED: ApiKey] */');
     });

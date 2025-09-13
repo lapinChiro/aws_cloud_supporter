@@ -69,7 +69,7 @@ export interface CDKStackDataOfficial {
 
 // 型変換ユーティリティ
 export function extractOfficialAlarmProps(complete: CDKAlarmComplete): cloudwatch.AlarmProps {
-  const { constructId, severity, resourceLogicalId, resourceType, ...officialProps } = complete;
+  const { constructId: _constructId, severity: _severity, resourceLogicalId: _resourceLogicalId, resourceType: _resourceType, ...officialProps } = complete;
   return officialProps;
 }
 

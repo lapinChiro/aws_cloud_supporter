@@ -1,7 +1,9 @@
 // CLAUDE.md準拠: TDD - RED段階
 // T-016: CLI完全実装テスト
 import { writeFileSync } from 'fs';
+
 import type { Command } from 'commander';
+
 import { createCLICommand } from '../../../src/cli/commands';
 import { MetricsAnalyzer } from '../../../src/core/analyzer';
 import { HTMLOutputFormatter } from '../../../src/core/formatters/html';

@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
+
 import { ResourceExtractor, ExtractionPerformanceMonitor } from '../../../src/core/extractor';
 import { TemplateParser } from '../../../src/core/parser';
 import type { CloudFormationTemplate, SupportedResource } from '../../../src/types/cloudformation';

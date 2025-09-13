@@ -140,15 +140,18 @@ export function isExtendedAnalysisResult(result: unknown): result is ExtendedAna
 }
 
 // Default mock data factories
-export const defaultMockResource: TestResourceFactory = (overrides = {}) => ({
-  Type: 'AWS::Lambda::Function',
-  Properties: {
-    Runtime: 'nodejs18.x',
-    Handler: 'index.handler',
-    ...overrides.Properties
-  },
-  ...overrides
-} as CloudFormationResource);
+export const defaultMockResource: TestResourceFactory = (overrides = {}) => {
+  const resource: CloudFormationResource = {
+    Type: 'AWS::Lambda::Function',
+    Properties: {
+      Runtime: 'nodejs18.x',
+      Handler: 'index.handler',
+      ...overrides.Properties
+    },
+    ...overrides
+  };
+  return resource;
+};
 
 export const defaultMockAnalysis: TestAnalysisFactory = (resources = []) => ({
   resources: resources.length > 0 ? resources : [
