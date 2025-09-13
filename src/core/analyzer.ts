@@ -211,12 +211,12 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
     };
     
     // 完了ログ
-    this.logger.info(`Analysis completed in ${result.metadata.processing_time_ms}ms`);
-    this.logger.info(`Analysis completed with peak memory usage: ${result.metadata.memory_peak_mb}MB`);
+    this.logger.info(`Analysis completed in ${result.metadata.processing_time_ms ?? 'unknown'}ms`);
+    this.logger.info(`Analysis completed with peak memory usage: ${result.metadata.memory_peak_mb ?? 'unknown'}MB`);
     
     // パフォーマンス警告
     if (result.metadata.processing_time_ms && result.metadata.processing_time_ms > 30000) {
-      this.logger.warn(`Processing time exceeded 30s target: ${result.metadata.processing_time_ms}ms`);
+      this.logger.warn(`Processing time exceeded 30s target: ${result.metadata.processing_time_ms ?? 'unknown'}ms`);
     }
     
     return result;

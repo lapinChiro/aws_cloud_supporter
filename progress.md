@@ -5,9 +5,9 @@
 **Total Target**: 572 problems (552 errors, 20 warnings)  
 
 ## Current Status
-- **Active Phase**: Phase 2 - Type Foundation  
-- **Current Task**: T004 - RDS Metrics Return Types
-- **Next Task**: T005 - EC2 Metrics Return Types
+- **Active Phase**: Phase 3 - Core Application Type Safety  
+- **Current Task**: T008 - Switch Exhaustiveness Fixes
+- **Next Task**: T009 - Nullish Coalescing in CDK Handler
 
 ## Task Completion Status
 
@@ -17,10 +17,10 @@
 
 ### Phase 2: Type Foundation  
 - [x] **T003**: DynamoDB Metrics Return Types - *COMPLETED* (4 errors fixed)
-- [ ] **T004**: RDS Metrics Return Types - *Not Started*
-- [ ] **T005**: EC2 Metrics Return Types - *Not Started*
-- [ ] **T006**: Remaining Metrics Config Files - *Not Started*
-- [ ] **T007**: Template Expression Type Safety - *Not Started*
+- [x] **T004**: RDS Metrics Return Types - *COMPLETED* (Already fixed)
+- [x] **T005**: EC2 Metrics Return Types - *SKIPPED* (File does not exist)
+- [x] **T006**: Remaining Metrics Config Files - *COMPLETED* (All files clean)
+- [x] **T007**: Template Expression Type Safety - *COMPLETED* (2 warnings fixed)
 
 ### Phase 3: Core Application Type Safety
 - [ ] **T008**: Switch Exhaustiveness Fixes - *Not Started*
@@ -50,7 +50,8 @@
 - **Initial**: 572 problems (552 errors, 20 warnings)
 - **After T002**: 570 problems (550 errors, 20 warnings) 
 - **After T003**: 566 problems (546 errors, 20 warnings)
-- **Current**: 566 problems (-6 total: -2 from T002, -4 from T003)
+- **After T007**: 564 problems (546 errors, 18 warnings)
+- **Current**: 564 problems (-8 total: -2 from T002, -4 from T003, -2 from T007)
 - **Target**: 0 problems
 
 ## Key Notes & Decisions
@@ -85,6 +86,42 @@
 - **Error Reduction**: 570 → 566 problems (546 errors, 20 warnings)
 - **Time Taken**: 45 minutes
 - **Status**: Completed, moving to T004
+
+### T004 - RDS Metrics Return Types (COMPLETED)
+- **File Checked**: `src/config/metrics/rds.metrics.ts`
+- **Investigation Result**: File already had correct return types
+- **Verification**: No explicit-module-boundary-types errors found
+- **Status**: Already fixed in previous work
+- **Time Taken**: 10 minutes (investigation only)
+- **Status**: Completed, moving to T005
+
+### T005 - EC2 Metrics Return Types (SKIPPED)
+- **Investigation Result**: `src/config/metrics/ec2.metrics.ts` does not exist
+- **Available Files**: lambda, ecs, alb, api-gateway, rds, dynamodb
+- **Status**: Skipped (file not found)
+- **Time Taken**: 5 minutes
+
+### T006 - Remaining Metrics Config Files (COMPLETED)
+- **Files Checked**: lambda.metrics.ts, ecs.metrics.ts, alb.metrics.ts, api-gateway.metrics.ts
+- **Investigation Result**: All files already have correct return types
+- **Verification**: No explicit-module-boundary-types errors in any metrics files
+- **Status**: Already fixed in previous work
+- **Time Taken**: 10 minutes
+- **Status**: Completed, moving to T007
+
+### T007 - Template Expression Type Safety (COMPLETED)
+- **File Fixed**: `src/core/analyzer.ts`
+- **Target Lines**: 214, 215 (original task scope)
+- **Changes Made**: 
+  - Line 214: Added `?? 'unknown'` to `processing_time_ms` template literal
+  - Line 215: Added `?? 'unknown'` to `memory_peak_mb` template literal
+  - Line 219: Added `?? 'unknown'` to `processing_time_ms` in warning message
+- **Issue**: Optional properties in `AnalysisMetadata` can be undefined
+- **Solution**: Used nullish coalescing to provide fallback values
+- **Result**: 2 restrict-template-expressions warnings fixed
+- **Error Reduction**: 566 → 564 problems (546 errors, 18 warnings)
+- **Time Taken**: 30 minutes
+- **Status**: Completed, moving to Phase 3
 
 ### Repository State
 - **Branch**: fix/lint-async-errors
