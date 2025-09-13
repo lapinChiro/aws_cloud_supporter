@@ -6,8 +6,8 @@
 
 ## Current Status
 - **Active Phase**: Phase 3 - Core Application Type Safety  
-- **Current Task**: T008 - Switch Exhaustiveness Fixes
-- **Next Task**: T009 - Nullish Coalescing in CDK Handler
+- **Current Task**: T009 - Nullish Coalescing in CDK Handler
+- **Next Task**: T010 - Nullish Coalescing in Core Analyzer
 
 ## Task Completion Status
 
@@ -23,7 +23,7 @@
 - [x] **T007**: Template Expression Type Safety - *COMPLETED* (2 warnings fixed)
 
 ### Phase 3: Core Application Type Safety
-- [ ] **T008**: Switch Exhaustiveness Fixes - *Not Started*
+- [x] **T008**: Switch Exhaustiveness Fixes - *COMPLETED* (3 errors fixed)
 - [ ] **T009**: Nullish Coalescing in CDK Handler - *Not Started*
 - [ ] **T010**: Nullish Coalescing in Core Analyzer - *Not Started*
 - [ ] **T011**: Use-Before-Define Fixes - *Not Started*
@@ -51,7 +51,8 @@
 - **After T002**: 570 problems (550 errors, 20 warnings) 
 - **After T003**: 566 problems (546 errors, 20 warnings)
 - **After T007**: 564 problems (546 errors, 18 warnings)
-- **Current**: 564 problems (-8 total: -2 from T002, -4 from T003, -2 from T007)
+- **After T008**: 563 problems (543 errors, 20 warnings)
+- **Current**: 563 problems (-9 total: -2 T002, -4 T003, -2 T007, -3 T008)
 - **Target**: 0 problems
 
 ## Key Notes & Decisions
@@ -122,6 +123,22 @@
 - **Error Reduction**: 566 → 564 problems (546 errors, 18 warnings)
 - **Time Taken**: 30 minutes
 - **Status**: Completed, moving to Phase 3
+
+### T008 - Switch Exhaustiveness Fixes (COMPLETED)
+- **Files Fixed**: 
+  - `src/cli/commands.ts` (line 165)
+  - `src/cli/utils/output-handlers.ts` (lines 55, 154)
+- **Changes Made**: 
+  - **commands.ts**: Added ErrorType.OUTPUT_ERROR and ErrorType.VALIDATION_ERROR cases
+  - **output-handlers.ts**: Added "yaml" case to 2 switch statements (duplicate methods)
+- **Switch fixes**:
+  - `ErrorType.OUTPUT_ERROR`: `log.plainError(\`Output error: \${error.message}\`)`
+  - `ErrorType.VALIDATION_ERROR`: `log.plainError(\`Validation error: \${error.message}\`)`
+  - `case 'yaml'`: Delegates to jsonFormatter for YAML output
+- **Result**: 3 switch-exhaustiveness-check violations fixed
+- **Error Reduction**: 564 → 563 problems (543 errors, 20 warnings)
+- **Time Taken**: 45 minutes
+- **Status**: Completed, moving to T009
 
 ### Repository State
 - **Branch**: fix/lint-async-errors

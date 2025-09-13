@@ -172,6 +172,12 @@ function handleError(error: unknown, options: CLIOptions, logger: ILogger): void
       case ErrorType.RESOURCE_ERROR:
         log.plainError(`Resource error: ${error.message}`);
         break;
+      case ErrorType.OUTPUT_ERROR:
+        log.plainError(`Output error: ${error.message}`);
+        break;
+      case ErrorType.VALIDATION_ERROR:
+        log.plainError(`Validation error: ${error.message}`);
+        break;
       default:
         log.plainError(`Error: ${error.message}`);
     }
