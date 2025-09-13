@@ -232,7 +232,7 @@ export class CDKValidator {
       // Clean up
       try {
         await fs.rm(tempDir, { recursive: true, force: true });
-      } catch (cleanupError) {
+      } catch {
         // Ignore cleanup errors
       }
 

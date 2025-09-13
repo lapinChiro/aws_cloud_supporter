@@ -478,9 +478,9 @@ export class JsonSchemaValidator {
     
     errors.forEach(error => {
       const pathSegments = error.path.split('.');
-      const firstSegment = pathSegments[0] || 'root';
-      const category = firstSegment.split('[')[0] || 'root'; // Remove array indices for categorization
-      categories[category] = (categories[category] || 0) + 1;
+      const firstSegment = pathSegments[0] ?? 'root';
+      const category = firstSegment.split('[')[0] ?? 'root'; // Remove array indices for categorization
+      categories[category] = (categories[category] ?? 0) + 1;
     });
     
     return {

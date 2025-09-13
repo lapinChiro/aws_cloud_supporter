@@ -55,7 +55,7 @@ export class CDKOfficialHandlebarsHelpers {
     const enumKey = String(treatMissingData);
     const mappedValue = treatMissingDataMap[enumKey];
     
-    return `cloudwatch.TreatMissingData.${mappedValue || enumKey}`;
+    return `cloudwatch.TreatMissingData.${mappedValue ?? enumKey}`;
   }
 
   /**
@@ -75,7 +75,7 @@ export class CDKOfficialHandlebarsHelpers {
     const enumKey = String(comparisonOperator);
     const mappedValue = comparisonOperatorMap[enumKey];
     
-    return `cloudwatch.ComparisonOperator.${mappedValue || enumKey}`;
+    return `cloudwatch.ComparisonOperator.${mappedValue ?? enumKey}`;
   }
 
   /**
@@ -132,7 +132,7 @@ export class CDKOfficialHandlebarsHelpers {
           period: { seconds: periodSeconds }
         };
       }
-    } catch (error) {
+    } catch {
       // Expected for test environment
     }
     

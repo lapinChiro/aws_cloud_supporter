@@ -147,7 +147,7 @@ export class CDKInputValidator {
       if (arnParts[1] !== 'aws') {
         throw new CloudSupporterError(
           ErrorType.RESOURCE_ERROR,
-          `Invalid ARN partition: Expected 'aws', got '${arnParts[1]}'`,
+          `Invalid ARN partition: Expected 'aws', got '${arnParts[1] ?? 'undefined'}'`,
           { providedArn: arn, expectedPartition: 'aws', actualPartition: arnParts[1] }
         );
       }
@@ -155,7 +155,7 @@ export class CDKInputValidator {
       if (arnParts[2] !== 'sns') {
         throw new CloudSupporterError(
           ErrorType.RESOURCE_ERROR,
-          `Invalid service: Expected 'sns', got '${arnParts[2]}'. This validator only supports SNS Topic ARNs.`,
+          `Invalid service: Expected 'sns', got '${arnParts[2] ?? 'undefined'}'. This validator only supports SNS Topic ARNs.`,
           { providedArn: arn, expectedService: 'sns', actualService: arnParts[2] }
         );
       }
