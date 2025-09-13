@@ -230,14 +230,9 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
   }
 }
 
-/**
- * Validate MetricDefinition object for correctness
- * Used by tests to ensure metric definitions meet standards
- */
-export function validateMetricDefinition(metric: Partial<MetricDefinition>): ValidationResult {
+// Helper functions to reduce complexity
+function validateStringFields(metric: Partial<MetricDefinition>): string[] {
   const errors: string[] = [];
-
-  // Required string fields
   const requiredStringFields: Array<keyof MetricDefinition> = [
     'metric_name', 'namespace', 'unit', 'description', 'statistic', 'category', 'importance'
   ];
@@ -247,19 +242,26 @@ export function validateMetricDefinition(metric: Partial<MetricDefinition>): Val
       errors.push(`${field} must be a non-empty string`);
     }
   }
+  return errors;
+}
 
-  // evaluation_period validation
+function validateEvaluationPeriod(metric: Partial<MetricDefinition>): string[] {
+  const errors: string[] = [];
+  
   if (typeof metric.evaluation_period !== 'number' || metric.evaluation_period <= 0) {
     errors.push('evaluation_period must be a positive number');
   }
 
-  // Valid evaluation periods (CloudWatch standard periods)
   const validPeriods = [60, 300, 900, 3600, 21600, 86400];
   if (metric.evaluation_period && !validPeriods.includes(metric.evaluation_period)) {
     errors.push(`evaluation_period must be one of: ${validPeriods.join(', ')}`);
   }
+  return errors;
+}
 
-  // recommended_threshold validation
+function validateThreshold(metric: Partial<MetricDefinition>): string[] {
+  const errors: string[] = [];
+  
   if (!metric.recommended_threshold || typeof metric.recommended_threshold !== 'object') {
     errors.push('recommended_threshold must be an object');
   } else {
@@ -274,20 +276,27 @@ export function validateMetricDefinition(metric: Partial<MetricDefinition>): Val
       errors.push('recommended_threshold.warning must be less than critical');
     }
   }
+  return errors;
+}
 
-  // Category validation
+function validateCategoryAndImportance(metric: Partial<MetricDefinition>): string[] {
+  const errors: string[] = [];
+  
   const validCategories = ['Performance', 'Error', 'Saturation', 'Latency'];
   if (metric.category && !validCategories.includes(metric.category)) {
     errors.push(`category must be one of: ${validCategories.join(', ')}`);
   }
 
-  // Importance validation
   const validImportance = ['High', 'Medium', 'Low'];
   if (metric.importance && !validImportance.includes(metric.importance)) {
     errors.push(`importance must be one of: ${validImportance.join(', ')}`);
   }
+  return errors;
+}
 
-  // Dimensions validation (if present)
+function validateDimensions(metric: Partial<MetricDefinition>): string[] {
+  const errors: string[] = [];
+  
   if (metric.dimensions && Array.isArray(metric.dimensions)) {
     metric.dimensions.forEach((dim, index) => {
       if (!dim.name || typeof dim.name !== 'string') {
@@ -298,6 +307,21 @@ export function validateMetricDefinition(metric: Partial<MetricDefinition>): Val
       }
     });
   }
+  return errors;
+}
+
+/**
+ * Validate MetricDefinition object for correctness
+ * Used by tests to ensure metric definitions meet standards
+ */
+export function validateMetricDefinition(metric: Partial<MetricDefinition>): ValidationResult {
+  const errors: string[] = [
+    ...validateStringFields(metric),
+    ...validateEvaluationPeriod(metric),
+    ...validateThreshold(metric),
+    ...validateCategoryAndImportance(metric),
+    ...validateDimensions(metric)
+  ];
 
   return {
     isValid: errors.length === 0,

@@ -1,17 +1,13 @@
 // CLAUDE.md準拠ResourceExtractorテスト（GREEN段階: パフォーマンス重視 + Type-Driven）
-
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
-
 import { ResourceExtractor, ExtractionPerformanceMonitor } from '../../../src/core/extractor';
 import { TemplateParser } from '../../../src/core/parser';
 import type { CloudFormationTemplate, SupportedResource } from '../../../src/types/cloudformation';
 import { isSupportedResource, isFargateService, isApplicationLoadBalancer } from '../../../src/types/cloudformation';
-
 // 全テストで使用する一時ディレクトリ
 let tempDir: string;
-
 // 全テスト前の準備
 beforeAll(() => {
   tempDir = path.join(tmpdir(), 'aws-cloud-supporter-extractor-test');
@@ -24,7 +20,6 @@ beforeAll(() => {
   // テストフィクスチャー作成
   createExtractionTestFixtures();
 });
-
 function createExtractionTestFixtures() {
   // 混在リソーステンプレート（サポート対象＋対象外）
   const mixedResourcesTemplate = {
@@ -64,7 +59,6 @@ function createExtractionTestFixtures() {
         Type: "AWS::Serverless::Api",
         Properties: { StageName: "prod" }
       },
-      
       // サポート対象外リソース（6個）
       TestS3: {
         Type: "AWS::S3::Bucket",
@@ -98,14 +92,12 @@ function createExtractionTestFixtures() {
     JSON.stringify(mixedResourcesTemplate, null, 2), 
     'utf8'
   );
-
   // 大量リソーステンプレート（正確に500個）
   const largeResourcesTemplate = {
     AWSTemplateFormatVersion: "2010-09-09",
     Description: "Large resources template for performance testing",
     Resources: {} as Record<string, unknown>
   };
-
   // 500リソース生成（サポート対象150個 + 対象外350個）
   for (let i = 0; i < 100; i++) {
     // サポート対象リソース（100個）
@@ -114,7 +106,6 @@ function createExtractionTestFixtures() {
       Properties: { Engine: "mysql", DBInstanceClass: "db.t3.micro" }
     };
   }
-  
   for (let i = 0; i < 50; i++) {
     // サポート対象リソース（50個）
     largeResourcesTemplate.Resources[`Lambda${i}`] = {
@@ -168,13 +159,11 @@ function createExtractionTestFixtures() {
       }
     }
   };
-
   writeFileSync(
     path.join(tempDir, 'ecs-test.json'),
     JSON.stringify(ecsTestTemplate, null, 2),
     'utf8'
   );
-
   // ALB/NLB判定テンプレート
   const loadBalancerTestTemplate = {
     AWSTemplateFormatVersion: "2010-09-09",
@@ -213,21 +202,17 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
       // ResourceExtractor is already imported
     }).not.toThrow(); // 実装完了で成功
   });
-
   // O(n)アルゴリズム要件テスト（GREEN段階: 実装確認）
   it('should extract resources with O(n) algorithm', () => {
     const extractor = new ResourceExtractor();
-    
     // アルゴリズムの時間計算量がO(n)であることを確認
     expect(typeof extractor.extract).toBe('function');
     expect(extractor.extract.length).toBe(1); // 引数1個（CloudFormationTemplate）
   });
-
   // 500リソース・3秒以内要件テスト（GREEN段階: パフォーマンス確認）
   it('should process 500 resources within 3 seconds', async () => {
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
-    
     const largePath = path.join(tempDir, 'large-resources-500.json');
     const template = await parser.parse(largePath);
     
@@ -532,9 +517,9 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
     
     // 型安全性：supported配列の要素がSupportedResource型
     if (result.supported.length > 0) {
-      const resource = result.supported[0]!;
-      expect(resource.LogicalId).toBe('Test');
-      expect(resource.Type).toBe('AWS::RDS::DBInstance');
+      const resource = result.supported[0];
+      expect(resource?.LogicalId).toBe('Test');
+      expect(resource?.Type).toBe('AWS::RDS::DBInstance');
     }
   });
 });

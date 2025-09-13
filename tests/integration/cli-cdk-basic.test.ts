@@ -11,6 +11,7 @@ import { HTMLOutputFormatter } from '../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { TemplateParser } from '../../src/core/parser';
 import { Logger } from '../../src/utils/logger';
+import { CDKOfficialGenerator } from '../../src/generators/cdk-official.generator';
 
 
 describe('CLI CDK Basic Integration', () => {
@@ -68,7 +69,6 @@ describe('CLI CDK Basic Integration', () => {
   describe('CDK Generation Routing', () => {
     it('should route to CDK generation when --output cdk is specified', async () => {
       // Create a spy on CDKOfficialGenerator to verify it's called
-      const CDKOfficialGenerator = require('../../src/generators/cdk-official.generator').CDKOfficialGenerator;
       const generateSpy = jest.spyOn(CDKOfficialGenerator.prototype, 'generate');
       
       // Mock the generate method to avoid actual file operations

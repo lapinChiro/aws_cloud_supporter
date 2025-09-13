@@ -309,7 +309,14 @@ describe('MetricsAnalyzer Integration Tests', () => {
         const jsonOutput = jsonFormatter.format(result);
         
         // JSON解析可能か確認
-        const parsed = JSON.parse(jsonOutput);
+        interface ParsedOutput {
+          metadata: {
+            version: string;
+            template_path: string;
+          };
+          resources: unknown[];
+        }
+        const parsed = JSON.parse(jsonOutput) as ParsedOutput;
         expect(parsed.metadata.version).toBe('1.0.0');
         expect(parsed.resources).toHaveLength(6);
         expect(parsed.metadata.template_path).toBe(tempPath);

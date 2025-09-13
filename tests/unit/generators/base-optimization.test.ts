@@ -1,21 +1,16 @@
 // CLAUDE.md準拠BaseMetricsGenerator最適化テスト（BLUE段階: リファクタリング検証）
-
 import { BaseMetricsGenerator, MetricsGenerationMonitor, validateMetricDefinition } from '../../../src/generators/base.generator';
 import type { CloudFormationResource } from '../../../src/types/cloudformation';
 import { createLogger } from '../../../src/utils/logger';
-
 // ヘルパー関数：テスト用ジェネレーター作成
 function createOptimizedTestGenerator() {
-   
   class OptimizedTestGenerator extends BaseMetricsGenerator {
     constructor() {
       super(createLogger('error'));
     }
-
     getSupportedTypes(): string[] {
       return ['AWS::Optimized::Resource'];
     }
-
     protected getMetricsConfig() {
       return Array.from({ length: 10 }, (_, i) => ({
         name: `OptimizedMetric${i}`,
@@ -33,15 +28,12 @@ function createOptimizedTestGenerator() {
         }
       }));
     }
-
     protected getResourceScale() {
       return 1.0;
     }
   }
-
   return new OptimizedTestGenerator();
 }
-
 // ヘルパー関数：テストリソース作成
 const createTestResource = (): CloudFormationResource => ({
   Type: 'AWS::Optimized::Resource',
@@ -94,10 +86,8 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
     expect(result.metrics).toHaveLength(10);
     expect(result.performanceGrade).not.toBe('F');
     expect(result.stats.generationTimeMs).toBeLessThan(1000);
-
     console.log(`⚡ 最適化パフォーマンス: ${result.performanceGrade}グレード (${result.stats.generationTimeMs}ms, ${result.stats.metricsGenerated}メトリクス)`);
   });
-
   // メトリクス検証機能の最適化確認
   it('should provide enhanced metric validation', () => {
     // 有効なメトリクス
@@ -112,11 +102,9 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
       category: 'Performance' as const,
       importance: 'High' as const
     };
-
     const validResult = validateMetricDefinition(validMetric);
     expect(validResult.isValid).toBe(true);
     expect(validResult.errors).toHaveLength(0);
-
     // 無効なメトリクス（複数エラー）
     const invalidMetric = {
       metric_name: '', // 空文字
@@ -173,28 +161,22 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
         if (resource.Properties && typeof resource.Properties === 'object') {
           const props = resource.Properties as Record<string, unknown>;
           const size = props.Size;
-          
           if (typeof size === 'number') {
             return size > 1000 ? 2.0 : 1.0;
           }
         }
-        
         return 1.0;
       }
     }
-
     const typeEnhancedGenerator = new TypeEnhancedGenerator();
     const testResourceLarge = {
       Type: 'AWS::TypeEnhanced::Resource',
       Properties: { Size: 2000 },
       LogicalId: 'TypeEnhancedLargeResource'
     };
-
     const metrics = await typeEnhancedGenerator.generate(testResourceLarge);
     expect(metrics).toHaveLength(1);
-    
     const metric = metrics[0];
-    
     // 型安全性：全フィールドが適切な型
     expect(typeof metric?.metric_name).toBe('string');
     expect(typeof metric?.namespace).toBe('string');
@@ -202,26 +184,21 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
     expect(metric?.category).toBe('Saturation');
     expect(metric?.importance).toBe('Medium');
     expect(metric?.evaluation_period).toBe(900);
-    
     // 大きなリソースに対してスケール係数2.0が適用されている確認
     const expectedWarning = Math.round(1024 * 1024 * 1024 * 2.0 * 0.8);
     const expectedCritical = Math.round(1024 * 1024 * 1024 * 2.0 * 0.9);
-    
     expect(metric?.recommended_threshold.warning).toBe(expectedWarning);
     expect(metric?.recommended_threshold.critical).toBe(expectedCritical);
   });
-
   // エラーハンドリングの最適化確認
   it('should provide optimized error handling', async () => {
     class ErrorHandlingTestGenerator extends BaseMetricsGenerator {
       constructor() {
         super(createLogger('error'));
       }
-
       getSupportedTypes(): string[] {
         return ['AWS::ErrorHandling::Test'];
       }
-
       protected getMetricsConfig() {
         return [
           {
@@ -253,23 +230,19 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
       Properties: {},
       LogicalId: 'ErrorHandlingTestResource'
     };
-
     // 条件評価エラーでもメトリクス生成は継続される（適用外として処理）
     const metrics = await errorHandlingGenerator.generate(testResource);
     expect(metrics).toHaveLength(0); // 条件評価失敗によりメトリクス適用外
   });
-
   // SOLID原則準拠の確認（全5原則）
   it('should demonstrate SOLID principles compliance', () => {
     // 静的importで型安全なアクセス
     interface BaseGeneratorPrototype {
       generate?: () => unknown;
     }
-
     // S: Single Responsibility - メトリクス生成のみ
     const basePrototype = BaseMetricsGenerator.prototype as unknown as BaseGeneratorPrototype;
     expect(basePrototype.generate).toBeDefined();
-
     // O: Open/Closed - 拡張開放、変更閉鎖
     class ExtensionTestGenerator extends BaseMetricsGenerator {
       constructor() {
@@ -279,32 +252,25 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
       protected getMetricsConfig() { return []; }
       protected getResourceScale() { return 1.0; }
     }
-    
     const extensionTest = new ExtensionTestGenerator();
     expect(extensionTest).toBeInstanceOf(BaseMetricsGenerator);
-
     // L: Liskov Substitution - 子クラス置換可能
     const baseGenerators = [extensionTest];
     expect(baseGenerators[0]).toBeInstanceOf(BaseMetricsGenerator);
-
     // I: Interface Segregation - 必要最小限インターフェース
     expect(typeof extensionTest.generate).toBe('function');
-
     // D: Dependency Inversion - 抽象化への依存（ILogger）
     expect(extensionTest).toBeDefined();
   });
-
   // 統合パフォーマンステスト（BLUE段階総合確認）
   it('should demonstrate overall optimization effectiveness', async () => {
     class ComprehensiveTestGenerator extends BaseMetricsGenerator {
       constructor() {
         super(createLogger('info'));
       }
-
       getSupportedTypes(): string[] {
         return ['AWS::Comprehensive::Test'];
       }
-
       protected getMetricsConfig() {
         // 様々なパターンのメトリクス設定
         return [

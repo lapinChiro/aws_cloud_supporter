@@ -1,16 +1,12 @@
 // CLAUDE.md準拠BaseMetricsGeneratorテスト（RED段階: SOLID抽象化原則 + Type-Driven）
-
 import { readFileSync } from 'fs';
 import path from 'path';
-
 import { BaseMetricsGenerator, validateMetricDefinition, MetricsGenerationMonitor } from '../../../src/generators/base.generator';
 import type { IMetricsGenerator } from '../../../src/interfaces/generator';
 import type { ILogger } from '../../../src/interfaces/logger';
 import { createLogger } from '../../../src/utils/logger';
 import { createMockLogger, measureGeneratorPerformance } from '../../helpers';
-
 describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', () => {
-
   // GREEN段階: BaseMetricsGenerator実装確認
   it('should implement BaseMetricsGenerator successfully', () => {
     expect(() => {
@@ -18,14 +14,11 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
       expect(BaseMetricsGenerator).toBeDefined();
     }).not.toThrow(); // 実装完了で成功
   });
-
   // 抽象クラス設計テスト（GREEN段階: 実装確認）
   it('should define proper abstract base class', () => {
-    
     // 抽象クラスが定義されている確認
     expect(BaseMetricsGenerator).toBeDefined();
     expect(typeof BaseMetricsGenerator).toBe('function');
-    
     // 抽象クラスの特性確認（TypeScriptでは実行時チェックなし）
     // 代わりに抽象メソッドの存在を確認
     expect(typeof BaseMetricsGenerator).toBe('function');

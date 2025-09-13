@@ -117,12 +117,12 @@ describe('CDK SNS Integration (Official Types)', () => {
       // Should have one SNS topic
       const snsTopicMatches = result.match(/new sns\.Topic/g);
       expect(snsTopicMatches).not.toBeNull();
-      expect(snsTopicMatches!.length).toBe(1); // Only one SNS topic
+      expect(snsTopicMatches?.length).toBe(1); // Only one SNS topic
       
       // Should add actions to all alarms (2 resources × 2 metrics × 2 severities = 8 actions)
       const snsActionMatches = result.match(/\.addAlarmAction/g);
       expect(snsActionMatches).not.toBeNull();
-      expect(snsActionMatches!.length).toBe(8); // All alarms should have SNS action
+      expect(snsActionMatches?.length).toBe(8); // All alarms should have SNS action
     });
   });
 

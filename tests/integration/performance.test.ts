@@ -124,9 +124,13 @@ describe('Performance Tests', () => {
       console.log('========================================');
       
       // Higher concurrency should generally be faster
-      const single = results.find(r => r.concurrency === 1)!;
-      const parallel = results.find(r => r.concurrency === 10)!;
-      expect(parallel.time).toBeLessThan(single.time * 0.8); // At least 20% faster
+      const single = results.find(r => r.concurrency === 1);
+      const parallel = results.find(r => r.concurrency === 10);
+      expect(single).toBeDefined();
+      expect(parallel).toBeDefined();
+      if (single && parallel) {
+        expect(parallel.time).toBeLessThan(single.time * 0.8); // At least 20% faster
+      }
     });
   });
 
@@ -213,7 +217,7 @@ describe('Performance Tests', () => {
       console.log(`JSON generation: ${jsonTime.toFixed(0)}ms for ${(jsonOutput.length / 1024).toFixed(0)}KB`);
       
       // Verify JSON is valid
-      expect(() => JSON.parse(jsonOutput)).not.toThrow();
+      expect(() => { JSON.parse(jsonOutput); }).not.toThrow();
     });
 
     test('Should generate large HTML outputs efficiently', async () => {

@@ -106,7 +106,7 @@ describe('All Resource Types CDK Generation (Official Types)', () => {
       // 3 resources × 1 metric × 2 severities = 6 alarms
       const alarmMatches = result.match(/new cloudwatch\.Alarm/g);
       expect(alarmMatches).not.toBeNull();
-      expect(alarmMatches!.length).toBe(6);
+      expect(alarmMatches?.length).toBe(6);
     });
   });
 });

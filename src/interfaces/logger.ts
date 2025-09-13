@@ -24,7 +24,7 @@ export interface ILogger {
   /**
    * Log error message
    */
-  error(message: string, error?: Error | unknown, ...args: unknown[]): void;
+  error(message: string, error?: unknown, ...args: unknown[]): void;
   
   /**
    * Log success message

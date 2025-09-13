@@ -38,7 +38,7 @@ export class HTMLUtility implements IHTMLUtility {
       'Bytes/Second': 'B/s'
     };
 
-    const shortUnit = unitMap[unit] || unit;
+    const shortUnit = unitMap[unit] ?? unit;
 
     // 数値フォーマット
     if (value >= 1000) {

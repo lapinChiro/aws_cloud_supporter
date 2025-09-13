@@ -50,7 +50,7 @@ describe('CDKOfficialGenerator', () => {
       const invalidOptions: CDKOptions = { enabled: true };
 
       await expect(
-        generator.generate(null as any, invalidOptions)
+        generator.generate(null as unknown as ExtendedAnalysisResult, invalidOptions)
       ).rejects.toThrow('Analysis result is required');
     });
 

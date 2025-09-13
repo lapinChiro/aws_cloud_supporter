@@ -1,10 +1,7 @@
 // CLAUDE.md準拠: TDD - RED段階
 // T-016: CLI完全実装テスト
-
 import { writeFileSync } from 'fs';
-
 import type { Command } from 'commander';
-
 import { createCLICommand } from '../../../src/cli/commands';
 import { MetricsAnalyzer } from '../../../src/core/analyzer';
 import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
@@ -12,7 +9,6 @@ import { JSONOutputFormatter } from '../../../src/core/json-formatter';
 import { TemplateParser } from '../../../src/core/parser';
 import { CloudSupporterError, ErrorType } from '../../../src/utils/error';
 import { Logger } from '../../../src/utils/logger';
-
 // モック
 jest.mock('../../../src/core/analyzer');
 jest.mock('../../../src/core/parser');
@@ -23,7 +19,6 @@ jest.mock('fs', () => ({
   ...jest.requireActual('fs'),
   writeFileSync: jest.fn()
 }));
-
 describe('CLI Commands (T-016)', () => {
   let program: Command;
   let mockAnalyzer: jest.Mocked<MetricsAnalyzer>;
@@ -74,19 +69,16 @@ describe('CLI Commands (T-016)', () => {
       {} as any,
       {} as any,
     ) as jest.Mocked<MetricsAnalyzer>;
-    
     mockParser = new TemplateParser() as jest.Mocked<TemplateParser>;
     mockJSONFormatter = new JSONOutputFormatter() as jest.Mocked<JSONOutputFormatter>;
     mockHTMLFormatter = new HTMLOutputFormatter() as jest.Mocked<HTMLOutputFormatter>;
     mockLogger = new Logger() as jest.Mocked<Logger>;
-
     // スパイ設定
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     processExitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {
       throw new Error('process.exit called');
     });
-
     // CommandをCLIコマンドで初期化
     program = createCLICommand({
       analyzer: mockAnalyzer,
@@ -119,7 +111,6 @@ describe('CLI Commands (T-016)', () => {
       // Test that the argument is properly configured by checking command usage
       const usage = program.usage();
       expect(usage).toContain('<template>');
-      
       // Alternative: check that the argument is in the help text
       const helpText = program.helpInformation();
       expect(helpText).toContain('template');
@@ -201,7 +192,6 @@ describe('CLI Commands (T-016)', () => {
     });
 
     it('should filter resource types when --resource-types is provided', async () => {
-      
       mockAnalyzer.analyze.mockResolvedValue(mockAnalysisResult);
       mockJSONFormatter.format.mockResolvedValue('{"filtered": true}');
 
@@ -492,9 +482,7 @@ describe('CLI Commands (T-016)', () => {
 
       mockAnalyzer.analyze.mockResolvedValue(resultWithLowMetrics);
       mockJSONFormatter.format.mockResolvedValue('{}');
-
       await program.parseAsync(['node', 'cli', 'test.yaml', '--include-low']);
-
       // 全てのメトリクスが含まれることを確認
       expect(mockJSONFormatter.format).toHaveBeenCalledWith(
         expect.objectContaining({

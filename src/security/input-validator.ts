@@ -139,7 +139,7 @@ export class CDKInputValidator {
       if (arnParts[0] !== 'arn') {
         throw new CloudSupporterError(
           ErrorType.RESOURCE_ERROR,
-          `Invalid ARN prefix: Expected 'arn', got '${arnParts[0]}'`,
+          `Invalid ARN prefix: Expected 'arn', got '${arnParts[0] ?? 'undefined'}'`,
           { providedArn: arn, expectedPrefix: 'arn', actualPrefix: arnParts[0] }
         );
       }

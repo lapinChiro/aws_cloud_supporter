@@ -1,6 +1,5 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + セキュリティ重視
 // tasks.md T-009: セキュリティ機能テスト
-
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
@@ -8,7 +7,6 @@ import * as path from 'path';
 import { CDKInputValidator } from '../../src/security/input-validator';
 import { CDKSecuritySanitizer } from '../../src/security/sanitizer';
 import { CloudSupporterError } from '../../src/utils/error';
-
 
 describe('CDK Security Features', () => {
   describe('Sensitive Data Sanitization', () => {
@@ -63,12 +61,25 @@ describe('CDK Security Features', () => {
       
       const result = CDKSecuritySanitizer.sanitizeForCDK(input);
       
-      expect((result.DatabaseConfig as any).Host).toBe('localhost');
-      expect((result.DatabaseConfig as any).Password).toBe('/* [REDACTED: Password] */');
-      expect((result.DatabaseConfig as any).Port).toBe(5432);
+      // Type assertions for nested objects
+      interface DatabaseConfig {
+        Host: string;
+        Password: string;
+        Port: number;
+      }
+      interface ApiConfig {
+        BaseUrl: string;
+        ApiKey: string;
+      }
       
-      expect((result.ApiConfig as any).BaseUrl).toBe('https://api.example.com');
-      expect((result.ApiConfig as any).ApiKey).toBe('/* [REDACTED: ApiKey] */');
+      const dbConfig = result.DatabaseConfig as unknown as DatabaseConfig;
+      expect(dbConfig.Host).toBe('localhost');
+      expect(dbConfig.Password).toBe('/* [REDACTED: Password] */');
+      expect(dbConfig.Port).toBe(5432);
+      
+      const apiConfig = result.ApiConfig as unknown as ApiConfig;
+      expect(apiConfig.BaseUrl).toBe('https://api.example.com');
+      expect(apiConfig.ApiKey).toBe('/* [REDACTED: ApiKey] */');
     });
 
     it('should sanitize array elements containing sensitive data', () => {
@@ -402,7 +413,19 @@ describe('CDK Security Features', () => {
       
       const result = CDKSecuritySanitizer.sanitizeForCDK(input);
       
-      expect((result.Level1 as any).Level2.Level3.Password).toBe('/* [REDACTED: Password] */');
+      // Type assertion for deeply nested structure
+      interface NestedStructure {
+        Level1: {
+          Level2: {
+            Level3: {
+              Password: string;
+            };
+          };
+        };
+      }
+      
+      const nested = result as unknown as NestedStructure;
+      expect(nested.Level1.Level2.Level3.Password).toBe('/* [REDACTED: Password] */');
     });
 
     it('should validate sanitization effectiveness', () => {

@@ -45,7 +45,7 @@ export class RDSMetricsGenerator extends BaseMetricsGenerator {
   protected getResourceScale(resource: CloudFormationResource): number {
     const rds = resource as RDSDBInstance;
     const properties = rds.Properties;
-    const instanceClass = properties?.DBInstanceClass || 'db.t3.micro';
+    const instanceClass = properties?.DBInstanceClass ?? 'db.t3.micro';
     
     // インスタンスクラス別スケール係数（AWS公式準拠）
     const scaleMap: Record<string, number> = {
@@ -119,6 +119,6 @@ export class RDSMetricsGenerator extends BaseMetricsGenerator {
     };
     
     // CLAUDE.md準拠: KISS原則（デフォルト値で将来の型対応）
-    return scaleMap[instanceClass] || 1.0;
+    return scaleMap[instanceClass] ?? 1.0;
   }
 }

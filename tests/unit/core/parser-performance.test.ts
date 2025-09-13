@@ -4,7 +4,7 @@ import { writeFileSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
 
-import { TemplateParser } from '../../../src/core/parser';
+import { TemplateParser, isJSONFile, isYAMLFile, isSupportedTemplateFile } from '../../../src/core/parser';
 import { CloudSupporterError } from '../../../src/utils/error';
 
 describe('TemplateParser最適化（CLAUDE.md: BLUE段階）', () => {
@@ -37,8 +37,6 @@ describe('TemplateParser最適化（CLAUDE.md: BLUE段階）', () => {
 
   // ファイル形式判定関数テスト（型安全性）
   it('should accurately detect file formats', () => {
-    const { isJSONFile, isYAMLFile, isSupportedTemplateFile } = require('../../../src/core/parser');
-
     expect(isJSONFile('template.json')).toBe(true);
     expect(isJSONFile('template.JSON')).toBe(true); // 大文字小文字対応
     expect(isJSONFile('template.yaml')).toBe(false);
@@ -121,7 +119,7 @@ Description: 'Template without Resources section'
     const mediumTemplate = {
       AWSTemplateFormatVersion: "2010-09-09",
       Description: "Medium size template",
-      Resources: {} as Record<string, unknown>
+      Resources: {} satisfies Record<string, unknown>
     };
     
     for (let i = 0; i < 1000; i++) {

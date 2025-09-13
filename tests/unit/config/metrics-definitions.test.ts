@@ -44,19 +44,15 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 
   // 116個メトリクス総数テスト（GREEN段階: 総数確認）
   it('should define exactly 116 metrics across all resource types', () => {
-    
     expect(METRICS_STATISTICS.totalCount).toBe(117); // 調整後の実装値
-    
     console.log(`📊 総メトリクス数: ${METRICS_STATISTICS.totalCount}`);
     console.log(`📋 リソース別内訳:`, METRICS_STATISTICS.byResourceType);
   });
 
   // RDS 27個メトリクステスト（GREEN段階: AWS CloudWatch準拠確認）
   it('should define 27 RDS metrics according to AWS CloudWatch spec', () => {
-    
     expect(RDS_METRICS).toHaveLength(26);
     expect(METRICS_STATISTICS.byResourceType.RDS).toBe(26);
-    
     // 必須メトリクス存在確認
     const rdsMetricNames = RDS_METRICS.map((m: unknown) => (m as TestMetric).name);
     expect(rdsMetricNames).toContain('CPUUtilization');
@@ -68,10 +64,8 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 
   // Lambda 18個メトリクステスト（GREEN段階: AWS CloudWatch準拠確認）
   it('should define 18 Lambda metrics according to AWS CloudWatch spec', () => {
-    
     expect(LAMBDA_METRICS).toHaveLength(18);
     expect(METRICS_STATISTICS.byResourceType.Lambda).toBe(18);
-    
     // 必須メトリクス存在確認
     const lambdaMetricNames = LAMBDA_METRICS.map((m: unknown) => (m as TestMetric).name);
     expect(lambdaMetricNames).toContain('Duration');
@@ -83,10 +77,8 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 
   // ECS 17個メトリクステスト（GREEN段階: AWS CloudWatch準拠確認）
   it('should define 17 ECS metrics according to AWS CloudWatch spec', () => {
-    
     expect(ECS_METRICS).toHaveLength(17);
     expect(METRICS_STATISTICS.byResourceType.ECS).toBe(17);
-    
     // Fargate特化メトリクス確認
     const ecsMetricNames = ECS_METRICS.map((m: unknown) => (m as TestMetric).name);
     expect(ecsMetricNames).toContain('CPUUtilization');
@@ -96,10 +88,8 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 
   // ALB 18個メトリクステスト（GREEN段階: AWS CloudWatch準拠確認）
   it('should define 18 ALB metrics according to AWS CloudWatch spec', () => {
-    
     expect(ALB_METRICS).toHaveLength(20);
     expect(METRICS_STATISTICS.byResourceType.ALB).toBe(20);
-    
     // 必須メトリクス存在確認
     const albMetricNames = ALB_METRICS.map((m: unknown) => (m as TestMetric).name);
     expect(albMetricNames).toContain('RequestCount');
@@ -111,10 +101,8 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 
   // DynamoDB 22個メトリクステスト（GREEN段階: AWS CloudWatch準拠確認）
   it('should define 22 DynamoDB metrics according to AWS CloudWatch spec', () => {
-    
     expect(DYNAMODB_METRICS).toHaveLength(22);
     expect(METRICS_STATISTICS.byResourceType.DynamoDB).toBe(22);
-    
     // 必須メトリクス存在確認
     const dynamoMetricNames = DYNAMODB_METRICS.map((m: unknown) => (m as TestMetric).name);
     expect(dynamoMetricNames).toContain('ConsumedReadCapacityUnits');
@@ -125,10 +113,8 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 
   // API Gateway 14個メトリクステスト（GREEN段階: AWS CloudWatch準拠確認）
   it('should define 14 API Gateway metrics according to AWS CloudWatch spec', () => {
-    
     expect(API_GATEWAY_METRICS).toHaveLength(14);
     expect(METRICS_STATISTICS.byResourceType.APIGateway).toBe(14);
-    
     // 必須メトリクス存在確認
     const apiMetricNames = API_GATEWAY_METRICS.map((m: unknown) => (m as TestMetric).name);
     expect(apiMetricNames).toContain('Count');
@@ -153,7 +139,6 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
     expect(METRICS_CONFIG_MAP['AWS::RDS::DBInstance']).toBe(RDS_METRICS);
     expect(METRICS_CONFIG_MAP['AWS::Lambda::Function']).toBe(LAMBDA_METRICS);
     expect(METRICS_CONFIG_MAP['AWS::Serverless::Function']).toBe(LAMBDA_METRICS); // 同じ定義再利用
-    
     // 共通プロパティの一貫性確認
     const allMetrics: TestMetric[] = Object.values(METRICS_CONFIG_MAP).flat() as TestMetric[];
     allMetrics.forEach((metric: TestMetric) => {
@@ -181,7 +166,6 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
     allMetrics.forEach((metric: unknown) => {
       expect(validStatistics).toContain((metric as TestMetric).statistic);
     });
-    
     // AWS CloudWatch標準評価期間使用確認
     const validPeriods = [60, 300, 900, 3600];
     allMetrics.forEach((metric: unknown) => {
@@ -191,11 +175,9 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 });
 
 describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
-
   // RDS必須メトリクステスト（実装完了）
   it('should define essential RDS metrics', () => {
     const essentialMetrics = ['CPUUtilization', 'DatabaseConnections', 'ReadLatency', 'WriteLatency'];
-    
     essentialMetrics.forEach(metricName => {
       const metric = RDS_METRICS.find((m: unknown) => (m as TestMetric).name === metricName);
       expect(metric).toBeDefined();
@@ -205,12 +187,10 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
   // RDSエンジン固有メトリクステスト（実装完了）
   it('should define engine-specific RDS metrics', () => {
-    
     // MySQL specific metrics
     const binLogMetric = RDS_METRICS.find((m: unknown) => (m as TestMetric).name === 'BinLogDiskUsage');
     expect(binLogMetric).toBeDefined();
     expect(binLogMetric?.applicableWhen).toBeDefined();
-    
     // Burstable instance metrics
     const creditMetrics = RDS_METRICS.filter((m: unknown) => (m as TestMetric).name.includes('Credit'));
     expect(creditMetrics.length).toBeGreaterThan(0);
@@ -218,10 +198,8 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
   // RDS条件付きメトリクステスト（実装完了）
   it('should define conditional RDS metrics with applicableWhen',  () => {
-    
     const conditionalMetrics = RDS_METRICS.filter((m: unknown) => (m as TestMetric).applicableWhen);
     expect(conditionalMetrics.length).toBeGreaterThan(0);
-    
     // Test applicableWhen functions are functions
     conditionalMetrics.forEach((metric: unknown) => {
       expect(typeof (metric as TestMetric).applicableWhen).toBe('function');
@@ -230,7 +208,6 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
   // RDSしきい値妥当性テスト（実装完了）
   it('should define valid RDS thresholds',  () => {
-    
     RDS_METRICS.forEach((metric: unknown) => {
       expect((metric as TestMetric).threshold).toBeDefined();
       expect((metric as TestMetric).threshold.base).toBeGreaterThanOrEqual(0);
@@ -243,11 +220,9 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 });
 
 describe('Lambdaメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
-
   // Lambda必須メトリクステスト（実装完了）
   it('should define essential Lambda metrics',  () => {
     const essentialMetrics = ['Duration', 'Errors', 'Invocations', 'Throttles'];
-    
     essentialMetrics.forEach(metricName => {
       const metric = LAMBDA_METRICS.find((m: unknown) => (m as TestMetric).name === metricName);
       expect(metric).toBeDefined();
@@ -258,9 +233,7 @@ describe('Lambdaメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
   // Lambdaパフォーマンスメトリクステスト（実装完了）
   it('should define Lambda performance metrics',  () => {
     const performanceMetrics = LAMBDA_METRICS.filter((m: unknown) => (m as TestMetric).category === 'Performance');
-    
     expect(performanceMetrics.length).toBeGreaterThan(0);
-    
     const durationMetric = LAMBDA_METRICS.find((m: unknown) => (m as TestMetric).name === 'Duration');
     expect(durationMetric).toBeDefined();
     expect(durationMetric?.category).toBe('Performance');

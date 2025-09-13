@@ -57,15 +57,17 @@ describe('MetricsAnalyzer Coverage Tests', () => {
 
       // Mock memory usage to exceed limit immediately
       const originalMemoryUsage = process.memoryUsage;
-      const mockMemoryUsage = jest.fn().mockReturnValue({
+      const mockMemoryUsage = jest.fn<NodeJS.MemoryUsage, []>().mockReturnValue({
         heapUsed: 300 * 1024 * 1024, // 300MB
         heapTotal: 400 * 1024 * 1024,
         external: 0,
         rss: 500 * 1024 * 1024,
         arrayBuffers: 0
-      }) as any;
-      mockMemoryUsage.rss = jest.fn().mockReturnValue(500 * 1024 * 1024);
-      process.memoryUsage = mockMemoryUsage;
+      });
+      const mockMemoryUsageWithRss = Object.assign(mockMemoryUsage, {
+        rss: jest.fn().mockReturnValue(500 * 1024 * 1024)
+      });
+      process.memoryUsage = mockMemoryUsageWithRss as unknown as typeof process.memoryUsage;
 
       await expect(analyzer.analyze('template.yaml', {
         memoryLimit: 256 * 1024 * 1024 // 256MB limit

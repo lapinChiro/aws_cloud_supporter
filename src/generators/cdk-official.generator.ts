@@ -88,7 +88,7 @@ export class CDKOfficialGenerator {
       
       // 5. テンプレート適用
       await this.loadTemplate();
-      const generatedCode = this.template?.(templateData) || '';
+      const generatedCode = this.template?.(templateData) ?? '';
       
       // 6. フォーマット
       const formattedCode = this.formatCode(generatedCode);
@@ -339,7 +339,7 @@ export class CDKOfficialGenerator {
     const snsConfig = this.buildOfficialSNSConfiguration(options);
 
     const stackData: CDKStackDataOfficial = {
-      stackClassName: options.stackName || 'CloudWatchAlarmsStack',
+      stackClassName: options.stackName ?? 'CloudWatchAlarmsStack',
       alarms,
       metadata: {
         generatedAt: new Date().toISOString(),
@@ -407,7 +407,7 @@ export class CDKOfficialGenerator {
         topicProps: {
           topicName: 'CloudWatchAlarmNotifications',
           displayName: 'CloudWatch Alarm Notifications'
-        } as sns.TopicProps // 公式型使用
+        } satisfies sns.TopicProps // 公式型使用
       };
     }
     return undefined;

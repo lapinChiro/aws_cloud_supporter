@@ -1,19 +1,15 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + 型安全性
 // tasks.md T-005: MVP統合テスト・動作確認
-
 import { spawn } from 'child_process';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-
 describe('CDK MVP Integration Tests', () => {
   let testOutputDir: string;
-
   beforeEach(async () => {
     // Create temporary output directory for file tests
     testOutputDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-mvp-test-'));
   });
-
   afterEach(async () => {
     // Clean up test output directory
     try {
@@ -22,7 +18,6 @@ describe('CDK MVP Integration Tests', () => {
       // Ignore cleanup errors
     }
   });
-
   describe('Basic CDK Generation Functionality', () => {
     it('should generate valid CDK Stack for RDS resources', async () => {
       const result = await runCLICommand([

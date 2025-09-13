@@ -87,7 +87,7 @@ export class TemplateParser implements ITemplateParser {
       // ファイルアクセスエラー（ENOENT等）
       const nodeError = error as NodeJS.ErrnoException;
       throw createFileError(
-        `Cannot access file: ${nodeError.code}`,
+        `Cannot access file: ${nodeError.code ?? 'Unknown error'}`,
         filePath,
         nodeError.code ? { error: nodeError.code } : {}
       );
@@ -189,7 +189,7 @@ export class TemplateParser implements ITemplateParser {
         const position = parseInt(positionMatch[1], 10);
         const lines = content.substring(0, position).split('\n');
         const lineNumber = lines.length;
-        const columnNumber = lines[lines.length - 1]?.length || 0;
+        const columnNumber = lines[lines.length - 1]?.length ?? 0;
         const nearText = content.substring(
           Math.max(0, position - 50), 
           Math.min(content.length, position + 50)

@@ -5,6 +5,7 @@ import { tmpdir } from 'os';
 import path from 'path';
 
 import { TemplateParser } from '../../../src/core/parser';
+import { isSupportedResource } from '../../../src/types/cloudformation';
 
 describe('TemplateParser実テンプレート統合（CLAUDE.md: 実用性確認）', () => {
   let parser: TemplateParser;
@@ -57,8 +58,6 @@ describe('TemplateParser実テンプレート統合（CLAUDE.md: 実用性確認
     const template = await parser.parse(basicTemplatePath);
     
     // 型安全なリソース識別
-    const { isSupportedResource } = require('../../../src/types/cloudformation');
-    
     let supportedCount = 0;
     let totalCount = 0;
     

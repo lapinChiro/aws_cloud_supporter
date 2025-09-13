@@ -1,16 +1,13 @@
 // MetricsAnalyzer統合テスト - 20パターン実装
 // CLAUDE.md準拠: No any types、TDD実践、Zero type errors
-
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
-
 import { MetricsAnalyzer } from '../../src/core/analyzer';
 import { HTMLOutputFormatter } from '../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { TemplateParser } from '../../src/core/parser';
 import { Logger } from '../../src/utils/logger';
-
 // カスタムマッチャー型定義
 declare global {
   namespace jest {
@@ -22,27 +19,21 @@ declare global {
     }
   }
 }
-
 // フィクスチャパス
 const FIXTURES_PATH = path.join(__dirname, '..', 'fixtures', 'templates');
-
 describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
   let analyzer: MetricsAnalyzer;
-  
   beforeAll(() => {
     const parser = new TemplateParser();
     const logger = new Logger('debug', false);
     analyzer = new MetricsAnalyzer(parser, logger);
   });
-
   describe('1. Complete Application Templates', () => {
     test('1-1: Web application complete template with all 6 resource types', async () => {
       const templatePath = path.join(FIXTURES_PATH, 'web-app-complete.yaml');
       const result = await analyzer.analyze(templatePath, { outputFormat: 'json' });
-
       expect(result.metadata.supported_resources).toBeGreaterThanOrEqual(6);
       expect(result.resources.length).toBeGreaterThanOrEqual(6);
-      
       // All resource types present
       const resourceTypes = result.resources.map(r => r.resource_type);
       expect(resourceTypes).toContain('AWS::RDS::DBInstance');
@@ -51,24 +42,19 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       expect(resourceTypes).toContain('AWS::ElasticLoadBalancingV2::LoadBalancer');
       expect(resourceTypes).toContain('AWS::DynamoDB::Table');
       expect(resourceTypes).toContain('AWS::ApiGateway::RestApi');
-      
       // Verify metrics count
       const totalMetrics = result.resources.reduce((sum, r) => sum + r.metrics.length, 0);
       expect(totalMetrics).toBeGreaterThan(100);
-      
       // Security: passwords sanitized
       const rdsResource = result.resources.find(r => r.resource_type === 'AWS::RDS::DBInstance');
       expect(rdsResource?.resource_properties.MasterUserPassword).toBe('[REDACTED]');
     });
-
     test('1-2: Serverless application template with SAM transform', async () => {
       const templatePath = path.join(FIXTURES_PATH, 'serverless-application.yaml');
       const result = await analyzer.analyze(templatePath, { outputFormat: 'json' });
-
       expect(result.resources).toContainResourceType('AWS::Serverless::Function');
       expect(result.resources).toContainResourceType('AWS::Serverless::Api');
       expect(result.resources).toContainResourceType('AWS::DynamoDB::Table');
-      
       // Verify serverless-specific metrics
       const serverlessFunction = result.resources.find(r => 
         r.resource_type === 'AWS::Serverless::Function'
@@ -76,11 +62,9 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       expect(serverlessFunction?.metrics).toContainMetric('ConcurrentExecutions');
       expect(serverlessFunction?.metrics).toContainMetric('Duration');
     });
-
     test('1-3: Minimal Lambda template', async () => {
       const templatePath = path.join(FIXTURES_PATH, 'minimal-lambda.yaml');
       const result = await analyzer.analyze(templatePath, { outputFormat: 'json' });
-
       expect(result.metadata.total_resources).toBe(1);
       expect(result.metadata.supported_resources).toBe(1);
       expect(result.resources).toHaveLength(1);
@@ -88,7 +72,6 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       expect(result.resources[0]?.metrics.length).toBeGreaterThanOrEqual(15);
     });
   });
-
   describe('2. Large Scale & Performance', () => {
     test('2-1: Large template with 478 resources', async () => {
       const templatePath = path.join(FIXTURES_PATH, 'large-template-500-resources.yaml');
@@ -104,7 +87,6 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       // Performance requirements
       expect(duration).toBeLessThan(30000); // 30 seconds
       expect(result.metadata.processing_time_ms).toBeLessThan(30000);
-      
       // Resource counts
       expect(result.metadata.total_resources).toBeGreaterThan(450);
       expect(result.resources.length).toBeGreaterThan(300);
@@ -112,13 +94,10 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       // Verify parallel processing worked
       const metricsPerMs = result.resources.length / (result.metadata.processing_time_ms || 1);
       expect(metricsPerMs).toBeGreaterThan(0.01); // At least 0.01 resources per ms
-      
       console.log(`Performance: ${result.resources.length} resources processed in ${duration.toFixed(0)}ms`);
     });
-
     test('2-2: Memory limit enforcement', async () => {
       const templatePath = path.join(FIXTURES_PATH, 'web-app-complete.yaml');
-      
       // Test with extremely low memory limit
       await expect(analyzer.analyze(templatePath, {
         outputFormat: 'json',
@@ -126,32 +105,25 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       })).rejects.toThrow(/Memory usage (already exceeds limit|exceeded)/);
     });
   });
-
   describe('3. Edge Cases & Error Handling', () => {
     test('3-1: Empty resources template', async () => {
       const templatePath = path.join(FIXTURES_PATH, 'empty-resources.yaml');
-      
       // Should throw error for empty resources section
       await expect(analyzer.analyze(templatePath, { outputFormat: 'json' }))
         .rejects.toThrow(/Template Resources section is empty/);
     });
-
     test('3-2: Invalid YAML syntax', async () => {
       const templatePath = path.join(FIXTURES_PATH, 'invalid-yaml.yaml');
-      
       await expect(analyzer.analyze(templatePath, {
         outputFormat: 'json'
       })).rejects.toThrow();
     });
-
     test('3-3: Non-existent file path', async () => {
       const fakePath = path.join(FIXTURES_PATH, 'non-existent-file.yaml');
-      
       await expect(analyzer.analyze(fakePath, {
         outputFormat: 'json'
       })).rejects.toThrow();
     });
-
     test('3-4: Mixed supported and unsupported resources', async () => {
       const template = {
         AWSTemplateFormatVersion: '2010-09-09',
@@ -167,10 +139,8 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       const tempPath = path.join(__dirname, 'mixed-resources.yaml');
       const yaml = (await import('yaml')).stringify(template);
       await fs.writeFile(tempPath, yaml);
-
       try {
         const result = await analyzer.analyze(tempPath, { outputFormat: 'json' });
-        
         expect(result.metadata.total_resources).toBe(5);
         expect(result.metadata.supported_resources).toBe(2);
         expect(result.resources).toHaveLength(2);
@@ -182,7 +152,6 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       }
     });
   });
-
   describe('4. Resource-Specific Behavior', () => {
     test('4-1: RDS with different engines', async () => {
       const template = {
@@ -205,17 +174,13 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
           }
         }
       };
-
       const tempPath = path.join(__dirname, 'rds-engines.yaml');
       const yaml = (await import('yaml')).stringify(template);
       await fs.writeFile(tempPath, yaml);
-
       try {
         const result = await analyzer.analyze(tempPath, { outputFormat: 'json' });
-        
         const mysqlDB = result.resources.find(r => r.logical_id === 'MySQLDB');
         const postgresDB = result.resources.find(r => r.logical_id === 'PostgresDB');
-        
         // MySQL specific metric
         expect(mysqlDB?.metrics).toContainMetric('BinLogDiskUsage');
         
@@ -259,14 +224,11 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
 
       try {
         const result = await analyzer.analyze(tempPath, { outputFormat: 'json' });
-        
         const smallFunc = result.resources.find(r => r.logical_id === 'SmallFunction');
         const largeFunc = result.resources.find(r => r.logical_id === 'LargeFunction');
-        
         // Different thresholds based on memory
         const smallDuration = smallFunc?.metrics.find(m => m.metric_name === 'Duration');
         const largeDuration = largeFunc?.metrics.find(m => m.metric_name === 'Duration');
-        
         // Lambda with more memory should have higher timeout thresholds (more capacity)
         expect(largeDuration?.recommended_threshold.warning).toBeGreaterThan(
           smallDuration?.recommended_threshold.warning || 0
@@ -306,12 +268,10 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
           outputFormat: 'json',
           continueOnError: true  // Continue despite EC2 service error
         });
-        
         // Both are extracted initially, but only Fargate succeeds in generation
         expect(result.metadata.total_resources).toBe(2);
         expect(result.resources).toHaveLength(1); // Only Fargate successfully processed
         expect(result.resources[0]?.logical_id).toBe('FargateService');
-        
         // Should have errors for failed EC2 service
         expect(result.errors).toBeDefined();
         expect(result.errors?.length).toBeGreaterThan(0);
@@ -350,9 +310,7 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
 
       try {
         const result = await analyzer.analyze(tempPath, { outputFormat: 'json' });
-        
         const provisionedTable = result.resources.find(r => r.logical_id === 'ProvisionedTable');
-        
         // Different metrics for different billing modes
         expect(provisionedTable?.metrics).toContainMetric('ConsumedReadCapacityUnits');
         expect(provisionedTable?.metrics).toContainMetric('ConsumedWriteCapacityUnits');
@@ -388,14 +346,11 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
 
       try {
         const result = await analyzer.analyze(tempPath, { outputFormat: 'json' });
-        
         const publicALB = result.resources.find(r => r.logical_id === 'PublicALB');
         const privateALB = result.resources.find(r => r.logical_id === 'PrivateALB');
-        
         // Internet-facing should have higher thresholds
         const publicRequests = publicALB?.metrics.find(m => m.metric_name === 'RequestCount');
         const privateRequests = privateALB?.metrics.find(m => m.metric_name === 'RequestCount');
-        
         expect(publicRequests?.recommended_threshold.warning).toBeGreaterThan(
           privateRequests?.recommended_threshold.warning || 0
         );
@@ -409,13 +364,36 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
     test('5-1: JSON output format validation', async () => {
       const templatePath = path.join(FIXTURES_PATH, 'web-app-complete.yaml');
       const result = await analyzer.analyze(templatePath, { outputFormat: 'json' });
-      
       const jsonFormatter = new JSONOutputFormatter();
       const jsonOutput = jsonFormatter.format(result);
-      
-      // Valid JSON
-      const parsed = JSON.parse(jsonOutput);
-      
+      // Valid JSON - properly type the parsed result
+      interface ParsedOutput {
+        metadata: {
+          version?: string;
+          generated_at?: string;
+          template_path?: string;
+          total_resources?: number;
+          supported_resources?: number;
+          processing_time_ms?: number;
+        };
+        resources: Array<{
+          logical_id: string;
+          resource_type: string;
+          resource_properties: Record<string, unknown>;
+          metrics: Array<{
+            metric_name: string;
+            namespace: string;
+            unit: string;
+            description: string;
+            statistic: string;
+            recommended_threshold: {
+              warning: number;
+              critical: number;
+            };
+          }>;
+        }>;
+      }
+      const parsed = JSON.parse(jsonOutput) as ParsedOutput;
       // Schema compliance
       expect(parsed.metadata).toHaveProperty('version', '1.0.0');
       expect(parsed.metadata).toHaveProperty('generated_at');

@@ -63,7 +63,7 @@ export class StandardOutputHandler implements IStandardOutputHandler {
       default:
         throw new CloudSupporterError(
           ErrorType.OUTPUT_ERROR,
-          `Unsupported output format: ${format}`,
+          `Unsupported output format: ${String(format)}`,
           { format }
         );
     }
@@ -165,7 +165,7 @@ export class FileOutputHandler implements IFileOutputHandler {
       default:
         throw new CloudSupporterError(
           ErrorType.OUTPUT_ERROR,
-          `Unsupported output format: ${format}`,
+          `Unsupported output format: ${String(format)}`,
           { format }
         );
     }
@@ -220,7 +220,7 @@ export class StatisticsDisplayHelper {
       'Total Resources': result.metadata.total_resources,
       'Supported Resources': result.metadata.supported_resources,
       'Unsupported Resources': result.unsupported_resources.length,
-      'Processing Time': `${result.metadata.processing_time_ms}ms`
+      'Processing Time': `${result.metadata.processing_time_ms ?? 'N/A'}ms`
     });
   }
 }

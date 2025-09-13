@@ -130,7 +130,7 @@ export interface ICDKOutputHandler {
     message: string,
     options: CLIOptions,
     logger: ILogger
-  ): void;
+  ): Promise<void>;
 }
 
 /**

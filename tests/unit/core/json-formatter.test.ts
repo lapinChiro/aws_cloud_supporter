@@ -146,7 +146,7 @@ describe('JSONOutputFormatter', () => {
       const json = formatter.formatJSON(mockResult);
       
       // Should be valid JSON
-      expect(() => JSON.parse(json)).not.toThrow();
+      expect(() => { JSON.parse(json); }).not.toThrow();
       
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       expect(parsed).toBeDefined();
@@ -173,21 +173,28 @@ describe('JSONOutputFormatter', () => {
       expect(parsed.resources).toHaveLength(2);
       
       // First resource
-      expect(parsed.resources[0]!.logical_id).toBe('MyDatabase');
-      expect(parsed.resources[0]!.resource_type).toBe('AWS::RDS::DBInstance');
-      expect(parsed.resources[0]!.metrics).toHaveLength(1);
+      const firstResource = parsed.resources[0];
+      if (!firstResource) throw new Error('First resource not found');
+      expect(firstResource.logical_id).toBe('MyDatabase');
+      expect(firstResource.resource_type).toBe('AWS::RDS::DBInstance');
+      expect(firstResource.metrics).toHaveLength(1);
       
       // Second resource
-      expect(parsed.resources[1]!.logical_id).toBe('MyFunction');
-      expect(parsed.resources[1]!.resource_type).toBe('AWS::Lambda::Function');
-      expect(parsed.resources[1]!.metrics).toHaveLength(2);
+      const secondResource = parsed.resources[1];
+      if (!secondResource) throw new Error('Second resource not found');
+      expect(secondResource.logical_id).toBe('MyFunction');
+      expect(secondResource.resource_type).toBe('AWS::Lambda::Function');
+      expect(secondResource.metrics).toHaveLength(2);
     });
 
     test('should format metrics correctly', () => {
       const json = formatter.formatJSON(mockResult);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
-      const metric = parsed.resources[0]!.metrics[0]!;
+      const firstResource = parsed.resources[0];
+      if (!firstResource) throw new Error('First resource not found');
+      const metric = firstResource.metrics[0];
+      if (!metric) throw new Error('First metric not found');
       expect(metric.metric_name).toBe('CPUUtilization');
       expect(metric.namespace).toBe('AWS/RDS');
       expect(metric.unit).toBe('Percent');
@@ -273,7 +280,10 @@ describe('JSONOutputFormatter', () => {
       const json = formatter.formatJSON(resultNoDims);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
-      const metric = parsed.resources[0]!.metrics[0]!;
+      const firstResource = parsed.resources[0];
+      if (!firstResource) throw new Error('First resource not found');
+      const metric = firstResource.metrics[0];
+      if (!metric) throw new Error('First metric not found');
       expect(metric.dimensions).toBeUndefined();
     });
 
@@ -296,7 +306,9 @@ describe('JSONOutputFormatter', () => {
       const json = formatter.formatJSON(resultWithSecrets);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
-      const props = parsed.resources[0]!.resource_properties;
+      const firstResource = parsed.resources[0];
+      if (!firstResource) throw new Error('First resource not found');
+      const props = firstResource.resource_properties;
       expect(props.MasterUserPassword).toBe('[REDACTED]');
       expect(props.DBPassword).toBe('[REDACTED]');
       expect(props.SecretString).toBe('[REDACTED]');
@@ -329,7 +341,9 @@ describe('JSONOutputFormatter', () => {
       const json = formatter.formatJSON(resultWithTypes);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
-      const props = parsed.resources[0]!.resource_properties;
+      const firstResource = parsed.resources[0];
+      if (!firstResource) throw new Error('First resource not found');
+      const props = firstResource.resource_properties;
       expect(typeof props.TableName).toBe('string');
       expect(typeof props.StreamEnabled).toBe('boolean');
       expect(props.StreamEnabled).toBe(true);
@@ -341,7 +355,7 @@ describe('JSONOutputFormatter', () => {
     test('should handle large outputs efficiently', () => {
       const largeResult: AnalysisResult = {
         ...mockResult,
-        resources: Array(500).fill(null).map((_, i) => ({
+        resources: Array(500).fill(null).map((_elem, i) => ({
           logical_id: `Resource${i}`,
           resource_type: 'AWS::Lambda::Function',
           resource_properties: {
@@ -350,11 +364,11 @@ describe('JSONOutputFormatter', () => {
             Timeout: 30,
             Environment: {
               Variables: Object.fromEntries(
-                Array(10).fill(null).map((_, j) => [`VAR_${j}`, `value_${j}`])
+                Array(10).fill(null).map((_el, j) => [`VAR_${j}`, `value_${j}`])
               )
             }
           },
-          metrics: Array(20).fill(null).map((_, j) => ({
+          metrics: Array(20).fill(null).map((_metric, j) => ({
             metric_name: `Metric${j}`,
             namespace: 'AWS/Lambda',
             unit: 'Count',
@@ -379,7 +393,8 @@ describe('JSONOutputFormatter', () => {
       expect(json.length).toBeGreaterThan(1000000); // Should be > 1MB
       
       // Should still be valid JSON
-      expect(() => JSON.parse(json)).not.toThrow();
+      const parsed = JSON.parse(json) as ParsedAnalysisResult;
+      expect(parsed).toBeDefined();
     });
 
     test('should maintain consistent output order', () => {
