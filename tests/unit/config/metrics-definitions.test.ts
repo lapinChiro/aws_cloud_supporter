@@ -149,23 +149,17 @@ describe('メトリクス定義データ完全性（CLAUDE.md: TDD RED段階）'
 
   // DRY原則テスト（GREEN段階: 重複排除確認）
   it('should follow DRY principle in metric definitions', () => {
-    const { 
-      RDS_METRICS, 
-      LAMBDA_METRICS,
-      METRICS_CONFIG_MAP 
-    } = require('../../../src/config/metrics');
-    
     // メトリクス配列が複数箇所で定義されていない（DRY原則）
     expect(METRICS_CONFIG_MAP['AWS::RDS::DBInstance']).toBe(RDS_METRICS);
     expect(METRICS_CONFIG_MAP['AWS::Lambda::Function']).toBe(LAMBDA_METRICS);
     expect(METRICS_CONFIG_MAP['AWS::Serverless::Function']).toBe(LAMBDA_METRICS); // 同じ定義再利用
     
     // 共通プロパティの一貫性確認
-    const allMetrics = Object.values(METRICS_CONFIG_MAP).flat();
-    allMetrics.forEach((metric: unknown) => {
-      expect(typeof (metric as TestMetric).name).toBe('string');
-      expect(typeof (metric as TestMetric).namespace).toBe('string');
-      expect(typeof (metric as TestMetric).threshold.base).toBe('number');
+    const allMetrics: TestMetric[] = Object.values(METRICS_CONFIG_MAP).flat() as TestMetric[];
+    allMetrics.forEach((metric: TestMetric) => {
+      expect(typeof metric.name).toBe('string');
+      expect(typeof metric.namespace).toBe('string');
+      expect(typeof metric.threshold.base).toBe('number');
     });
   });
 
@@ -504,7 +498,11 @@ describe('メトリクス定義品質（CLAUDE.md: 型安全性・妥当性）',
     expectedResourceTypes.forEach(resourceType => {
       expect(METRICS_CONFIG_MAP[resourceType]).toBeDefined();
       expect(Array.isArray(METRICS_CONFIG_MAP[resourceType])).toBe(true);
-      expect(METRICS_CONFIG_MAP[resourceType]!.length).toBeGreaterThan(0);
+      const metrics = METRICS_CONFIG_MAP[resourceType];
+      expect(metrics).toBeDefined();
+      if (metrics) {
+        expect(metrics.length).toBeGreaterThan(0);
+      }
     });
   });
 
@@ -519,8 +517,12 @@ describe('メトリクス定義品質（CLAUDE.md: 型安全性・妥当性）',
       
       // Test with sample resource properties
       const sampleProps = { DBInstanceClass: 'db.t3.micro', Engine: 'mysql' };
-      const result = (metric as TestMetric).applicableWhen!(sampleProps);
-      expect(typeof result).toBe('boolean');
+      const applicableWhen = (metric as TestMetric).applicableWhen;
+      expect(applicableWhen).toBeDefined();
+      if (applicableWhen) {
+        const result = applicableWhen(sampleProps);
+        expect(typeof result).toBe('boolean');
+      }
     });
   });
 });

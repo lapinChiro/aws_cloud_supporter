@@ -6,23 +6,10 @@ import path from 'path';
 
 import { TemplateParser } from '../../../src/core/parser';
 import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
-import { CloudSupporterError, isFileError } from '../../../src/utils/error';
+import { CloudSupporterError, isFileError, isParseError, ErrorType } from '../../../src/utils/error';
 
 // テスト全体で使用する一時ディレクトリ
 let tempDir: string;
-
-// 全テスト前の準備
-beforeAll(() => {
-  tempDir = path.join(tmpdir(), 'aws-cloud-supporter-test');
-  try {
-    mkdirSync(tempDir, { recursive: true });
-  } catch {
-    // 既に存在する場合は無視
-  }
-  
-  // テストフィクスチャー作成
-  createTestFixtures();
-});
 
 function createTestFixtures() {
   // 有効なYAMLテンプレート
@@ -127,6 +114,19 @@ Resources:
   const largePath = path.join(tempDir, 'large-template.json');
   writeFileSync(largePath, JSON.stringify(largeTemplate, null, 4), 'utf8'); // さらにインデント増加
 }
+
+// 全テスト前の準備
+beforeAll(() => {
+  tempDir = path.join(tmpdir(), 'aws-cloud-supporter-test');
+  try {
+    mkdirSync(tempDir, { recursive: true });
+  } catch {
+    // 既に存在する場合は無視
+  }
+  
+  // テストフィクスチャー作成
+  createTestFixtures();
+});
 
 describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
 
@@ -240,7 +240,7 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
     } catch (error) {
       if (error instanceof CloudSupporterError) {
       // yamlライブラリが寛容なため、構文エラーが解析エラーになる場合もある
-      expect(error.type === 'PARSE_ERROR' || error.type === 'FILE_ERROR').toBe(true);
+      expect(error.type === ErrorType.PARSE_ERROR || error.type === ErrorType.FILE_ERROR).toBe(true);
       expect(error.message).toBeTruthy();
       expect(error.filePath).toBe(invalidYamlPath);
       }
@@ -249,7 +249,6 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
 
   // JSON構文エラーハンドリングテスト
   it('should provide detailed JSON syntax error with position', async () => {
-    const { isParseError } = require('../../../src/utils/error');
     const parser = new TemplateParser();
     
     const invalidJsonPath = path.join(tempDir, 'invalid-syntax.json');
@@ -387,7 +386,6 @@ describe('TemplateParserエラーハンドリング統合（CLAUDE.md: 型安全
 
   // CloudSupporterErrorシステム統合確認
   it('should integrate with CloudSupporterError system', async () => {
-    const { CloudSupporterError, ErrorType } = require('../../../src/utils/error');
     const parser = new TemplateParser();
     
     const nonExistentPath = '/non/existent/file.yaml';
@@ -396,13 +394,12 @@ describe('TemplateParserエラーハンドリング統合（CLAUDE.md: 型安全
       await parser.parse(nonExistentPath);
     } catch (error) {
       if (error instanceof CloudSupporterError) {
-        const csError = error as CloudSupporterError;
-        expect(csError).toBeInstanceOf(CloudSupporterError);
-        expect(csError.type).toBe(ErrorType.FILE_ERROR);
-        expect(csError.filePath).toBe(nonExistentPath);
+        expect(error).toBeInstanceOf(CloudSupporterError);
+        expect(error.type).toBe(ErrorType.FILE_ERROR);
+        expect(error.filePath).toBe(nonExistentPath);
         
         // 構造化出力確認
-        const structured = csError.toStructuredOutput();
+        const structured = error.toStructuredOutput();
         expect(structured.error).toBe('FILE_ERROR');
         expect(structured.filePath).toBe(nonExistentPath);
         expect(structured.timestamp).toBeDefined();

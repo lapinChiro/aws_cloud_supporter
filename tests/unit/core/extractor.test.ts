@@ -4,9 +4,10 @@ import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
 
-import { ResourceExtractor } from '../../../src/core/extractor';
+import { ResourceExtractor, ExtractionPerformanceMonitor } from '../../../src/core/extractor';
 import { TemplateParser } from '../../../src/core/parser';
-import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import type { CloudFormationTemplate, SupportedResource } from '../../../src/types/cloudformation';
+import { isSupportedResource, isFargateService, isApplicationLoadBalancer } from '../../../src/types/cloudformation';
 
 // 全テストで使用する一時ディレクトリ
 let tempDir: string;
@@ -283,7 +284,7 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     const result = extractor.extract(template);
     
     // Fargateサービスのみがサポート対象として抽出される  
-    const fargateServices = result.supported.filter((r: any) => r.Type === 'AWS::ECS::Service');
+    const fargateServices = result.supported.filter((r: SupportedResource) => r.Type === 'AWS::ECS::Service');
     expect(fargateServices.length).toBe(3); // Fargate + FargateSpot + MixedCapacity
     
     // EC2サービスはサポート対象外
@@ -301,7 +302,7 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     const result = extractor.extract(template);
     
     // Application LBのみがサポート対象
-    const supportedLBs = result.supported.filter((r: any) => 
+    const supportedLBs = result.supported.filter((r: SupportedResource) => 
       r.Type === 'AWS::ElasticLoadBalancingV2::LoadBalancer'
     );
     expect(supportedLBs.length).toBe(2); // ApplicationLB + DefaultLB
@@ -366,7 +367,7 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     
     // ResourceExtractorは抽出処理のみに特化
     const publicMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(extractor))
-      .filter(name => !name.startsWith('_') && name !== 'constructor' && typeof (extractor as any)[name] === 'function');
+      .filter(name => !name.startsWith('_') && name !== 'constructor' && typeof (extractor as unknown as Record<string, unknown>)[name] === 'function');
     
     // 主要メソッドは抽出関連のみ
     expect(publicMethods).toContain('extract');
@@ -379,8 +380,6 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
 
   // 大量リソース処理テスト（GREEN段階: 500リソース3秒以内）
   it('should handle large templates efficiently', async () => {
-    const { ResourceExtractor, ExtractionPerformanceMonitor } = require('../../../src/core/extractor');
-    
     const parser = new TemplateParser();
     const extractor = new ResourceExtractor();
     
@@ -460,8 +459,6 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
 
   // 型ガード関数統合テスト（GREEN段階: Don't Reinvent the Wheel）
   it('should integrate with existing type guard functions', () => {
-    const { isSupportedResource, isFargateService, isApplicationLoadBalancer } = require('../../../src/types/cloudformation');
-    
     // 既存型ガード関数がResourceExtractorで使用されている確認
     const testResource = { Type: 'AWS::RDS::DBInstance', Properties: {} };
     
@@ -490,10 +487,9 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
     
     // SupportedResource Union型が正しく使用されている
     expect(result.supported).toHaveLength(2);
-    result.supported.forEach((resource: unknown) => {
-      const r = resource as { LogicalId?: string; Type: string };
-      expect(r.LogicalId).toBeDefined();
-      expect(r.Type).toBeDefined();
+    result.supported.forEach((resource: SupportedResource) => {
+      expect(resource.LogicalId).toBeDefined();
+      expect(resource.Type).toBeDefined();
     });
   });
 
@@ -512,7 +508,7 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
     
     // 型安全性確認
     expect(template.Resources).toBeDefined();
-    expect(result.supported.every((r: unknown) => typeof (r as { Type: string }).Type === 'string')).toBe(true);
+    expect(result.supported.every((r: SupportedResource) => typeof r.Type === 'string')).toBe(true);
   });
 
   // ExtractResult型安全性テスト（GREEN段階: 戻り値型確認）

@@ -5,6 +5,7 @@ import path from 'path';
 
 import { BaseMetricsGenerator, validateMetricDefinition, MetricsGenerationMonitor } from '../../../src/generators/base.generator';
 import type { IMetricsGenerator } from '../../../src/interfaces/generator';
+import type { ILogger } from '../../../src/interfaces/logger';
 import { createLogger } from '../../../src/utils/logger';
 import { createMockLogger, measureGeneratorPerformance } from '../../helpers';
 
@@ -230,8 +231,8 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     
     // 抽象クラス自体にはない（子クラスで実装）
     expect(BaseMetricsGenerator.prototype.getSupportedTypes).toBeUndefined();
-    expect((BaseMetricsGenerator.prototype as any).getMetricsConfig).toBeUndefined();
-    expect((BaseMetricsGenerator.prototype as any).getResourceScale).toBeUndefined();
+    expect((BaseMetricsGenerator.prototype as unknown as Record<string, unknown>).getMetricsConfig).toBeUndefined();
+    expect((BaseMetricsGenerator.prototype as unknown as Record<string, unknown>).getResourceScale).toBeUndefined();
     
     // 具象実装を持つメソッド
     expect(BaseMetricsGenerator.prototype.generate).toBeDefined();
@@ -385,7 +386,7 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     
     // 自動修正により warning < critical が保証される
     expect(metric?.recommended_threshold).toHaveValidThreshold();
-    expect(metric?.recommended_threshold.critical).toBeGreaterThan(metric.recommended_threshold.warning);
+    expect(metric?.recommended_threshold.critical).toBeGreaterThan(metric?.recommended_threshold.warning ?? Infinity);
   });
 
   // 数値精度テスト（GREEN段階: 丸め処理確認）
@@ -575,7 +576,10 @@ describe('BaseMetricsGeneratorパフォーマンス（CLAUDE.md: 性能要件）
     expect(results).toHaveLength(10);
     results.forEach(metrics => {
       expect(metrics).toHaveLength(1);
-      expect(metrics[0]!.metric_name).toBe('FastMetric');
+      expect(metrics[0]).toBeDefined();
+      if (metrics[0]) {
+        expect(metrics[0].metric_name).toBe('FastMetric');
+      }
     });
   });
 
@@ -653,7 +657,10 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
     const metrics = await typeSafeGenerator.generate(cloudFormationResource);
     
     expect(metrics).toHaveLength(1);
-    expect(metrics[0]!.metric_name).toBe('TypeSafeMetric');
+    expect(metrics[0]).toBeDefined();
+    if (metrics[0]) {
+      expect(metrics[0].metric_name).toBe('TypeSafeMetric');
+    }
   });
 
   // MetricDefinition型生成テスト（GREEN段階: 型準拠確認）
@@ -666,28 +673,36 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
     };
 
     const metrics = await typeSafeGenerator.generate(testResource);
-    const metric = metrics[0]!;
+    expect(metrics).toHaveLength(1);
+    expect(metrics[0]).toBeDefined();
     
-    // MetricDefinition型の全フィールド確認
-    expect(typeof metric.metric_name).toBe('string');
-    expect(typeof metric.namespace).toBe('string');
-    expect(typeof metric.unit).toBe('string');
-    expect(typeof metric.description).toBe('string');
-    expect(typeof metric.statistic).toBe('string');
-    expect(typeof metric.evaluation_period).toBe('number');
-    expect(typeof metric.category).toBe('string');
-    expect(typeof metric.importance).toBe('string');
+    const metric = metrics[0];
     
-    // しきい値オブジェクトの型安全性
-    expect(typeof metric.recommended_threshold.warning).toBe('number');
-    expect(typeof metric.recommended_threshold.critical).toBe('number');
-    
-    // ディメンション配列の型安全性
-    expect(Array.isArray(metric.dimensions)).toBe(true);
-    if (metric.dimensions && metric.dimensions.length > 0) {
-      const dimension = metric.dimensions[0]!;
-      expect(typeof dimension.name).toBe('string');
-      expect(typeof dimension.value).toBe('string');
+    if (metric) {
+      // MetricDefinition型の全フィールド確認
+      expect(typeof metric.metric_name).toBe('string');
+      expect(typeof metric.namespace).toBe('string');
+      expect(typeof metric.unit).toBe('string');
+      expect(typeof metric.description).toBe('string');
+      expect(typeof metric.statistic).toBe('string');
+      expect(typeof metric.evaluation_period).toBe('number');
+      expect(typeof metric.category).toBe('string');
+      expect(typeof metric.importance).toBe('string');
+      
+      // しきい値オブジェクトの型安全性
+      expect(typeof metric.recommended_threshold.warning).toBe('number');
+      expect(typeof metric.recommended_threshold.critical).toBe('number');
+      
+      // ディメンション配列の型安全性
+      expect(Array.isArray(metric.dimensions)).toBe(true);
+      if (metric.dimensions && metric.dimensions.length > 0) {
+        const dimension = metric.dimensions[0];
+        expect(dimension).toBeDefined();
+        if (dimension) {
+          expect(typeof dimension.name).toBe('string');
+          expect(typeof dimension.value).toBe('string');
+        }
+      }
     }
   });
 
@@ -703,16 +718,19 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
     // MetricConfig型の処理が型安全であることを確認
     const metrics = await typeSafeGenerator.generate(testResource);
     expect(metrics).toHaveLength(1);
+    expect(metrics[0]).toBeDefined();
     
-    const metric = metrics[0]!;
+    const metric = metrics[0];
     
-    // MetricConfig→MetricDefinition変換の型安全性
-    expect(metric.metric_name).toBe('TypeSafeMetric');
-    expect(metric.namespace).toBe('AWS/Test');
-    expect(metric.unit).toBe('Count');
-    expect(metric.statistic).toBe('Average');
-    expect(metric.category).toBe('Performance');
-    expect(metric.importance).toBe('High');
+    if (metric) {
+      // MetricConfig→MetricDefinition変換の型安全性
+      expect(metric.metric_name).toBe('TypeSafeMetric');
+      expect(metric.namespace).toBe('AWS/Test');
+      expect(metric.unit).toBe('Count');
+      expect(metric.statistic).toBe('Average');
+      expect(metric.category).toBe('Performance');
+      expect(metric.importance).toBe('High');
+    }
   });
 
   // 型安全なGenerics使用テスト（GREEN段階: ジェネリック確認）
@@ -773,7 +791,10 @@ describe('BaseMetricsGenerator型安全性（CLAUDE.md: Type-Driven Development�
 
     const metrics = await conditionalGenerator.generate(testResource);
     expect(metrics).toHaveLength(1);
-    expect(metrics[0]!.metric_name).toBe('ConditionalTypeSafeMetric');
+    expect(metrics[0]).toBeDefined();
+    if (metrics[0]) {
+      expect(metrics[0].metric_name).toBe('ConditionalTypeSafeMetric');
+    }
   });
 });
 
@@ -792,7 +813,7 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
     const publicMethods = methods.filter(name => 
       !name.startsWith('_') && 
       name !== 'constructor' &&
-      typeof (prototype as any)[name] === 'function'
+      typeof (prototype as Record<string, unknown>)[name] === 'function'
     );
     
     expect(publicMethods).toContain('generate');
@@ -845,7 +866,7 @@ describe('BaseMetricsGeneratorSOLID原則（CLAUDE.md: 設計原則）', () => {
     
     // ILoggerインターフェースに依存（具象クラスに非依存）
     class DIPTestGenerator extends BaseMetricsGenerator {
-      constructor(customLogger: any) { // カスタムログ実装受け入れ
+      constructor(customLogger: ILogger) { // カスタムログ実装受け入れ
         super(customLogger);
       }
 

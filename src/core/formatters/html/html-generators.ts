@@ -7,55 +7,6 @@ import { HTMLUtility } from './formatter-utils';
 import type { IResourceHTMLGenerator, IMetricHTMLGenerator, IUnsupportedHTMLGenerator, IHTMLUtility } from './interfaces';
 
 /**
- * リソースHTML生成クラス
- * Single Responsibility: リソース表示用HTML生成のみ
- */
-export class ResourceHTMLGenerator implements IResourceHTMLGenerator {
-  private readonly metricHTMLGenerator: IMetricHTMLGenerator;
-  private readonly utility: IHTMLUtility;
-
-  constructor() {
-    this.metricHTMLGenerator = new MetricHTMLGenerator();
-    this.utility = new HTMLUtility();
-  }
-
-  /**
-   * リソース用HTML生成（詳細メトリクス表示）
-   * T-014準拠: レスポンシブ・重要度別表示・検索対応
-   */
-  generateResourceHTML(resource: ResourceWithMetrics, _index: number): string {
-    const metricsHtml = resource.metrics.map(metric => 
-      this.metricHTMLGenerator.generateMetricHTML(metric, resource.resource_type)
-    ).join('');
-    
-    return `
-        <div class="resource-card" data-resource-type="${this.utility.escapeHtml(resource.resource_type)}" data-resource-id="${this.utility.escapeHtml(resource.logical_id)}">
-            <div class="resource-header">
-                <div class="resource-title-section">
-                    <div class="resource-title">${this.utility.escapeHtml(resource.logical_id)}</div>
-                    <div class="resource-type">${resource.resource_type}</div>
-                    <div class="resource-metrics-count">
-                        <span class="badge metrics-count">${resource.metrics.length} metrics</span>
-                        <span class="badge high-importance">${resource.metrics.filter(m => m.importance === 'High').length} high</span>
-                        <span class="badge medium-importance">${resource.metrics.filter(m => m.importance === 'Medium').length} medium</span>
-                        <span class="badge low-importance">${resource.metrics.filter(m => m.importance === 'Low').length} low</span>
-                    </div>
-                </div>
-                <div class="toggle-button" onclick="toggleMetrics('${this.utility.escapeHtml(resource.logical_id)}')">
-                    <span class="toggle-icon">▼</span>
-                </div>
-            </div>
-            <div class="resource-content" id="metrics-${this.utility.escapeHtml(resource.logical_id)}">
-                <div class="metrics-grid">
-                    ${metricsHtml}
-                </div>
-            </div>
-        </div>
-    `;
-  }
-}
-
-/**
  * メトリクスHTML生成クラス
  * Single Responsibility: メトリクス表示用HTML生成のみ
  */
@@ -124,6 +75,55 @@ export class MetricHTMLGenerator implements IMetricHTMLGenerator {
                 </div>
             </div>
             ${dimensionsHtml ? `<div class="dimensions-section"><div class="dimensions-title">Dimensions</div><div class="dimensions-list">${dimensionsHtml}</div></div>` : ''}
+        </div>
+    `;
+  }
+}
+
+/**
+ * リソースHTML生成クラス
+ * Single Responsibility: リソース表示用HTML生成のみ
+ */
+export class ResourceHTMLGenerator implements IResourceHTMLGenerator {
+  private readonly metricHTMLGenerator: IMetricHTMLGenerator;
+  private readonly utility: IHTMLUtility;
+
+  constructor() {
+    this.metricHTMLGenerator = new MetricHTMLGenerator();
+    this.utility = new HTMLUtility();
+  }
+
+  /**
+   * リソース用HTML生成（詳細メトリクス表示）
+   * T-014準拠: レスポンシブ・重要度別表示・検索対応
+   */
+  generateResourceHTML(resource: ResourceWithMetrics, _index: number): string {
+    const metricsHtml = resource.metrics.map(metric => 
+      this.metricHTMLGenerator.generateMetricHTML(metric, resource.resource_type)
+    ).join('');
+    
+    return `
+        <div class="resource-card" data-resource-type="${this.utility.escapeHtml(resource.resource_type)}" data-resource-id="${this.utility.escapeHtml(resource.logical_id)}">
+            <div class="resource-header">
+                <div class="resource-title-section">
+                    <div class="resource-title">${this.utility.escapeHtml(resource.logical_id)}</div>
+                    <div class="resource-type">${resource.resource_type}</div>
+                    <div class="resource-metrics-count">
+                        <span class="badge metrics-count">${resource.metrics.length} metrics</span>
+                        <span class="badge high-importance">${resource.metrics.filter(m => m.importance === 'High').length} high</span>
+                        <span class="badge medium-importance">${resource.metrics.filter(m => m.importance === 'Medium').length} medium</span>
+                        <span class="badge low-importance">${resource.metrics.filter(m => m.importance === 'Low').length} low</span>
+                    </div>
+                </div>
+                <div class="toggle-button" onclick="toggleMetrics('${this.utility.escapeHtml(resource.logical_id)}')">
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="resource-content" id="metrics-${this.utility.escapeHtml(resource.logical_id)}">
+                <div class="metrics-grid">
+                    ${metricsHtml}
+                </div>
+            </div>
         </div>
     `;
   }

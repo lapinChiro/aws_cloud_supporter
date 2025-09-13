@@ -96,7 +96,7 @@ describe('APIGatewayMetricsGenerator', () => {
       const devCount = devMetrics.find(m => m.metric_name === 'Count');
       
       expect(prodCount?.recommended_threshold.warning).toBeGreaterThan(
-        devCount?.recommended_threshold.warning || 0
+        devCount?.recommended_threshold.warning ?? 0
       );
     });
 
