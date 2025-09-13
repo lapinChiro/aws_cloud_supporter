@@ -27,7 +27,7 @@ export class BaseHTMLFormatter implements IHTMLGenerator {
    * HTML形式でのフォーマット出力
    * レスポンシブデザイン・外部依存なし
    */
-  async formatHTML(result: AnalysisResult): Promise<string> {
+  formatHTML(result: AnalysisResult): string {
     const startTime = performance.now();
     
     try {

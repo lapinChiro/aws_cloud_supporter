@@ -110,7 +110,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 1.25
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const dynamodb = resource as DynamoDBTable;
       const props = dynamodb.Properties;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
@@ -130,7 +130,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 1.25
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const dynamodb = resource as DynamoDBTable;
       const props = dynamodb.Properties;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
@@ -150,7 +150,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 5.0
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const dynamodb = resource as DynamoDBTable;
       const props = dynamodb.Properties;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);
@@ -170,7 +170,7 @@ export const DYNAMODB_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 5.0
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const dynamodb = resource as DynamoDBTable;
       const props = dynamodb.Properties;
       return !!(props?.GlobalSecondaryIndexes && props.GlobalSecondaryIndexes.length > 0);

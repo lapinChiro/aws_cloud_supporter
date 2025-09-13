@@ -112,8 +112,8 @@ export interface GeneratedTestCase {
 }
 
 // Export aggregated types
-export * from '../aws/cloudformation';
-export * from '../internal/parser';
+export type * from '../aws/cloudformation';
+export type * from '../internal/parser';
 
 // Type guards
 export function isCDKGeneratedCode(result: GeneratedCodeResult): result is CDKGeneratedCode {

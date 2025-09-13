@@ -33,9 +33,9 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 2.0
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
-      const instanceClass = rds.Properties?.DBInstanceClass || '';
+      const instanceClass = rds.Properties?.DBInstanceClass ?? '';
       return instanceClass.startsWith('db.t3.') || instanceClass.startsWith('db.t4g.');
     }
   },
@@ -53,9 +53,9 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 0.5 // 15以下で警告
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
-      const instanceClass = rds.Properties?.DBInstanceClass || '';
+      const instanceClass = rds.Properties?.DBInstanceClass ?? '';
       return instanceClass.startsWith('db.t3.') || instanceClass.startsWith('db.t4g.');
     }
   },
@@ -225,9 +225,9 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 2.0,
       criticalMultiplier: 1.0
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
-      const engine = rds.Properties?.Engine || '';
+      const engine = rds.Properties?.Engine ?? '';
       return engine.startsWith('aurora');
     }
   },
@@ -247,10 +247,10 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 2.0
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
       const props = rds.Properties;
-      return props?.Engine === 'mysql' && (props?.BackupRetentionPeriod || 0) > 0;
+      return props?.Engine === 'mysql' && (props?.BackupRetentionPeriod ?? 0) > 0;
     }
   },
   {
@@ -267,7 +267,7 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 2.0 // 60秒
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
       const props = rds.Properties;
       return !props?.MultiAZ; // リードレプリカ想定
@@ -287,9 +287,9 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 2.0
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
-      const engine = rds.Properties?.Engine || '';
+      const engine = rds.Properties?.Engine ?? '';
       return engine === 'postgresql';
     }
   },
@@ -307,9 +307,9 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 1.5,
       criticalMultiplier: 1.8
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
-      const engine = rds.Properties?.Engine || '';
+      const engine = rds.Properties?.Engine ?? '';
       return engine === 'postgresql';
     }
   },
@@ -327,9 +327,9 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 5.0,
       criticalMultiplier: 10.0
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
-      const engine = rds.Properties?.Engine || '';
+      const engine = rds.Properties?.Engine ?? '';
       return engine === 'postgresql';
     }
   },
@@ -347,9 +347,9 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 1.0,
       criticalMultiplier: 5.0
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
-      const engine = rds.Properties?.Engine || '';
+      const engine = rds.Properties?.Engine ?? '';
       return engine.startsWith('aurora');
     }
   },
@@ -382,9 +382,9 @@ export const RDS_METRICS: MetricConfig[] = [
       warningMultiplier: 0.9,
       criticalMultiplier: 0.7
     },
-    applicableWhen: (resource: CloudFormationResource) => {
+    applicableWhen: (resource: CloudFormationResource): boolean => {
       const rds = resource as RDSDBInstance;
-      const engine = rds.Properties?.Engine || '';
+      const engine = rds.Properties?.Engine ?? '';
       return engine === 'mysql';
     }
   },

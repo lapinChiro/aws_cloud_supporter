@@ -32,7 +32,7 @@ export class HTMLOutputFormatter implements IHTMLOutputFormatter {
    * @param result - 分析結果
    * @returns フォーマットされたHTML文字列
    */
-  async format(result: AnalysisResult): Promise<string> {
+  format(result: AnalysisResult): string {
     this.logger?.info('📄 Formatting output as HTML');
     return this.baseFormatter.formatHTML(result);
   }
@@ -43,7 +43,7 @@ export class HTMLOutputFormatter implements IHTMLOutputFormatter {
    * @param result - 分析結果
    * @returns フォーマットされたHTML文字列
    */
-  async formatHTML(result: AnalysisResult): Promise<string> {
+  formatHTML(result: AnalysisResult): string {
     return this.format(result);
   }
 

@@ -37,7 +37,7 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
   protected abstract getResourceScale(resource: CloudFormationResource): number;
 
   // メイン生成メソッド（CLAUDE.md: Type-Driven Development）
-  async generate(resource: CloudFormationResource): Promise<MetricDefinition[]> {
+  generate(resource: CloudFormationResource): Promise<MetricDefinition[]> {
     const startTime = performance.now();
     
     try {
@@ -61,7 +61,7 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
         this.logger.debug(`Generated ${metrics.length} metrics for ${this.getResourceId(resource)} in ${duration.toFixed(1)}ms`);
       }
 
-      return metrics;
+      return Promise.resolve(metrics);
     } catch (error) {
       const resourceId = this.getResourceId(resource);
       this.logger.error(`Failed to generate metrics for ${resourceId}`, error as Error);

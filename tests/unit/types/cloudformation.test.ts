@@ -1,6 +1,7 @@
 // CLAUDE.md準拠型安全性テスト（RED段階: any型違反検知）
 import { readFileSync } from 'fs';
 import path from 'path';
+
 import * as cfnTypes from '../../../src/types/cloudformation';
 import * as commonTypes from '../../../src/types/common';
 import * as metricsTypes from '../../../src/types/metrics';
@@ -16,9 +17,7 @@ interface CommonTypesModule {
   MetricStatistic?: string;
 }
 
-interface MetricsTypesModule {
-  [key: string]: unknown;
-}
+type MetricsTypesModule = Record<string, unknown>;
 
 describe('CloudFormation型定義（CLAUDE.md: No any types）', () => {
   

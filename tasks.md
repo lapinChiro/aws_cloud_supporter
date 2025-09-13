@@ -1,456 +1,819 @@
-# 🚨 EMERGENCY: 型安全性違反修正タスク一覧 (改良版)
+# Lint Error Fixing Tasks - Final Version
 
-## 📋 プロジェクト概要
-**目標**: 694個の型安全性違反エラーを7日間で完全修正  
-**戦略**: 並行実行可能な設計で開発効率最大化  
-**品質基準**: CLAUDE.md 100%準拠 ("Zero type errors at all times")
-
----
-
-## 🎯 実行可能性を重視した設計改善
-
-### ✅ **改良点**
-- **並行実行対応**: 複数開発者での効率的作業
-- **現実的バッチサイズ**: 5個/2時間で確実な品質保証
-- **段階的品質確認**: 各段階での詳細な検証手順
-- **エスケープパス**: 困難ケースの代替対応手順
-- **技術的リスク対応**: 複雑な型問題の専門対応
+**Project**: AWS Cloud Supporter  
+**Total Target**: 572 problems (552 errors, 20 warnings)  
+**Strategy**: 21 carefully planned, verifiable tasks with investigation phases
 
 ---
 
-## 🏗️ Phase 1: インフラ整備
+## Task Dependencies Overview
 
-### T001: 開発環境とベースライン確立
-**担当者**: Tech Lead  
-**時間見積もり**: 60分  
-**リスク**: Low  
-
-**目的**: 全チームメンバーが安全に作業できる環境を構築
-
-**事前条件**:
-- [ ] Git repository への書き込み権限
-- [ ] Node.js 18+ & npm インストール済み
-- [ ] 現在のブランチ: `add_eslint`
-
-**実行手順**:
-```bash
-# 1. 環境固定化
-git stash push -m "EMERGENCY: pre-type-safety-fix-state"
-npm install
-
-# 2. ベースライン記録
-npm run lint 2>&1 | tee baseline_lint.log
-npm run typecheck 2>&1 | tee baseline_typecheck.log
-npm test 2>&1 | tee baseline_test.log
-npm run build 2>&1 | tee baseline_build.log
-
-# 3. エラー分類とタスク割り当て準備
-echo "=== ERROR CLASSIFICATION ===" > error_analysis.md
-npm run lint 2>&1 | grep "no-non-null-assertion" | nl > non_null_errors.txt
-npm run lint 2>&1 | grep "no-explicit-any" | nl > explicit_any_errors.txt
-npm run lint 2>&1 | grep -E "no-unsafe-" | nl > unsafe_errors.txt
-
-# 4. 並行作業用ブランチ準備
-git checkout -b fix/non-null-assertions
-git push -u origin fix/non-null-assertions
-git checkout add_eslint
-git checkout -b fix/explicit-any
-git push -u origin fix/explicit-any
-git checkout add_eslint
-git checkout -b fix/unsafe-operations
-git push -u origin fix/unsafe-operations
-git checkout add_eslint
+```
+T001 → T002 → T003, T004, T005, T006 → T007, T008 → T009, T010, T011 → T012, T013 → T014, T015, T016 → T017 → T018, T019, T020 → T021
 ```
 
-**完了条件**:
-- [ ] 全ベースラインファイル生成完了
-- [ ] エラー数確認: non-null(59) + explicit-any(27) + unsafe(608) = 694
-- [ ] 3つの作業ブランチが作成済み
-- [ ] `npm test && npm run typecheck && npm run build` 全て成功
-- [ ] エラー分類ファイルが生成済み
+---
 
-**成果物**:
-- `baseline_*.log` (4ファイル)
-- `*_errors.txt` (3ファイル)
-- `error_analysis.md`
-- 並行作業用ブランチ (3本)
+## Phase 1: Quick Wins & Auto-fixes
 
-**依存関係**: なし
+### T001: Auto-fix ESLint Errors
+**Purpose**: Apply automatic fixes for syntax and formatting issues  
+**Prerequisites**: 
+- Clean working directory (no uncommitted changes)
+- Current branch: fix/lint-async-errors
+- npm dependencies installed
+
+**Dependencies**: None  
+
+**Pre-task Investigation**:
+1. Run `npm run lint 2>&1 | tee lint_before_autofix.log` to document current state
+2. Count current errors: `npm run lint 2>&1 | grep -E "✖ [0-9]+ problems" | head -1`
+
+**Description**:
+Execute ESLint auto-fix across the codebase to resolve simple formatting and syntax issues.
+
+**Detailed Tasks**:
+1. Create git checkpoint: `git add -A && git commit -m "Before autofix - snapshot"`
+2. Run `npx eslint src tests --fix --ext .ts,.js`
+3. Review git diff to understand what changed
+4. Check for any auto-fix failures or warnings
+5. Run basic verification
+
+**Success Criteria**:
+- ESLint auto-fix completes without critical errors
+- Git diff shows only formatting/import order changes
+- Error count decreases by at least 30
+- No test failures introduced
+
+**Verification Steps**:
+```bash
+# Verify auto-fix success
+npm run lint 2>&1 | grep -E "✖ [0-9]+ problems"  # Compare with before
+git diff --stat  # Should show only formatting changes
+npm test --silent --bail  # Quick test to ensure no breaks
+```
+
+**Rollback Plan**:
+If verification fails: `git reset --hard HEAD~1`
+
+**Estimated Time**: 45 minutes  
+**Risk Level**: Low  
+**Notes**: Auto-fixes are conservative but always verify changes
 
 ---
 
-## 🔧 Phase 2A: Non-null Assertion修正 [並行実行可能]
+### T002: Manual Import Order Fixes
+**Purpose**: Fix remaining import ordering violations not handled by auto-fix  
+**Prerequisites**: T001 completed successfully  
+**Dependencies**: T001  
 
-### T002A: Non-null Assertion修正 Track A (1-20個)
-**担当者**: Senior Developer A  
-**時間見積もり**: 8時間 (5個/2時間 × 4バッチ)  
-**リスク**: Medium  
+**Pre-task Investigation**:
+1. Identify remaining import/order violations:
+   ```bash
+   npm run lint 2>&1 | grep "import/order" | cut -d: -f1-2 | sort | uniq
+   ```
+2. Document findings in working notes
 
-**目的**: 最優先エラー(no-non-null-assertion)の前半修正
+**Description**:
+Manually fix remaining import order violations in specific files.
 
-**事前条件**:
-- [ ] T001完了
-- [ ] `fix/non-null-assertions` ブランチで作業
-- [ ] TypeScript 型システム理解
+**Detailed Tasks**:
+1. For each file with import/order violations:
+   - Open file and locate import section
+   - Check ESLint import grouping rules in .eslintrc
+   - Reorder imports according to rules (external, internal, relative)
+   - Save and verify fix
 
-**実行手順** (バッチ1: 1-5個目):
+**Target Files** (identified during investigation):
+- `src/cli/interfaces/handler.interface.ts` (lines 4-5 confirmed in error report)
+- Additional files from investigation step
+
+**Success Criteria**:
+- Zero import/order violations remain
+- No compilation errors introduced
+- No test failures
+- File structure remains clean
+
+**Verification Steps**:
 ```bash
-# ブランチ切り替え
-git checkout fix/non-null-assertions
-git pull origin fix/non-null-assertions
+npm run lint 2>&1 | grep "import/order"  # Should return empty
+npm run build  # Should succeed without errors
+npm test --silent --maxWorkers=1 --bail  # Quick test
+```
 
-# 修正対象特定 (Track A: 1-5個目)
-head -5 ../non_null_errors.txt > batch_2A_1_targets.txt
+**Rollback Plan**:
+Git checkout individual files if issues arise
 
-# 修正実行 (Pattern適用)
-# Pattern: obj.prop! → obj.prop ?? defaultValue
-#          array[0]! → array[0] || fallback
-#          value! → value && value.method()
+**Estimated Time**: 1.5 hours  
+**Risk Level**: Low  
+**Notes**: Import reordering is safe but verify each change
 
-# 段階的検証 (5個修正毎)
-npm test -- --bail  # 1つでも失敗なら即停止
-if [ $? -ne 0 ]; then
-    echo "❌ Test failed - rolling back batch"
-    git checkout .
-    exit 1
-fi
+---
 
-npm run typecheck
-if [ $? -ne 0 ]; then
-    echo "❌ Type check failed - rolling back batch"
-    git checkout .
-    exit 1
-fi
+## Phase 2: Type Foundation
 
+### T003: DynamoDB Metrics Return Types
+**Purpose**: Add explicit return types to DynamoDB metrics configuration functions  
+**Prerequisites**: T002 completed, no import errors remaining  
+**Dependencies**: T002  
+
+**Pre-task Investigation**:
+1. Get exact error locations:
+   ```bash
+   npm run lint src/config/metrics/dynamodb.metrics.ts 2>&1 | grep "explicit-module-boundary-types"
+   ```
+2. Examine each function to understand required return type
+3. Check if MetricsConfig type exists or needs creation
+
+**Description**:
+Add explicit return types to functions missing them in DynamoDB metrics configuration.
+
+**Target File**: `src/config/metrics/dynamodb.metrics.ts`  
+
+**Detailed Tasks**:
+1. Open target file and examine each function flagged by linter
+2. Determine appropriate return type by analyzing function content
+3. Add explicit return type annotations
+4. If return types don't exist, create them in appropriate type file
+5. Verify TypeScript compilation
+
+**Example Fix Pattern**:
+```typescript
+// Before
+function getMetricsConfig() {
+  return { 
+    metrics: [...],
+    dimension: '...'
+  };
+}
+
+// After  
+function getMetricsConfig(): MetricsConfig {
+  return { 
+    metrics: [...],
+    dimension: '...'
+  };
+}
+```
+
+**Success Criteria**:
+- All explicit-module-boundary-types errors eliminated for this file
+- No TypeScript compilation errors
+- Function signatures remain compatible with existing usage
+- Return types accurately reflect function behavior
+
+**Verification Steps**:
+```bash
+npm run build  # Must succeed
+npm run lint src/config/metrics/dynamodb.metrics.ts 2>&1 | grep "explicit-module-boundary-types"  # Should be empty
+npm test -- --testPathPattern="dynamodb" --silent  # If DynamoDB tests exist
+```
+
+**Rollback Plan**:
+Remove added return types if compilation fails
+
+**Estimated Time**: 1 hour  
+**Risk Level**: Low  
+**Notes**: Focus on type accuracy over speed
+
+---
+
+### T004: RDS Metrics Return Types  
+**Purpose**: Add explicit return types to RDS metrics configuration functions  
+**Prerequisites**: T002 completed  
+**Dependencies**: T002 (can run parallel with T003)  
+
+**Pre-task Investigation**:
+1. Get exact error locations:
+   ```bash
+   npm run lint src/config/metrics/rds.metrics.ts 2>&1 | grep "explicit-module-boundary-types"
+   ```
+2. Follow same investigation pattern as T003
+
+**Description**:
+Add explicit return types to functions missing them in RDS metrics configuration.
+
+**Target File**: `src/config/metrics/rds.metrics.ts`  
+
+**Detailed Tasks**:
+1. Apply same methodology as T003
+2. Use consistent type naming patterns
+3. Reuse type definitions where appropriate
+
+**Success Criteria**: 
+Same as T003 but for RDS metrics file
+
+**Verification Steps**:
+```bash
 npm run build
-if [ $? -ne 0 ]; then
-    echo "❌ Build failed - rolling back batch"
-    git checkout .
-    exit 1
-fi
-
-# 修正確認
-ERRORS_REMAINING=$(npm run lint 2>&1 | grep -c "no-non-null-assertion")
-echo "Remaining non-null assertion errors: $ERRORS_REMAINING"
-
-# コミット
-git add .
-git commit -m "fix: remove non-null assertions batch A1 (5 errors)
-
-- Replaced obj.prop! with obj.prop ?? defaultValue pattern
-- All tests passing
-- Build successful  
-- Remaining non-null errors: $ERRORS_REMAINING
-
-🚨 Emergency type safety fix
-🤖 Generated with Claude Code"
-
-git push origin fix/non-null-assertions
+npm run lint src/config/metrics/rds.metrics.ts 2>&1 | grep "explicit-module-boundary-types"  # Should be empty
 ```
 
-**完了条件** (各バッチ毎):
-- [ ] 5個のno-non-null-assertionエラーが修正済み
-- [ ] `npm test --bail` が100%成功
-- [ ] `npm run typecheck` でエラー0
-- [ ] `npm run build` が成功
-- [ ] Git commit & push 完了
-- [ ] 修正確認レポート記録
-
-**成果物**:
-- 修正されたソースファイル
-- 4個のgit commit (Track A)
-- バッチ実行ログ
-
-**依存関係**: T001
-
-### T002B: Non-null Assertion修正 Track B (21-39個)
-**担当者**: Senior Developer B  
-**実行内容**: T002Aと同様のパターン (19個を4バッチ)  
-**時間見積もり**: 8時間
-
-### T002C: Non-null Assertion修正 Track C (40-59個)
-**担当者**: Senior Developer C  
-**実行内容**: T002Aと同様のパターン (20個を4バッチ)  
-**時間見積もり**: 8時間
+**Estimated Time**: 1 hour  
+**Risk Level**: Low  
 
 ---
 
-## 🎯 Phase 2B: Explicit Any修正 [T002A/B/C完了後]
+### T005: EC2 Metrics Return Types
+**Purpose**: Add explicit return types to EC2 metrics configuration functions  
+**Prerequisites**: T002 completed  
+**Dependencies**: T002 (can run parallel with T003, T004)  
 
-### T003: 型定義設計と実装
-**担当者**: Senior TypeScript Engineer  
-**時間見積もり**: 6時間  
-**リスク**: High  
-
-**目的**: explicit any修正のための堅牢な型システム構築
-
-**事前条件**:
-- [ ] T002A/B/C完了 (non-null assertion全修正)
-- [ ] TypeScript型システム深い理解
-- [ ] 既存コードベースの設計理解
-
-**実行手順**:
-```bash
-git checkout fix/explicit-any
-git pull origin fix/explicit-any
-
-# 1. Explicit Any エラー分析
-npm run lint 2>&1 | grep "no-explicit-any" > explicit_any_analysis.txt
-
-# 2. 型定義設計
-# 各anyを分析し、適切な型定義を設計
-# - CloudFormation template types
-# - AWS resource types  
-# - Parser result types
-# - Configuration types
-
-# 3. 型定義ファイル作成
-mkdir -p src/types/generated
-mkdir -p src/types/aws
-mkdir -p src/types/internal
-
-# CloudFormation関連型定義
-cat > src/types/aws/cloudformation.ts << 'EOF'
-// CloudFormation template strict types
-export interface CloudFormationTemplate {
-  AWSTemplateFormatVersion?: string;
-  Description?: string;
-  Parameters?: Record<string, CloudFormationParameter>;
-  Resources: Record<string, CloudFormationResource>;
-  Outputs?: Record<string, CloudFormationOutput>;
-}
-
-export interface CloudFormationResource {
-  Type: string;
-  Properties?: Record<string, unknown>;
-  Condition?: string;
-  DependsOn?: string | string[];
-}
-
-// ... 詳細な型定義を継続
-EOF
-
-# Parser関連型定義
-cat > src/types/internal/parser.ts << 'EOF'
-export interface ParseResult<T = unknown> {
-  success: boolean;
-  data?: T;
-  errors: ParseError[];
-  metadata: ParseMetadata;
-}
-
-export interface ParseError {
-  message: string;
-  location?: SourceLocation;
-  severity: 'error' | 'warning';
-}
-
-// ... 詳細な型定義を継続  
-EOF
-
-# 4. 段階的検証
-npm run typecheck
-# 新しい型定義がコンパイルエラーを起こさないことを確認
-
-# 5. 型定義コミット
-git add src/types/
-git commit -m "feat: add comprehensive type definitions for any replacement
-
-- CloudFormation template strict types
-- Parser result types with proper error handling
-- Internal configuration types
-- AWS resource-specific types
-
-🚨 Emergency type safety infrastructure
-🤖 Generated with Claude Code"
-
-git push origin fix/explicit-any
-```
-
-**完了条件**:
-- [ ] 全explicit anyに対応する型定義が完成
-- [ ] 型定義ファイルがコンパイル成功
-- [ ] 循環依存がない型構造
-- [ ] 型定義に対する基本テスト通過
-- [ ] 型定義commit完了
-
-**成果物**:
-- `src/types/aws/cloudformation.ts`
-- `src/types/internal/parser.ts`  
-- `src/types/generated/*.ts`
-- 型定義設計書
-- Git commit
-
-**依存関係**: T002A, T002B, T002C
-
-### T004: Explicit Any修正実行
-**担当者**: TypeScript Engineer (T003と同一人物推奨)  
-**時間見積もり**: 4時間  
-**リスク**: Medium  
-
-**実行手順** (T003完了後):
-```bash
-# 1. 修正実行 (27個を5-6個ずつのバッチ)
-for i in {1..5}; do
-    echo "Starting explicit any fix batch $i"
-    
-    # バッチ対象特定
-    sed -n "$((($i-1)*5+1)),$((i*5))p" ../explicit_any_errors.txt > batch_4_${i}_targets.txt
-    
-    # 修正実行
-    # Pattern: function(param: any) → function(param: CloudFormationTemplate)
-    #          const data: any = → const data: ParseResult<CloudFormationTemplate> =
-    
-    # 段階的検証
-    npm test -- --bail
-    npm run typecheck
-    npm run build
-    
-    # コミット
-    git add .
-    git commit -m "fix: replace explicit any types batch $i
-    
-    Using comprehensive type definitions from T003
-    All tests passing, build successful
-    
-    🚨 Emergency type safety fix
-    🤖 Generated with Claude Code"
-    
-    git push origin fix/explicit-any
-done
-```
-
-**依存関係**: T003
+**Pre-task Investigation & Tasks**: Same pattern as T003, T004
+**Target File**: `src/config/metrics/ec2.metrics.ts`  
+**Estimated Time**: 1 hour  
+**Risk Level**: Low  
 
 ---
 
-## ⚡ Phase 3: Unsafe Operations修正 [最大並行度]
+### T006: Remaining Metrics Config Files
+**Purpose**: Add return types to any remaining metrics configuration files  
+**Prerequisites**: T002 completed  
+**Dependencies**: T002 (can run parallel with T003-T005)  
 
-### T005A-H: Unsafe Operations修正 (8並行トラック)
+**Pre-task Investigation**:
+1. Identify all metrics files with issues:
+   ```bash
+   npm run lint src/config/metrics/ 2>&1 | grep "explicit-module-boundary-types" | cut -d: -f1 | sort | uniq
+   ```
+2. Exclude files already handled in T003-T005
 
-各トラックで76個ずつ (608÷8) を担当
-**時間見積もり**: 各16時間 (76個 ÷ 5個/2時間)
+**Description**: Apply same pattern to all remaining metrics configuration files
 
-**修正パターン**:
+**Estimated Time**: 1.5 hours  
+**Risk Level**: Low  
+
+---
+
+### T007: Template Expression Type Safety
+**Purpose**: Fix template literal expressions with unsafe types  
+**Prerequisites**: T006 completed  
+**Dependencies**: T003, T004, T005, T006  
+
+**Pre-task Investigation**:
+1. Get exact error locations:
+   ```bash
+   npm run lint src/core/analyzer.ts 2>&1 | grep "restrict-template-expressions"
+   ```
+2. Examine each flagged template literal
+
+**Description**: Fix template literal expressions that use potentially undefined values
+
+**Target File**: `src/core/analyzer.ts`  
+
+**Detailed Tasks**:
+1. For each flagged template literal:
+   - Identify the problematic variable
+   - Determine if it can be null/undefined
+   - Add appropriate null check or default value
+2. Test with sample data if possible
+
+**Example Fix Pattern**:
 ```typescript
-// Pattern A: Unsafe assignment
-// ❌ const result = data as any;
-// ✅ const result = data as CloudFormationTemplate;
+// Before
+`Value: ${someNumber}`  // someNumber can be undefined
 
-// Pattern B: Unsafe member access  
-// ❌ obj.someProperty (objがany)
-// ✅ (obj as TypedObject).someProperty
-
-// Pattern C: Unsafe call
-// ❌ fn.call(any)
-// ✅ fn.call(typedObject)
+// After
+`Value: ${someNumber ?? 'N/A'}`
+// OR
+`Value: ${someNumber !== undefined ? someNumber : 'N/A'}`
 ```
 
-**エスケープパス**: 修正困難な場合
+**Success Criteria**:
+- Zero restrict-template-expressions warnings for target file
+- Template expressions handle null/undefined gracefully
+- No behavior change for valid inputs
+
+**Verification Steps**:
+```bash
+npm run build
+npm run lint src/core/analyzer.ts 2>&1 | grep "restrict-template-expressions"  # Should be empty
+npm test -- --testPathPattern="analyzer" --silent
+```
+
+**Estimated Time**: 45 minutes  
+**Risk Level**: Low  
+
+---
+
+## Phase 3: Core Application Type Safety
+
+### T008: Switch Exhaustiveness Fixes
+**Purpose**: Make all switch statements exhaustive  
+**Prerequisites**: T007 completed  
+**Dependencies**: T007  
+
+**Pre-task Investigation**:
+1. Get exact switch statement locations:
+   ```bash
+   npm run lint 2>&1 | grep "switch-exhaustiveness-check" | cut -d: -f1-2
+   ```
+2. For each location, examine the switch statement and missing cases
+3. Understand the enum/union types involved
+
+**Description**: Add missing cases to switch statements to make them exhaustive
+
+**Detailed Tasks**:
+1. For `src/cli/commands.ts` switch statement:
+   - Locate the switch on ErrorType
+   - Add cases for ErrorType.OUTPUT_ERROR and ErrorType.VALIDATION_ERROR
+   - Implement appropriate handling (may be similar to existing cases)
+
+2. For `src/cli/utils/output-handlers.ts` switches:
+   - Locate switches that need "yaml" cases
+   - Add yaml case handling (may delegate or throw not-implemented)
+
+**Example Pattern**:
 ```typescript
-// 一時的な型アサーション（要TODO追加）
-const result = data as unknown as RequiredType; // TODO: T999で適切な型定義作成
+switch (errorType) {
+  case ErrorType.NETWORK_ERROR:
+    // existing handling
+    break;
+  case ErrorType.OUTPUT_ERROR:  // ADD
+    // appropriate handling
+    break;
+  case ErrorType.VALIDATION_ERROR:  // ADD
+    // appropriate handling  
+    break;
+  default:
+    // exhaustive check satisfied
+}
 ```
+
+**Success Criteria**:
+- Zero switch-exhaustiveness-check errors
+- All enum values handled appropriately
+- No runtime errors for any enum value
+- Consistent error handling patterns
+
+**Verification Steps**:
+```bash
+npm run lint 2>&1 | grep "switch-exhaustiveness-check"  # Should be empty
+npm run build
+npm test -- --testPathPattern="cli" --silent
+```
+
+**Rollback Plan**: Comment out new cases if they cause issues
+
+**Estimated Time**: 2 hours  
+**Risk Level**: Medium (affects control flow)  
+**Notes**: Ensure new cases handle errors appropriately
 
 ---
 
-## ✅ Phase 4: 統合と品質保証
+### T009: Nullish Coalescing in CDK Handler
+**Purpose**: Replace logical OR with nullish coalescing for safer defaults  
+**Prerequisites**: T008 completed  
+**Dependencies**: T008  
 
-### T006: ブランチ統合と最終検証
-**担当者**: Tech Lead + QA Engineer  
-**時間見積もり**: 4時間  
-**リスク**: Medium  
+**Pre-task Investigation**:
+1. Get exact error locations:
+   ```bash
+   npm run lint src/cli/handlers/cdk-handler.ts 2>&1 | grep "prefer-nullish-coalescing"
+   ```
+2. For each location, analyze if nullish coalescing is appropriate
 
-**実行手順**:
-```bash
-# 1. 全修正ブランチの統合
-git checkout add_eslint
-git pull origin fix/non-null-assertions
-git pull origin fix/explicit-any
-git pull origin fix/unsafe-operations
+**Description**: Replace `||` with `??` where it improves type safety
 
-# 2. 競合解決 (発生時)
-# 自動マージが失敗した場合の手動解決
+**Detailed Tasks**:
+1. For each flagged line:
+   - Examine the expression context
+   - Determine if the left operand can be 0, false, or empty string
+   - If so, replace `||` with `??` to preserve those falsy values
+   - If not, document why `||` is intentional
 
-# 3. 最終検証
-npm run lint > final_verification.txt
-LINT_ERRORS=$(npm run lint 2>&1 | grep -c " error ")
+**Example Decision Process**:
+```typescript
+// If config.timeout can legitimately be 0
+const timeout = config.timeout || 30;  // WRONG: 0 becomes 30
+const timeout = config.timeout ?? 30;  // CORRECT: 0 stays 0
 
-if [ "$LINT_ERRORS" -eq 0 ]; then
-    echo "🎉 SUCCESS: Zero lint errors achieved!"
-else
-    echo "❌ FAILURE: $LINT_ERRORS errors remaining"
-    cat final_verification.txt
-    exit 1
-fi
-
-# 4. 包括的品質確認
-npm test 2>&1 | tee final_test.log
-npm run typecheck 2>&1 | tee final_typecheck.log  
-npm run build 2>&1 | tee final_build.log
-
-# 5. 最終commit
-git add .
-git commit -m "EMERGENCY COMPLETE: Zero type safety errors achieved
-
-🎯 Mission Accomplished:
-✅ 694 type safety violations fixed
-✅ 59 non-null assertions → safe null checks  
-✅ 27 explicit any → proper types
-✅ 608 unsafe operations → type-safe code
-✅ CLAUDE.md 100% compliant
-✅ All tests passing ($(grep -c PASS final_test.log) tests)
-✅ Build successful
-
-📊 Verification:
-- npm run lint: 0 errors (was 694)
-- npm run typecheck: SUCCESS
-- npm test: 100% PASS  
-- npm run build: SUCCESS
-
-🚨 Emergency response completed in 7 days
-🤖 Generated with Claude Code
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
+// If config.enabled should fallback for any falsy value
+const enabled = config.enabled || false;  // KEEP: any falsy → false
 ```
 
-**完了条件**:
-- [ ] `npm run lint`: **0 errors**
-- [ ] `npm run typecheck`: **SUCCESS**
-- [ ] `npm test`: **100% PASS**
-- [ ] `npm run build`: **SUCCESS**
-- [ ] CLAUDE.md品質基準100%準拠
-- [ ] 全作業用ファイルクリーンアップ完了
+**Success Criteria**:
+- Zero prefer-nullish-coalescing errors for target file
+- Behavior preserved for all valid inputs
+- Improved handling of legitimate falsy values
+
+**Verification Steps**:
+```bash
+npm run lint src/cli/handlers/cdk-handler.ts 2>&1 | grep "prefer-nullish-coalescing"  # Should be empty
+npm test -- --testPathPattern="cdk" --silent
+```
+
+**Estimated Time**: 1.5 hours  
+**Risk Level**: Medium (logic change)  
 
 ---
 
-## 🛡️ エスケープ戦略と品質保証
+### T010: Nullish Coalescing in Core Analyzer
+**Purpose**: Replace logical OR with nullish coalescing in core analyzer  
+**Prerequisites**: T008 completed  
+**Dependencies**: T008 (can run parallel with T009)  
 
-### 🚨 即座Rollback条件
-1. **テスト失敗率 > 5%** → `git checkout .`
-2. **型エラー1個でも増加** → `git checkout .`
-3. **ビルド失敗** → `git checkout .`
-4. **1バッチで2時間超過** → 技術支援要請
+**Pre-task Investigation & Tasks**: Same pattern as T009  
+**Target File**: `src/core/analyzer.ts`  
+**Estimated Time**: 1.5 hours  
+**Risk Level**: Medium  
 
-### 🎯 品質基準 (交渉不可)
-- Lint errors: **0** (694 → 0)
-- Type errors: **0** (維持)
-- Test pass rate: **100%** (維持)
-- Build status: **SUCCESS** (維持)
+---
 
-### 📈 進捗監視
-```bash
-# 日次進捗確認コマンド
-echo "=== DAILY PROGRESS REPORT ==="
-echo "Lint errors: $(npm run lint 2>&1 | grep -c " error ")"
-echo "Test status: $(npm test --silent && echo PASS || echo FAIL)"
-echo "Build status: $(npm run build --silent && echo SUCCESS || echo FAIL)"
-echo "Completion: $(( (694 - $(npm run lint 2>&1 | grep -c " error ")) * 100 / 694 ))%"
+### T011: Use-Before-Define Fixes
+**Purpose**: Move function definitions before their usage  
+**Prerequisites**: T008 completed  
+**Dependencies**: T008 (can run parallel with T009, T010)  
+
+**Pre-task Investigation**:
+1. Get exact error locations:
+   ```bash
+   npm run lint src/ 2>&1 | grep "no-use-before-define" | cut -d: -f1-2
+   ```
+2. For each file, map function dependencies
+
+**Description**: Reorganize function definitions to eliminate use-before-define errors
+
+**Detailed Tasks**:
+1. For each file with violations:
+   - Create dependency map of functions
+   - Determine optimal ordering (dependency-first)
+   - Move function definitions maintaining readability
+   - Preserve comments and logical grouping where possible
+
+**Example Approach**:
+```typescript
+// Before: functions in random order
+function main() { 
+  helper1(); // ERROR: used before defined
+}
+function helper1() { 
+  helper2(); // ERROR: used before defined
+}
+function helper2() { ... }
+
+// After: dependency order
+function helper2() { ... }
+function helper1() { helper2(); }
+function main() { helper1(); }
 ```
 
-### 🔄 並行作業コンフリクト回避
-- **ファイルレベル分割**: 同一ファイルは1人が担当
-- **定時同期**: 4時間毎にブランチ同期
-- **即座コミット**: 5個修正毎に必ずcommit
+**Success Criteria**:
+- Zero no-use-before-define errors in src/ directory
+- Code organization remains logical
+- No compilation errors
+- Function behavior unchanged
 
-**🎯 最終目標: TypeScript型安全性100%達成** ✅
+**Verification Steps**:
+```bash
+npm run lint src/ 2>&1 | grep "no-use-before-define"  # Should be empty
+npm run build
+npm test -- --testPathPattern="cli" --silent
+```
+
+**Estimated Time**: 2.5 hours  
+**Risk Level**: Low (reorganization only)  
+
+---
+
+## Phase 4: Test Files - Tier 1 (Critical)
+
+### T012: Extractor Test Type Safety
+**Purpose**: Fix unsafe operations in extractor test file  
+**Prerequisites**: T011 completed, core app errors resolved  
+**Dependencies**: T008, T009, T010, T011  
+
+**Pre-task Investigation**:
+1. Catalog specific errors:
+   ```bash
+   npm run lint tests/unit/core/extractor.test.ts 2>&1 | grep "no-unsafe" | head -20
+   ```
+2. Examine test structure and mock patterns
+3. Identify required types for proper mocking
+
+**Description**: Replace `any` types and unsafe operations with proper test types
+
+**Detailed Tasks**:
+1. **Analysis Phase** (1 hour):
+   - Map all `any` usages and their contexts
+   - Identify what types they should actually be
+   - Plan replacement strategy
+   
+2. **Type Creation Phase** (2 hours):
+   - Create proper mock types
+   - Use `jest.Mocked<T>` for type-safe mocking
+   - Replace `any` incrementally
+   
+3. **Verification Phase** (1 hour):
+   - Ensure all tests still pass
+   - Verify mock behavior unchanged
+
+**Example Pattern**:
+```typescript
+// Before (unsafe)
+const mockExtractor: any = {
+  extract: jest.fn(),
+  process: jest.fn()
+};
+
+// After (safe)  
+const mockExtractor: jest.Mocked<IExtractor> = {
+  extract: jest.fn().mockResolvedValue(mockResult),
+  process: jest.fn().mockReturnValue(mockOutput)
+};
+```
+
+**Success Criteria**:
+- Zero no-unsafe-* errors for target file
+- All tests pass with same behavior
+- No explicit `any` types remain
+- Mock objects properly typed
+
+**Verification Steps**:
+```bash
+npm test tests/unit/core/extractor.test.ts  # Must pass
+npm run lint tests/unit/core/extractor.test.ts 2>&1 | grep "no-unsafe"  # Should be empty
+npm run lint tests/unit/core/extractor.test.ts 2>&1 | grep "no-explicit-any"  # Should be empty
+```
+
+**Rollback Plan**: Keep backup of original file for rollback
+
+**Estimated Time**: 4 hours  
+**Risk Level**: High (test behavior changes)  
+**Notes**: Preserve exact test behavior; type safety should not change test logic
+
+---
+
+### T013: Metrics Definitions Test Type Safety
+**Purpose**: Fix unsafe operations in metrics definitions test file  
+**Prerequisites**: T011 completed  
+**Dependencies**: T008, T009, T010, T011  
+
+**Pre-task Investigation & Tasks**: Same methodology as T012  
+**Target File**: `tests/unit/config/metrics-definitions.test.ts`  
+**Estimated Time**: 3.5 hours  
+**Risk Level**: High  
+
+---
+
+## Phase 5: Test Files - Tier 2 (Medium Impact)
+
+### T014: Base Generator Test Fixes
+**Purpose**: Fix mixed type safety issues in base generator tests  
+**Prerequisites**: T013 completed  
+**Dependencies**: T012, T013  
+
+**Pre-task Investigation**:
+1. Catalog error types:
+   ```bash
+   npm run lint tests/unit/generators/base.generator.test.ts 2>&1 | grep -E "no-non-null-assertion|no-explicit-any|no-shadow"
+   ```
+
+**Description**: Fix type safety issues including non-null assertions and explicit any usage
+
+**Detailed Tasks**:
+1. **Non-null assertion fixes**:
+   - Replace `!` with proper null checks or optional chaining
+   - Add type guards where necessary
+   
+2. **Explicit any replacement**:
+   - Same pattern as T012-T013
+   
+3. **Variable shadowing fixes**:
+   - Rename conflicting variables
+
+**Example Patterns**:
+```typescript
+// Non-null assertion fix
+// Before
+const result = someValue!.property;
+// After
+const result = someValue?.property ?? defaultValue;
+
+// Variable shadowing fix  
+// Before
+function test() {
+  const data = 'outer';
+  someArray.forEach(data => { ... });  // shadows outer 'data'
+}
+// After
+function test() {
+  const data = 'outer';
+  someArray.forEach(item => { ... });  // no shadow
+}
+```
+
+**Success Criteria**:
+- Zero no-non-null-assertion errors
+- Zero no-explicit-any errors  
+- Zero no-shadow errors
+- All tests pass with same behavior
+
+**Verification Steps**:
+```bash
+npm test tests/unit/generators/base.generator.test.ts
+npm run lint tests/unit/generators/base.generator.test.ts 2>&1 | grep -E "no-non-null-assertion|no-explicit-any|no-shadow"  # Should be empty
+```
+
+**Estimated Time**: 4 hours  
+**Risk Level**: Medium  
+
+---
+
+### T015: Parser Test Type Safety
+**Purpose**: Fix unsafe enum comparisons and variable shadowing in parser tests  
+**Prerequisites**: T013 completed  
+**Dependencies**: T012, T013 (can run parallel with T014)  
+
+**Pre-task Investigation**:
+1. Focus on specific error types:
+   ```bash
+   npm run lint tests/unit/core/parser.test.ts 2>&1 | grep -E "no-unsafe-enum-comparison|no-shadow"
+   ```
+
+**Description**: Fix enum comparison safety and variable shadowing issues
+
+**Detailed Tasks**:
+1. **Enum comparison fixes**:
+   - Ensure both sides of comparison are same enum type
+   - Add type assertions if necessary
+   
+2. **Variable shadowing fixes**:
+   - Same pattern as T014
+
+**Example Enum Fix**:
+```typescript
+// Before (unsafe)
+if (result.type === 'ERROR') { ... }  // string vs enum
+
+// After (safe)
+if (result.type === ErrorType.ERROR) { ... }  // enum vs enum
+```
+
+**Success Criteria**:
+- Zero no-unsafe-enum-comparison errors
+- Zero no-shadow errors
+- All tests pass
+
+**Estimated Time**: 2.5 hours  
+**Risk Level**: Medium  
+
+---
+
+### T016: Remaining Medium-Impact Test Files
+**Purpose**: Fix type safety issues in other medium-impact test files  
+**Prerequisites**: T013 completed  
+**Dependencies**: T012, T013 (can run parallel with T014, T015)  
+
+**Pre-task Investigation**:
+1. Identify remaining test files with 5-20 errors each:
+   ```bash
+   npm run lint tests/ 2>&1 | grep -E "no-unsafe|no-explicit-any" | cut -d: -f1 | sort | uniq -c | sort -rn
+   ```
+
+**Description**: Apply established patterns to remaining test files
+
+**Estimated Time**: 3 hours  
+**Risk Level**: Medium  
+
+---
+
+## Phase 6: Test Files - Tier 3 (Remaining)
+
+### T017: Remaining Test File Cleanup
+**Purpose**: Fix remaining scattered errors in small test files  
+**Prerequisites**: T016 completed  
+**Dependencies**: T014, T015, T016  
+
+**Pre-task Investigation**:
+1. Get final count of test file errors:
+   ```bash
+   npm run lint tests/ 2>&1 | grep "no-unsafe" | wc -l
+   ```
+
+**Description**: Clean up remaining unsafe operations and type issues
+
+**Estimated Time**: 4 hours  
+**Risk Level**: Medium  
+
+---
+
+## Phase 7: Code Organization & Quality
+
+### T018: Function Size Violations
+**Purpose**: Break down oversized functions  
+**Prerequisites**: T017 completed, all type safety issues resolved  
+**Dependencies**: T017  
+
+**Pre-task Investigation**:
+1. Get exact function locations:
+   ```bash
+   npm run lint 2>&1 | grep "max-lines-per-function"
+   ```
+
+**Description**: Extract smaller, focused functions from oversized functions
+
+**Detailed Tasks**:
+1. For each oversized function:
+   - Identify logical breakpoints
+   - Extract pure sub-functions first
+   - Maintain single responsibility principle
+   - Update tests if needed
+
+**Success Criteria**:
+- Zero max-lines-per-function errors
+- Function readability improved
+- No behavior changes
+
+**Estimated Time**: 4 hours  
+**Risk Level**: Medium  
+
+---
+
+### T019: File Size Violations
+**Purpose**: Split oversized files  
+**Prerequisites**: T017 completed  
+**Dependencies**: T017 (can run parallel with T018)  
+
+**Pre-task Investigation**:
+1. Get exact file locations:
+   ```bash
+   npm run lint 2>&1 | grep "max-lines"
+   ```
+
+**Description**: Split large test files into multiple files or extract utilities
+
+**Estimated Time**: 3 hours  
+**Risk Level**: Medium  
+
+---
+
+### T020: Miscellaneous Fixes
+**Purpose**: Fix remaining miscellaneous lint errors  
+**Prerequisites**: T017 completed  
+**Dependencies**: T017 (can run parallel with T018, T019)  
+
+**Pre-task Investigation**:
+1. Catalog remaining error types:
+   ```bash
+   npm run lint 2>&1 | grep -v "max-lines" | grep -E "no-unused-vars|no-shadow|no-misused-promises"
+   ```
+
+**Description**: Clean up final scattered issues
+
+**Estimated Time**: 2 hours  
+**Risk Level**: Low  
+
+---
+
+### T021: Final Verification
+**Purpose**: Ensure complete error elimination and system health  
+**Prerequisites**: T020 completed  
+**Dependencies**: T018, T019, T020  
+
+**Description**: Comprehensive verification of the entire codebase
+
+**Detailed Tasks**:
+1. **Complete lint verification**: `npm run lint` must show 0 problems
+2. **Build verification**: `npm run build` must succeed  
+3. **Test suite verification**: `npm test` must pass completely
+4. **Performance check**: Ensure no significant performance regression
+5. **Documentation update**: Update any relevant documentation
+
+**Success Criteria**:
+- Exactly 0 ESLint errors and warnings
+- 0 TypeScript compilation errors
+- 100% test pass rate
+- Clean build output
+- No performance regression >10%
+
+**Final Verification Commands**:
+```bash
+npm run lint  # Must show: ✨  No problems found!
+npm run build  # Must succeed with no errors
+npm test  # Must show: Tests: X passed, X total
+git status  # Should be clean or only intended changes
+```
+
+**Estimated Time**: 1 hour  
+**Risk Level**: Low  
+
+---
+
+## Summary
+
+**Total Tasks**: 21  
+**Total Estimated Time**: 48-55 hours  
+**Parallel Work Opportunities**: 
+- T003-T006 (metrics config files)
+- T009-T011 (core app fixes)  
+- T014-T016 (medium test files)
+- T018-T020 (organization fixes)
+
+**Critical Path**: T001 → T002 → T003-T006 → T007 → T008 → T009-T011 → T012-T013 → T014-T017 → T018-T021
+
+**Risk Mitigation**:
+- All tasks include investigation phases to verify assumptions
+- Rollback plans provided for medium+ risk tasks
+- Verification steps ensure quality at each stage
+- Test preservation is prioritized throughout

@@ -10,8 +10,8 @@ export class APIGatewayMetricsGenerator {
     return ['AWS::ApiGateway::RestApi', 'AWS::Serverless::Api'];
   }
   
-  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
-    return [{
+  generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
+    return Promise.resolve([{
       metric_name: '4XXError',
       namespace: 'AWS/ApiGateway',
       unit: 'Count',
@@ -22,6 +22,6 @@ export class APIGatewayMetricsGenerator {
       category: 'Error',
       importance: 'High',
       dimensions: []
-    }];
+    }]);
   }
 }

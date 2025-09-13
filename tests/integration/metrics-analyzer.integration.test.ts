@@ -411,7 +411,7 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       const result = await analyzer.analyze(templatePath, { outputFormat: 'json' });
       
       const jsonFormatter = new JSONOutputFormatter();
-      const jsonOutput = await jsonFormatter.format(result);
+      const jsonOutput = jsonFormatter.format(result);
       
       // Valid JSON
       const parsed = JSON.parse(jsonOutput);
@@ -453,7 +453,7 @@ describe('MetricsAnalyzer Integration Tests - 20 Patterns', () => {
       const result = await analyzer.analyze(templatePath, { outputFormat: 'html' });
       
       const htmlFormatter = new HTMLOutputFormatter();
-      const htmlOutput = await htmlFormatter.format(result);
+      const htmlOutput = htmlFormatter.format(result);
       
       // HTML structure
       expect(htmlOutput).toMatch(/<!DOCTYPE html>/);

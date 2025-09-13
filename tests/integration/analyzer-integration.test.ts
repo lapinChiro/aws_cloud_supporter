@@ -18,7 +18,7 @@ describe('MetricsAnalyzer Integration Tests', () => {
   let analyzer: MetricsAnalyzer;
   let testTemplate: CloudFormationTemplate;
   
-  beforeAll(async () => {
+  beforeAll(() => {
     // 実際のコンポーネントでAnalyzerを初期化
     const parser = new TemplateParser();
     const logger = new Logger();
@@ -306,7 +306,7 @@ describe('MetricsAnalyzer Integration Tests', () => {
         
         // JSON形式の検証
         const jsonFormatter = new JSONOutputFormatter();
-        const jsonOutput = await jsonFormatter.format(result);
+        const jsonOutput = jsonFormatter.format(result);
         
         // JSON解析可能か確認
         const parsed = JSON.parse(jsonOutput);
@@ -330,7 +330,7 @@ describe('MetricsAnalyzer Integration Tests', () => {
         
         // HTML形式の検証
         const htmlFormatter = new HTMLOutputFormatter();
-        const htmlOutput = await htmlFormatter.format(result);
+        const htmlOutput = htmlFormatter.format(result);
         
         // HTML基本構造確認
         expect(htmlOutput).toContain('<!DOCTYPE html>');

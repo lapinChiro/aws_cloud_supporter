@@ -121,19 +121,23 @@ describe('Generators Integration Tests', () => {
         );
         
         expect(generator).toBeDefined();
-        const metrics = await generator!.generate(resource);
+        const metrics = await generator?.generate(resource);
         
         // 全メトリクスが型安全であることを確認
-        for (const metric of metrics) {
-          expect(metric.metric_name).toBeDefined();
-          expect(typeof metric.metric_name).toBe('string');
-          
-          // しきい値の妥当性を確認（警告と重要の値が異なることを確認）
-          expect(metric.recommended_threshold.warning).not.toBe(
-            metric.recommended_threshold.critical
-          );
-          expect(typeof metric.recommended_threshold.warning).toBe('number');
-          expect(typeof metric.recommended_threshold.critical).toBe('number');
+        if (metrics) {
+          for (const metric of metrics) {
+            expect(metric.metric_name).toBeDefined();
+            expect(typeof metric.metric_name).toBe('string');
+
+            // しきい値の妥当性を確認（警告と重要の値が異なることを確認）
+            expect(metric.recommended_threshold.warning).not.toBe(
+              metric.recommended_threshold.critical
+            );
+            expect(typeof metric.recommended_threshold.warning).toBe('number');
+            expect(typeof metric.recommended_threshold.critical).toBe('number');
+          }
+        } else {
+          throw new Error(`No metrics generated for resource type ${resource.Type}`);
         }
       }
     });
@@ -255,7 +259,7 @@ describe('Generators Integration Tests', () => {
   });
 
   describe('Error Handling Integration', () => {
-    it('should handle invalid resource types gracefully', async () => {
+    it('should handle invalid resource types gracefully', () => {
       const invalidResource: CloudFormationResource = {
         Type: 'AWS::Unsupported::Resource',
       };
@@ -296,10 +300,10 @@ describe('Generators Integration Tests', () => {
         
         // ECSはFargate以外をサポートしないため、特別処理
         if (resource.Type === 'AWS::ECS::Service' && !resource.Properties) {
-          await expect(generator!.generate(resource)).rejects.toThrow('Only Fargate services are supported');
+          await expect(generator?.generate(resource)).rejects.toThrow('Only Fargate services are supported');
         } else {
           // その他はエラーを投げずにデフォルト値で処理されることを確認
-          await expect(generator!.generate(resource)).resolves.toBeDefined();
+          await expect(generator?.generate(resource)).resolves.toBeDefined();
         }
       }
     });

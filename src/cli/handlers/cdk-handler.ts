@@ -64,7 +64,7 @@ export class CDKHandler implements ICDKHandler {
       
       // 5. 出力処理
       await this.outputHandler.outputCDKResult(
-        options.cdkOutputDir || '',
+        options.cdkOutputDir ?? '',
         { [cdkOptions.stackName + '.ts']: cdkCode },
         'CDK Stack generated successfully',
         options,
@@ -102,7 +102,7 @@ export class CDKHandler implements ICDKHandler {
       enabled: true,
       includeLowImportance: options.includeLow,
       verbose: options.verbose,
-      stackName: options.cdkStackName || 'CloudWatchAlarmsStack'
+      stackName: options.cdkStackName ?? 'CloudWatchAlarmsStack'
     };
     
     // オプショナルプロパティの設定
@@ -249,7 +249,7 @@ export class CDKCodeGenerator implements ICDKCodeGenerator {
     const cdkCode = await cdkGenerator.generate(result as ExtendedAnalysisResult, cdkOptions);
     
     return {
-      projectDir: cdkOptions.outputDir || '.',
+      projectDir: cdkOptions.outputDir ?? '.',
       files: { [cdkOptions.stackName + '.ts']: cdkCode },
       message: 'CDK Stack generated successfully'
     };

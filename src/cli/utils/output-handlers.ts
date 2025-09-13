@@ -57,6 +57,9 @@ export class StandardOutputHandler implements IStandardOutputHandler {
         return await jsonFormatter.format(result);
       case 'html':
         return await htmlFormatter.format(result);
+      case 'yaml':
+        // YAML formatはjsonFormatterでYAML形式として出力
+        return await jsonFormatter.format(result);
       default:
         throw new CloudSupporterError(
           ErrorType.OUTPUT_ERROR,
@@ -156,6 +159,9 @@ export class FileOutputHandler implements IFileOutputHandler {
         return await jsonFormatter.format(result);
       case 'html':
         return await htmlFormatter.format(result);
+      case 'yaml':
+        // YAML formatはjsonFormatterでYAML形式として出力
+        return await jsonFormatter.format(result);
       default:
         throw new CloudSupporterError(
           ErrorType.OUTPUT_ERROR,

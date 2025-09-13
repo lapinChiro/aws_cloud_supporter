@@ -10,8 +10,8 @@ export class DynamoDBMetricsGenerator {
     return ['AWS::DynamoDB::Table'];
   }
   
-  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
-    return [{
+  generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
+    return Promise.resolve([{
       metric_name: 'ConsumedReadCapacityUnits',
       namespace: 'AWS/DynamoDB',
       unit: 'Count',
@@ -22,6 +22,6 @@ export class DynamoDBMetricsGenerator {
       category: 'Saturation',
       importance: 'Medium',
       dimensions: []
-    }];
+    }]);
   }
 }

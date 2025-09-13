@@ -142,8 +142,8 @@ describe('JSONOutputFormatter', () => {
   });
 
   describe('formatJSON', () => {
-    test('should generate valid JSON output', async () => {
-      const json = await formatter.formatJSON(mockResult);
+    test('should generate valid JSON output', () => {
+      const json = formatter.formatJSON(mockResult);
       
       // Should be valid JSON
       expect(() => JSON.parse(json)).not.toThrow();
@@ -153,8 +153,8 @@ describe('JSONOutputFormatter', () => {
       expect(typeof parsed).toBe('object');
     });
 
-    test('should include all required metadata fields', async () => {
-      const json = await formatter.formatJSON(mockResult);
+    test('should include all required metadata fields', () => {
+      const json = formatter.formatJSON(mockResult);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       expect(parsed.metadata).toBeDefined();
@@ -166,8 +166,8 @@ describe('JSONOutputFormatter', () => {
       expect(parsed.metadata.processing_time_ms).toBe(1500);
     });
 
-    test('should include all resources with metrics', async () => {
-      const json = await formatter.formatJSON(mockResult);
+    test('should include all resources with metrics', () => {
+      const json = formatter.formatJSON(mockResult);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       expect(parsed.resources).toHaveLength(2);
@@ -183,8 +183,8 @@ describe('JSONOutputFormatter', () => {
       expect(parsed.resources[1]!.metrics).toHaveLength(2);
     });
 
-    test('should format metrics correctly', async () => {
-      const json = await formatter.formatJSON(mockResult);
+    test('should format metrics correctly', () => {
+      const json = formatter.formatJSON(mockResult);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       const metric = parsed.resources[0]!.metrics[0]!;
@@ -200,48 +200,48 @@ describe('JSONOutputFormatter', () => {
       expect(metric.importance).toBe('High');
     });
 
-    test('should include unsupported resources', async () => {
-      const json = await formatter.formatJSON(mockResult);
+    test('should include unsupported resources', () => {
+      const json = formatter.formatJSON(mockResult);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       expect(parsed.unsupported_resources).toBeDefined();
       expect(parsed.unsupported_resources).toContain('S3Bucket1');
     });
 
-    test('should handle empty results', async () => {
+    test('should handle empty results', () => {
       const emptyResult: AnalysisResult = {
         ...mockResult,
         resources: [],
         unsupported_resources: []
       };
       
-      const json = await formatter.formatJSON(emptyResult);
+      const json = formatter.formatJSON(emptyResult);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       expect(parsed.resources).toEqual([]);
       expect(parsed.unsupported_resources).toEqual([]);
     });
 
-    test('should validate output against schema', async () => {
-      await formatter.formatJSON(mockResult);
+    test('should validate output against schema', () => {
+      formatter.formatJSON(mockResult);
       
       expect(mockValidateMetricsOutput).toHaveBeenCalledTimes(1);
       expect(mockValidateMetricsOutput).toHaveBeenCalledWith(expect.any(Object) as ParsedAnalysisResult);
     });
 
-    test('should throw error if validation fails', async () => {
+    test('should throw error if validation fails', () => {
       mockValidateMetricsOutput.mockReturnValue({
         valid: false,
         errors: ['Invalid metric structure', 'Missing required field']
       });
       
-      await expect(formatter.formatJSON(mockResult)).rejects.toThrow(
+      expect(() => formatter.formatJSON(mockResult)).toThrow(
         'JSON output validation failed: Invalid metric structure; Missing required field'
       );
     });
 
-    test('should pretty print JSON with 2 space indentation', async () => {
-      const json = await formatter.formatJSON(mockResult);
+    test('should pretty print JSON with 2 space indentation', () => {
+      const json = formatter.formatJSON(mockResult);
       
       // Check for proper indentation
       expect(json).toContain('\n  "metadata"');
@@ -249,7 +249,7 @@ describe('JSONOutputFormatter', () => {
       expect(json).not.toContain('\t'); // No tabs
     });
 
-    test('should handle metrics without dimensions', async () => {
+    test('should handle metrics without dimensions', () => {
       const resultNoDims: AnalysisResult = {
         ...mockResult,
         resources: [{
@@ -270,14 +270,14 @@ describe('JSONOutputFormatter', () => {
         }]
       };
       
-      const json = await formatter.formatJSON(resultNoDims);
+      const json = formatter.formatJSON(resultNoDims);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       const metric = parsed.resources[0]!.metrics[0]!;
       expect(metric.dimensions).toBeUndefined();
     });
 
-    test('should sanitize sensitive properties', async () => {
+    test('should sanitize sensitive properties', () => {
       const resultWithSecrets: AnalysisResult = {
         ...mockResult,
         resources: [{
@@ -293,7 +293,7 @@ describe('JSONOutputFormatter', () => {
         }]
       };
       
-      const json = await formatter.formatJSON(resultWithSecrets);
+      const json = formatter.formatJSON(resultWithSecrets);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       const props = parsed.resources[0]!.resource_properties;
@@ -303,7 +303,7 @@ describe('JSONOutputFormatter', () => {
       expect(props.DBInstanceClass).toBe('db.t3.medium');
     });
 
-    test('should preserve resource property types', async () => {
+    test('should preserve resource property types', () => {
       const resultWithTypes: AnalysisResult = {
         ...mockResult,
         resources: [{
@@ -326,7 +326,7 @@ describe('JSONOutputFormatter', () => {
         }]
       };
       
-      const json = await formatter.formatJSON(resultWithTypes);
+      const json = formatter.formatJSON(resultWithTypes);
       const parsed = JSON.parse(json) as ParsedAnalysisResult;
       
       const props = parsed.resources[0]!.resource_properties;
@@ -338,7 +338,7 @@ describe('JSONOutputFormatter', () => {
       expect(typeof props.ProvisionedThroughput).toBe('object');
     });
 
-    test('should handle large outputs efficiently', async () => {
+    test('should handle large outputs efficiently', () => {
       const largeResult: AnalysisResult = {
         ...mockResult,
         resources: Array(500).fill(null).map((_, i) => ({
@@ -372,7 +372,7 @@ describe('JSONOutputFormatter', () => {
       };
       
       const startTime = Date.now();
-      const json = await formatter.formatJSON(largeResult);
+      const json = formatter.formatJSON(largeResult);
       const duration = Date.now() - startTime;
       
       expect(duration).toBeLessThan(2000); // 2 seconds max
@@ -382,10 +382,10 @@ describe('JSONOutputFormatter', () => {
       expect(() => JSON.parse(json)).not.toThrow();
     });
 
-    test('should maintain consistent output order', async () => {
+    test('should maintain consistent output order', () => {
       // Run formatter twice with same input
-      const json1 = await formatter.formatJSON(mockResult);
-      const json2 = await formatter.formatJSON(mockResult);
+      const json1 = formatter.formatJSON(mockResult);
+      const json2 = formatter.formatJSON(mockResult);
       
       // Should produce identical output
       expect(json1).toBe(json2);

@@ -20,7 +20,7 @@ export class JSONOutputFormatter implements IOutputFormatter {
    * @param result 分析結果
    * @returns JSON文字列
    */
-  async format(result: AnalysisResult): Promise<string> {
+  format(result: AnalysisResult): string {
     return this.formatJSON(result);
   }
 
@@ -28,7 +28,7 @@ export class JSONOutputFormatter implements IOutputFormatter {
    * JSON形式でのフォーマット出力
    * requirement.md準拠のJSON Schema実装
    */
-  async formatJSON(result: AnalysisResult): Promise<string> {
+  formatJSON(result: AnalysisResult): string {
     const startTime = performance.now();
     
     try {

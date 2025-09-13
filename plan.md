@@ -1,136 +1,272 @@
-# 🚨 EMERGENCY: 型安全性違反 即時修正計画
+# Lint Error Fixing Plan
 
-## 🔴 CRITICAL STATUS: 開発停止レベルの品質基準違反
+**Total Target**: 572 problems (552 errors, 20 warnings)  
+**Strategy**: Incremental, verifiable approach with parallel work opportunities
 
-**CLAUDE.md違反**: "*Maintain 0 TypeScript errors at all times*"
-**現状**: 694個の型安全性違反エラー
-**対応**: **即座の全面修正** - 新機能開発を完全停止
+## Plan Overview
 
-### 違反内容
-- `no-non-null-assertion`: 59個 🚫 明確に禁止された`!`演算子
-- `no-unsafe-*`: 635個 🚫 any型による型安全性破綻
-- `no-explicit-any`: 27個 🚫 明示的any型使用
+### Execution Principles
+1. **Incremental Progress**: Each phase reduces errors by 50-100
+2. **Continuous Verification**: `npm run lint` after each phase
+3. **Risk Management**: Critical files first, test files with validation
+4. **Parallel Opportunities**: Independent files can be fixed simultaneously
 
-## ⚡ 即時対応戦略 (KISS原則)
+---
 
-### 🎯 単一目標
-**`npm run lint`エラー0達成** - 他の全活動を停止
+## Phase 1: Quick Wins & Auto-fixes
+**Target**: 50-80 errors  
+**Duration**: 1-2 hours
 
-### 📋 実行手順 (最短ルート)
+### Tasks
+1. **Auto-fix application**
+   ```bash
+   npx eslint src tests --fix
+   ```
+   - Fix import/order violations
+   - Simple syntax corrections
+   - Consistent formatting
 
-#### STEP 1: 開発環境固定
+2. **Manual import order fixes**
+   - `src/cli/interfaces/handler.interface.ts` (2 errors)
+   - Other import group violations
+
+### Verification
 ```bash
-# 現在のブランチで作業継続
-git stash  # 作業中変更を退避
+npm run lint | grep "import/order\|consistent-type-assertions"
 ```
 
-#### STEP 2: エラー個別修正 (バッチ処理)
+### Expected Reduction: ~60 errors
+
+---
+
+## Phase 2: Type Foundation 
+**Target**: 40-60 errors  
+**Duration**: 2-3 hours
+
+### Tasks
+1. **Metrics config return types** (Pattern-based fix)
+   - `src/config/metrics/dynamodb.metrics.ts` (4 functions)
+   - `src/config/metrics/rds.metrics.ts` (4 functions) 
+   - `src/config/metrics/ec2.metrics.ts` (4 functions)
+   - Other metrics config files
+   
+   **Method**: Add explicit return types to functions at lines 113, 133, 153, 173
+
+2. **Template expression types**
+   - `src/core/analyzer.ts` lines 214, 215
+   - Add null checks for `number | undefined`
+
+### Verification
 ```bash
-# 1. Non-null assertions (59個) - 最優先
-npm run lint | grep "no-non-null-assertion" | head -10
-# → 10個単位で修正・テスト・commit
-
-# 2. Explicit any (27個) - 第2優先  
-npm run lint | grep "no-explicit-any" | head -10
-# → 型定義作成・修正・テスト・commit
-
-# 3. Unsafe operations (608個) - 最終段階
-npm run lint | grep "no-unsafe-" | head -10
-# → 型保護・修正・テスト・commit
+npm run lint | grep "explicit-module-boundary-types\|restrict-template-expressions"
+npm run build
 ```
 
-#### STEP 3: 各修正サイクル (10個単位)
-1. **修正実行** (10分以内)
-2. **`npm test`** - fail時は即rollback
-3. **`npm run typecheck`** - エラー時は即rollback  
-4. **`npm run build`** - エラー時は即rollback
-5. **git commit** - 成功時のみ
-6. **次の10個へ**
+### Expected Reduction: ~50 errors
 
-### 🔧 修正パターン (DRY原則)
+---
 
-#### Pattern A: Non-null assertion
+## Phase 3: Core Application Type Safety
+**Target**: 60-80 errors  
+**Duration**: 3-4 hours
+
+### Tasks
+1. **Switch exhaustiveness** (High Impact)
+   - `src/cli/commands.ts`: Add ErrorType.OUTPUT_ERROR | ErrorType.VALIDATION_ERROR cases
+   - `src/cli/utils/output-handlers.ts`: Add "yaml" cases (2 instances)
+
+2. **Nullish coalescing** (Pattern replacement)
+   - `src/cli/handlers/cdk-handler.ts` (3 locations)
+   - `src/core/analyzer.ts` (4 locations)
+   - Replace `||` with `??` where appropriate
+
+3. **Use-before-define** (src directory only)
+   - `src/cli/commands.ts` (5 functions)
+   - `src/cli/builders/command-builder.ts` (1 function)
+   - `src/cli/handlers/cdk-handler.ts` (1 function)
+
+### Verification
+```bash
+npm run lint | grep "switch-exhaustiveness\|prefer-nullish-coalescing\|no-use-before-define"
+npm run build
+npm test -- --testPathPattern="integration" --bail
+```
+
+### Expected Reduction: ~70 errors
+
+---
+
+## Phase 4: Test Files - Tier 1 (Critical)
+**Target**: 80-100 errors  
+**Duration**: 4-6 hours
+
+### Priority Files
+1. **tests/unit/core/extractor.test.ts** (~50 errors)
+   - Focus on unsafe operations pattern
+   - Replace `any` with proper test types
+   - Fix unsafe assignments, calls, member access
+
+2. **tests/unit/config/metrics-definitions.test.ts** (~40 errors)
+   - Similar unsafe operations pattern
+   - Mock proper types instead of `any`
+
+### Approach for Unsafe Operations
 ```typescript
-// ❌ FORBIDDEN
-const value = obj.property!;
+// Before (unsafe)
+const mockConfig: any = { /* ... */ };
+mockConfig.someMethod();
 
-// ✅ CORRECT
-const value = obj.property ?? defaultValue;
-// OR
-if (obj.property) {
-  const value = obj.property;
-}
+// After (safe)
+const mockConfig = {
+  someMethod: jest.fn(),
+  // ... properly typed mock
+} as jest.Mocked<ConfigType>;
 ```
 
-#### Pattern B: Explicit any
-```typescript
-// ❌ FORBIDDEN
-function process(data: any): any
-
-// ✅ CORRECT  
-interface ProcessInput { /* specific shape */ }
-interface ProcessOutput { /* specific shape */ }
-function process(data: ProcessInput): ProcessOutput
+### Verification
+```bash
+npm test -- --testPathPattern="extractor|metrics-definitions" --bail
+npm run lint | grep "no-unsafe"
 ```
 
-#### Pattern C: Unsafe operations
-```typescript
-// ❌ FORBIDDEN
-const result = (data as any).someProperty;
+### Expected Reduction: ~90 errors
 
-// ✅ CORRECT
-interface DataShape {
-  someProperty: string;
-}
-const result = (data as DataShape).someProperty;
+---
+
+## Phase 5: Test Files - Tier 2 (Medium Impact)
+**Target**: 60-80 errors  
+**Duration**: 3-4 hours
+
+### Priority Files
+1. **tests/unit/generators/base.generator.test.ts** (~25 errors)
+   - Mixed type safety issues
+   - Non-null assertions to proper null checks
+   - Explicit any replacement
+
+2. **tests/unit/core/parser.test.ts** (~20 errors)
+   - Unsafe enum comparisons
+   - Variable shadowing fixes
+   - Unsafe operations
+
+3. **Other medium-impact test files**
+
+### Specific Fixes
+- **Non-null assertions**: Replace `!` with proper null checks
+- **Enum comparisons**: Ensure type safety in enum comparisons
+- **Variable shadowing**: Rename conflicting variables
+
+### Verification
+```bash
+npm test -- --testPathPattern="base.generator|parser" --bail
+npm run lint | grep "no-non-null-assertion\|no-unsafe-enum-comparison\|no-shadow"
 ```
 
-## ⏰ タイムライン (現実的)
+### Expected Reduction: ~70 errors
 
-### Day 1-2: Non-null assertions (59個)
-- 10個/時 = 6時間作業
-- テスト・commit時間込み = 8時間
+---
 
-### Day 3: Explicit any (27個)  
-- Interface作成 + 修正 = 4時間
+## Phase 6: Test Files - Tier 3 (Remaining)
+**Target**: 50-80 errors  
+**Duration**: 2-4 hours
 
-### Day 4-7: Unsafe operations (608個)
-- 20個/時 = 30時間作業
-- 4日間集中作業
+### Tasks
+1. **Small test files with scattered errors**
+2. **Pattern-based fixes for remaining unsafe operations**
+3. **Cleanup of remaining test-specific issues**
 
-**合計: 7日間** (週単位ではなく日単位)
+### Approach
+- Group similar errors across files
+- Apply consistent patterns established in Phases 4-5
+- Focus on remaining `@typescript-eslint/no-unsafe-*` rules
 
-## ✅ 成功基準 (交渉不可)
+### Verification
+```bash
+npm test
+npm run lint | grep "no-unsafe"
+```
 
-- [ ] `npm run lint`エラー数: **0** (現在: 694)
-- [ ] `npm run typecheck`エラー数: **0** (維持)
-- [ ] `npm run build`: **成功** (維持)
-- [ ] `npm test`: **100%パス** (維持)
+### Expected Reduction: ~60 errors
 
-## 🛡️ リスク最小化
+---
 
-### 修正中断条件
-- テスト失敗 → 即座にrollback
-- ビルド失敗 → 即座にrollback  
-- 1時間で10個修正できない → アプローチ見直し
+## Phase 7: Code Organization & Quality
+**Target**: 30-50 errors  
+**Duration**: 3-5 hours
 
-### バックアップ戦略
-- 修正前: `git stash`
-- 10個単位: commit作成
-- 問題発生: `git reset --hard HEAD~1`
+### Tasks
+1. **Function size violations** (max-lines-per-function)
+   - `src/core/formatters/html/assets/scripts.ts` (226 lines)
+   - `tests/unit/generators/base-optimization.test.ts` (484 lines)
+   - `tests/unit/utils/schema-validator.test.ts` (376 lines)
+   
+   **Strategy**: Extract smaller, focused functions
 
-## 🎯 完了後の状態
+2. **File size violations** (max-lines)
+   - `tests/unit/generators/base.generator.test.ts` (950 lines)
+   - `tests/unit/generators/base-optimization.test.ts` (535 lines)
+   
+   **Strategy**: Split into multiple test files or extract utilities
 
-1. **Zero TypeScript errors** ✅
-2. **No `any` types** ✅  
-3. **No non-null assertions** ✅
-4. **Type-safe codebase** ✅
-5. **CLAUDE.md 100%準拠** ✅
+3. **Miscellaneous fixes**
+   - Unused variables (prefix with `_`)
+   - Remaining shadowing issues
+   - Promise misuse fixes
 
-## 📢 重要な認識
+### Verification
+```bash
+npm run lint
+npm test
+npm run build
+```
 
-**これは緊急事態対応である。**
-- 新機能開発は一切行わない
-- コードレビューは品質修正後に実施
-- 他の全てのタスクより最優先
-- "Zero errors at all times"は例外なし
+### Expected Reduction: ~40 errors
+
+---
+
+## Final Verification & Cleanup
+
+### Complete Test Suite
+```bash
+npm test
+npm run build
+npm run lint
+```
+
+### Success Criteria
+- ✅ 0 ESLint errors
+- ✅ 0 TypeScript compilation errors  
+- ✅ All tests passing
+- ✅ Clean build output
+
+---
+
+## Parallel Work Opportunities
+
+### Independent Files (Can work simultaneously)
+- Phase 2: Different metrics config files
+- Phase 4-6: Different test files
+- Phase 7: Different oversized files
+
+### Sequential Dependencies
+- Phase 1 → Phase 2 (import fixes before type fixes)
+- Phase 2 → Phase 3 (type foundation before core logic)
+- Phases 4-6 → Phase 7 (functional fixes before organizational)
+
+---
+
+## Risk Mitigation
+
+### After Each Phase
+1. **Lint check**: Ensure error count decreases
+2. **Build check**: Ensure no compilation issues
+3. **Test check**: Ensure no functionality breaks
+
+### Rollback Strategy
+- Git commit after each successful phase
+- If phase fails, analyze impact and adjust approach
+- Use `git checkout -- .` if needed for clean restart
+
+### Critical Success Factors
+1. **Type safety first**: Establish solid type foundation early
+2. **Test validation**: Ensure tests still pass after modifications
+3. **Incremental progress**: Never let error count increase between phases

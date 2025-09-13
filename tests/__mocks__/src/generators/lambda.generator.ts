@@ -10,8 +10,8 @@ export class LambdaMetricsGenerator {
     return ['AWS::Lambda::Function'];
   }
   
-  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
-    return [{
+  generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
+    return Promise.resolve([{
       metric_name: 'Duration',
       namespace: 'AWS/Lambda',
       unit: 'Milliseconds',
@@ -22,6 +22,6 @@ export class LambdaMetricsGenerator {
       category: 'Performance',
       importance: 'High',
       dimensions: [{ name: 'FunctionName', value: 'test-function' }]
-    }];
+    }]);
   }
 }
