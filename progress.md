@@ -85,7 +85,25 @@
 ## TASK-004: srcディレクトリ小規模修正
 - **開始時刻**: 2025-09-13 XX:XX
 - **担当者**: Claude Code
-- **ブランチ**: fix/task-004-small-fixes（新規作成予定）
+- **ブランチ**: fix/task-004-small-fixes
 
 ### 作業内容
-1. 現在の変更をコミット
+1. ブランチ作成
+   - `git checkout -b fix/task-004-small-fixes` でブランチ作成 ✅
+
+2. 修正実施（9ファイル）
+   - src/utils/schema-validator.ts: `||` を `??` に変更（3箇所） ✅
+   - src/utils/error.ts: error.stackのテンプレートリテラルにnull合体演算子追加 ✅
+   - src/templates/handlebars-official-helpers.ts: `||` を `??` に変更（2箇所）、未使用errorパラメータ削除 ✅
+   - src/cli/handlers/cdk-handler.ts: クラス定義の順序を修正（use-before-defineエラー解消） ✅
+   - src/security/input-validator.ts: テンプレートリテラルにnull合体演算子追加（2箇所） ✅
+   - src/validation/cdk-validator.ts: 未使用cleanupErrorパラメータを削除 ✅
+
+### 完了内容
+- 全9個のファイルで修正完了 ✅
+- srcディレクトリのESLintエラーが0になったことを確認 ✅
+- fix/lint-async-errorsブランチにマージ完了 ✅
+
+### 引継ぎ事項
+- Nullish合体演算子（??）への変更により、空文字列やゼロを有効な値として扱うようになった
+- クラスの定義順序を変更したが、機能的な影響はない
