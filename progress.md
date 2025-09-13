@@ -6,8 +6,8 @@
 
 ## Current Status
 - **Active Phase**: Phase 2 - Type Foundation  
-- **Current Task**: T003 - DynamoDB Metrics Return Types
-- **Next Task**: T004 - RDS Metrics Return Types
+- **Current Task**: T004 - RDS Metrics Return Types
+- **Next Task**: T005 - EC2 Metrics Return Types
 
 ## Task Completion Status
 
@@ -16,7 +16,7 @@
 - [x] **T002**: Manual Import Order Fixes - *COMPLETED* (2 errors fixed)
 
 ### Phase 2: Type Foundation  
-- [ ] **T003**: DynamoDB Metrics Return Types - *Not Started*
+- [x] **T003**: DynamoDB Metrics Return Types - *COMPLETED* (4 errors fixed)
 - [ ] **T004**: RDS Metrics Return Types - *Not Started*
 - [ ] **T005**: EC2 Metrics Return Types - *Not Started*
 - [ ] **T006**: Remaining Metrics Config Files - *Not Started*
@@ -49,7 +49,8 @@
 ## Error Count Progress
 - **Initial**: 572 problems (552 errors, 20 warnings)
 - **After T002**: 570 problems (550 errors, 20 warnings) 
-- **Current**: 570 problems (-2 from T002)
+- **After T003**: 566 problems (546 errors, 20 warnings)
+- **Current**: 566 problems (-6 total: -2 from T002, -4 from T003)
 - **Target**: 0 problems
 
 ## Key Notes & Decisions
@@ -72,6 +73,18 @@
 - **Error Reduction**: 572 → 570 problems (550 errors, 20 warnings)
 - **Time Taken**: 30 minutes
 - **Status**: Completed, moving to Phase 2
+
+### T003 - DynamoDB Metrics Return Types (COMPLETED)
+- **File Fixed**: `src/config/metrics/dynamodb.metrics.ts`
+- **Changes Made**: 
+  - Added `: boolean` return type to 4 `applicableWhen` arrow functions
+  - Functions at lines 113, 133, 153, 173 now have explicit return types
+  - Used `(resource: CloudFormationResource): boolean =>` pattern
+- **Type Used**: `boolean` (matches `ResourceConditionFunction` signature)
+- **Result**: 4 explicit-module-boundary-types violations fixed
+- **Error Reduction**: 570 → 566 problems (546 errors, 20 warnings)
+- **Time Taken**: 45 minutes
+- **Status**: Completed, moving to T004
 
 ### Repository State
 - **Branch**: fix/lint-async-errors
