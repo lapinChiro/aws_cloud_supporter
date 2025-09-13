@@ -66,3 +66,26 @@
 
 ### 作業内容
 1. ブランチの準備
+   - `git checkout -b fix/task-003-logger` でブランチ作成 ✅
+
+2. 修正実施
+   - console文にeslint-disable-next-lineコメント追加（129, 131行） ✅
+   - log オブジェクトの全メソッドに戻り値型`:void`を追加（233-251行） ✅
+
+### 完了内容
+- 全16個のエラーを解消 ✅
+- ESLintエラーが0になったことを確認 ✅
+
+### 引継ぎ事項
+- console.logはCLI出力に必要なため、eslint-disableで対応
+- logger専用のテストは存在しない
+
+---
+
+## TASK-004: srcディレクトリ小規模修正
+- **開始時刻**: 2025-09-13 XX:XX
+- **担当者**: Claude Code
+- **ブランチ**: fix/task-004-small-fixes（新規作成予定）
+
+### 作業内容
+1. 現在の変更をコミット

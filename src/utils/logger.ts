@@ -126,8 +126,10 @@ export class Logger implements ILogger {
   plain(message: string, ...args: unknown[]): void {
      
     if (args.length > 0) {
+      // eslint-disable-next-line no-console
       console.log(message, ...args);
     } else {
+      // eslint-disable-next-line no-console
       console.log(message);
     }
   }
@@ -230,21 +232,21 @@ export const logger = new Logger('info', true);
 // CLIアプリケーション用のコンビニエンス関数
 export const log = {
   // 基本ログメソッド
-  debug: (message: string, ...args: unknown[]) => { logger.debug(message, ...args); },
-  info: (message: string, ...args: unknown[]) => { logger.info(message, ...args); },
-  warn: (message: string, ...args: unknown[]) => { logger.warn(message, ...args); },
-  error: (message: string, error?: Error, ...args: unknown[]) => { logger.error(message, error, ...args); },
-  success: (message: string, ...args: unknown[]) => { logger.success(message, ...args); },
+  debug: (message: string, ...args: unknown[]): void => { logger.debug(message, ...args); },
+  info: (message: string, ...args: unknown[]): void => { logger.info(message, ...args); },
+  warn: (message: string, ...args: unknown[]): void => { logger.warn(message, ...args); },
+  error: (message: string, error?: Error, ...args: unknown[]): void => { logger.error(message, error, ...args); },
+  success: (message: string, ...args: unknown[]): void => { logger.success(message, ...args); },
   
   // CLI専用メソッド
-  plain: (message: string, ...args: unknown[]) => { logger.plain(message, ...args); },
-  stats: (title: string, stats: Record<string, string | number>) => { logger.stats(title, stats); },
-  list: (title: string, items: Array<string | { label: string; value: string | number }>) => 
+  plain: (message: string, ...args: unknown[]): void => { logger.plain(message, ...args); },
+  stats: (title: string, stats: Record<string, string | number>): void => { logger.stats(title, stats); },
+  list: (title: string, items: Array<string | { label: string; value: string | number }>): void => 
     { logger.list(title, items); },
-  errorList: (title: string, errors: string[]) => { logger.errorList(title, errors); },
-  warnList: (title: string, warnings: string[]) => { logger.warnList(title, warnings); },
-  infoList: (title: string, items: string[]) => { logger.infoList(title, items); },
-  fileSaved: (filePath: string) => { logger.fileSaved(filePath); },
-  plainError: (message: string, error?: Error) => { logger.plainError(message, error); },
-  plainWarn: (message: string) => { logger.plainWarn(message); }
+  errorList: (title: string, errors: string[]): void => { logger.errorList(title, errors); },
+  warnList: (title: string, warnings: string[]): void => { logger.warnList(title, warnings); },
+  infoList: (title: string, items: string[]): void => { logger.infoList(title, items); },
+  fileSaved: (filePath: string): void => { logger.fileSaved(filePath); },
+  plainError: (message: string, error?: Error): void => { logger.plainError(message, error); },
+  plainWarn: (message: string): void => { logger.plainWarn(message); }
 };
