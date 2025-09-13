@@ -3,9 +3,10 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
-import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+
 import { ResourceExtractor } from '../../../src/core/extractor';
 import { TemplateParser } from '../../../src/core/parser';
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 
 // 全テストで使用する一時ディレクトリ
 let tempDir: string;

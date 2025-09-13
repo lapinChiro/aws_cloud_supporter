@@ -1,7 +1,8 @@
 // Test-specific type definitions
 
-import { CloudFormationResource } from '../aws/cloudformation';
-import { AnalysisResultData } from './parser';
+import type { CloudFormationResource } from '../aws/cloudformation';
+
+import type { AnalysisResultData } from './parser';
 
 // Mock data types for tests
 export interface MockAnalysisResult {

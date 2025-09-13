@@ -43,7 +43,7 @@ describe('CLI CDK Basic Integration', () => {
   });
 
   describe('CLI Option Parsing', () => {
-    it('should accept CDK output format', async () => {
+    it('should accept CDK output format', () => {
       const program = createCLICommand(dependencies);
       
       // Test help output includes CDK options
@@ -54,7 +54,7 @@ describe('CLI CDK Basic Integration', () => {
       expect(helpOutput).toContain('json|html|yaml|cdk');
     });
 
-    it('should include CDK examples in help text', async () => {
+    it('should include CDK examples in help text', () => {
       const program = createCLICommand(dependencies);
       const helpOutput = program.helpInformation();
       

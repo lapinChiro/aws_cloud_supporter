@@ -6,7 +6,7 @@ import { createLogger } from '../../../src/utils/logger';
 
 // ヘルパー関数：テスト用ジェネレーター作成
 function createOptimizedTestGenerator() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   class OptimizedTestGenerator extends BaseMetricsGenerator {
     constructor() {
       super(createLogger('error'));
@@ -262,9 +262,9 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
   // SOLID原則準拠の確認（全5原則）
   it('should demonstrate SOLID principles compliance', () => {
     // 静的importで型安全なアクセス
-    type BaseGeneratorPrototype = {
+    interface BaseGeneratorPrototype {
       generate?: () => unknown;
-    };
+    }
 
     // S: Single Responsibility - メトリクス生成のみ
     const basePrototype = BaseMetricsGenerator.prototype as unknown as BaseGeneratorPrototype;
@@ -501,9 +501,9 @@ describe('BaseMetricsGenerator最適化（CLAUDE.md: BLUE段階）', () => {
   // CLAUDE.md準拠度の総合確認
   it('should fully comply with CLAUDE.md principles', () => {
     // 静的importで型安全なアクセス
-    type BaseGeneratorPrototype = {
+    interface BaseGeneratorPrototype {
       generate?: () => unknown;
-    };
+    }
     
     // Zero type errors: ビルド成功済み ✅
     // No any types: コード内確認済み ✅

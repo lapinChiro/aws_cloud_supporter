@@ -102,8 +102,8 @@ describe('HTMLOutputFormatter', () => {
   });
 
   describe('formatHTML', () => {
-    test('should generate valid HTML structure', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should generate valid HTML structure', () => {
+      const html = formatter.formatHTML(mockResult);
 
       // Basic HTML structure
       expect(html).toContain('<!DOCTYPE html>');
@@ -120,8 +120,8 @@ describe('HTMLOutputFormatter', () => {
       expect(html).toContain('<title>CloudWatch Metrics Report</title>');
     });
 
-    test('should include all CSS styles', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should include all CSS styles', () => {
+      const html = formatter.formatHTML(mockResult);
 
       // CSS should be embedded
       expect(html).toContain('<style>');
@@ -138,8 +138,8 @@ describe('HTMLOutputFormatter', () => {
       expect(html).toContain('@media (max-width: 768px)');
     });
 
-    test('should include JavaScript functionality', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should include JavaScript functionality', () => {
+      const html = formatter.formatHTML(mockResult);
 
       // JavaScript should be embedded
       expect(html).toContain('<script>');
@@ -154,8 +154,8 @@ describe('HTMLOutputFormatter', () => {
       expect(html).toContain('toggleMetrics');
     });
 
-    test('should display metadata correctly', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should display metadata correctly', () => {
+      const html = formatter.formatHTML(mockResult);
 
       expect(html).toContain('Generated: ');
       expect(html).toContain('2024年1月1日');
@@ -164,8 +164,8 @@ describe('HTMLOutputFormatter', () => {
       expect(html).toContain('Memory: 100MB');
     });
 
-    test('should render resource cards with metrics', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should render resource cards with metrics', () => {
+      const html = formatter.formatHTML(mockResult);
 
       // Resource cards
       expect(html).toContain('MyDatabase');
@@ -184,24 +184,24 @@ describe('HTMLOutputFormatter', () => {
       expect(html).toContain('Critical: 90%');
     });
 
-    test('should apply importance styles', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should apply importance styles', () => {
+      const html = formatter.formatHTML(mockResult);
 
       expect(html).toContain('importance-high');
       expect(html).toContain('importance-medium');
       expect(html).toContain('importance-low');
     });
 
-    test('should apply category badges', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should apply category badges', () => {
+      const html = formatter.formatHTML(mockResult);
 
       expect(html).toContain('category-badge category-performance');
       expect(html).toContain('category-badge category-latency');
       expect(html).toContain('category-badge category-error');
     });
 
-    test('should handle unsupported resources', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should handle unsupported resources', () => {
+      const html = formatter.formatHTML(mockResult);
 
       expect(html).toContain('Unsupported Resources');
       expect(html).toContain('UnsupportedResource1');
@@ -209,20 +209,20 @@ describe('HTMLOutputFormatter', () => {
       expect(html).toContain('2 resources were not supported');
     });
 
-    test('should handle empty results', async () => {
+    test('should handle empty results', () => {
       const emptyResult: AnalysisResult = {
         ...mockResult,
         resources: [],
         unsupported_resources: []
       };
 
-      const html = await formatter.formatHTML(emptyResult);
+      const html = formatter.formatHTML(emptyResult);
       
       expect(html).toContain('No supported resources found');
       expect(html).not.toContain('Unsupported Resources');
     });
 
-    test('should escape HTML in resource names', async () => {
+    test('should escape HTML in resource names', () => {
       const resultWithHtml: AnalysisResult = {
         ...mockResult,
         resources: [{
@@ -233,14 +233,14 @@ describe('HTMLOutputFormatter', () => {
         }]
       };
 
-      const html = await formatter.formatHTML(resultWithHtml);
+      const html = formatter.formatHTML(resultWithHtml);
       
       expect(html).not.toContain('<script>alert("xss")</script>');
       expect(html).toContain('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
     });
 
-    test('should format numbers correctly', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should format numbers correctly', () => {
+      const html = formatter.formatHTML(mockResult);
 
       // Thresholds
       expect(html).toContain('0.02s'); // ReadLatency warning
@@ -249,8 +249,8 @@ describe('HTMLOutputFormatter', () => {
       expect(html).toContain('3,000ms'); // Duration critical
     });
 
-    test('should include search and filter controls', async () => {
-      const html = await formatter.formatHTML(mockResult);
+    test('should include search and filter controls', () => {
+      const html = formatter.formatHTML(mockResult);
 
       // Search input
       expect(html).toContain('<input type="text" id="searchInput"');
@@ -267,7 +267,7 @@ describe('HTMLOutputFormatter', () => {
       expect(html).toContain('<option value="Performance">Performance</option>');
     });
 
-    test('should handle metrics without dimensions', async () => {
+    test('should handle metrics without dimensions', () => {
       const resultNoDims: AnalysisResult = {
         ...mockResult,
         resources: [{
@@ -288,12 +288,12 @@ describe('HTMLOutputFormatter', () => {
         }]
       };
 
-      const html = await formatter.formatHTML(resultNoDims);
+      const html = formatter.formatHTML(resultNoDims);
       expect(html).toContain('TestMetric');
       // Should still render without errors
     });
 
-    test('should complete within performance limits', async () => {
+    test('should complete within performance limits', () => {
       const largeResult: AnalysisResult = {
         ...mockResult,
         resources: Array.from({ length: 100 }, (_, i) => ({
@@ -316,7 +316,7 @@ describe('HTMLOutputFormatter', () => {
       };
 
       const startTime = Date.now();
-      await formatter.formatHTML(largeResult);
+      formatter.formatHTML(largeResult);
       const duration = Date.now() - startTime;
 
       expect(duration).toBeLessThan(3000); // 3 seconds max

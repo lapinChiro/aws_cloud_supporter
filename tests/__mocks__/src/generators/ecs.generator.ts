@@ -10,8 +10,8 @@ export class ECSMetricsGenerator {
     return ['AWS::ECS::Service'];
   }
   
-  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
-    return [{
+  generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
+    return Promise.resolve([{
       metric_name: 'CPUUtilization',
       namespace: 'AWS/ECS',
       unit: 'Percent',
@@ -22,6 +22,6 @@ export class ECSMetricsGenerator {
       category: 'Performance',
       importance: 'High',
       dimensions: []
-    }];
+    }]);
   }
 }

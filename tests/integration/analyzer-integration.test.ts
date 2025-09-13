@@ -18,7 +18,7 @@ describe('MetricsAnalyzer Integration Tests', () => {
   let analyzer: MetricsAnalyzer;
   let testTemplate: CloudFormationTemplate;
   
-  beforeAll(async () => {
+  beforeAll(() => {
     // 実際のコンポーネントでAnalyzerを初期化
     const parser = new TemplateParser();
     const logger = new Logger();

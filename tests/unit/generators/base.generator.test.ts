@@ -89,12 +89,12 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     const metrics = await testGenerator.generate(testResource);
     
     expect(metrics).toHaveLength(1);
-    const metric = metrics[0]!;
+    const metric = metrics[0];
     
     // しきい値計算確認
-    expect(metric.recommended_threshold).toHaveValidThreshold();
-    expect(metric.recommended_threshold.warning).toBe(100); // 100 * 1.0 * 1.0
-    expect(metric.recommended_threshold.critical).toBe(150); // 100 * 1.0 * 1.5
+    expect(metric?.recommended_threshold).toHaveValidThreshold();
+    expect(metric?.recommended_threshold.warning).toBe(100); // 100 * 1.0 * 1.0
+    expect(metric?.recommended_threshold.critical).toBe(150); // 100 * 1.0 * 1.5
   });
 
   // リソーススケール係数計算テスト（GREEN段階: スケール反映確認）
@@ -114,11 +114,11 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     };
 
     const metrics = await scaledGenerator.generate(testResource);
-    const metric = metrics[0]!;
+    const metric = metrics[0];
     
     // スケール係数が反映されている確認
-    expect(metric.recommended_threshold.warning).toBe(200); // 100 * 2.0 * 1.0
-    expect(metric.recommended_threshold.critical).toBe(300); // 100 * 2.0 * 1.5
+    expect(metric?.recommended_threshold.warning).toBe(200); // 100 * 2.0 * 1.0
+    expect(metric?.recommended_threshold.critical).toBe(300); // 100 * 2.0 * 1.5
   });
 
   // メトリクス生成パフォーマンステスト（GREEN段階: 性能確認）
@@ -203,16 +203,16 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     };
 
     const metrics = await testGenerator.generate(testResource);
-    const metric = metrics[0]!;
+    const metric = metrics[0];
     
     // ディメンション構築確認
-    expect(metric.dimensions).toBeDefined();
-    expect(metric.dimensions).toHaveLength(1);
-    
-    if (metric.dimensions && metric.dimensions.length > 0) {
-      const dimension = metric.dimensions[0]!;
-      expect(dimension.name).toBe('ResourceId'); // Test::Resourceはマップにないのでデフォルト
-      expect(dimension.value).toBe('DimensionTestResource');
+    expect(metric?.dimensions).toBeDefined();
+    expect(metric?.dimensions).toHaveLength(1);
+
+    if (metric?.dimensions && metric.dimensions.length > 0) {
+      const dimension = metric.dimensions[0];
+      expect(dimension?.name).toBe('ResourceId'); // Test::Resourceはマップにないのでデフォルト
+      expect(dimension?.value).toBe('DimensionTestResource');
     }
   });
 
@@ -306,13 +306,13 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     };
 
     const metrics = await thresholdGenerator.generate(testResource);
-    const metric = metrics[0]!;
+    const metric = metrics[0];
     
     // 計算式: base * scale * multiplier
     // warning: 80 * 2.0 * 0.875 = 140
     // critical: 80 * 2.0 * 1.25 = 200
-    expect(metric.recommended_threshold.warning).toBe(140);
-    expect(metric.recommended_threshold.critical).toBe(200);
+    expect(metric?.recommended_threshold.warning).toBe(140);
+    expect(metric?.recommended_threshold.critical).toBe(200);
   });
 
   // スケール係数反映テスト（GREEN段階: スケール計算確認）
@@ -338,13 +338,13 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     for (const scale of scales) {
       const generator = new VariableScaleGenerator(scale);
       const metrics = await generator.generate(testResource);
-      const metric = metrics[0]!;
+      const metric = metrics[0];
       
       const expectedWarning = Math.round(80 * scale * 0.875);
       const expectedCritical = Math.round(80 * scale * 1.25);
       
-      expect(metric.recommended_threshold.warning).toBe(expectedWarning);
-      expect(metric.recommended_threshold.critical).toBe(expectedCritical);
+      expect(metric?.recommended_threshold.warning).toBe(expectedWarning);
+      expect(metric?.recommended_threshold.critical).toBe(expectedCritical);
     }
   });
 
@@ -381,11 +381,11 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     };
 
     const metrics = await invalidGenerator.generate(testResource);
-    const metric = metrics[0]!;
+    const metric = metrics[0];
     
     // 自動修正により warning < critical が保証される
-    expect(metric.recommended_threshold).toHaveValidThreshold();
-    expect(metric.recommended_threshold.critical).toBeGreaterThan(metric.recommended_threshold.warning);
+    expect(metric?.recommended_threshold).toHaveValidThreshold();
+    expect(metric?.recommended_threshold.critical).toBeGreaterThan(metric.recommended_threshold.warning);
   });
 
   // 数値精度テスト（GREEN段階: 丸め処理確認）
@@ -425,13 +425,13 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     };
 
     const metrics = await precisionGenerator.generate(testResource);
-    const metric = metrics[0]!;
+    const metric = metrics[0];
     
     // 丸め処理により整数値になっている確認
-    expect(Number.isInteger(metric.recommended_threshold.warning)).toBe(true);
-    expect(Number.isInteger(metric.recommended_threshold.critical)).toBe(true);
-    expect(metric.recommended_threshold.warning).toBeGreaterThanOrEqual(0);
-    expect(metric.recommended_threshold.critical).toBeGreaterThan(0);
+    expect(Number.isInteger(metric?.recommended_threshold.warning)).toBe(true);
+    expect(Number.isInteger(metric?.recommended_threshold.critical)).toBe(true);
+    expect(metric?.recommended_threshold.warning).toBeGreaterThanOrEqual(0);
+    expect(metric?.recommended_threshold.critical).toBeGreaterThan(0);
   });
 
   // 境界値テスト（GREEN段階: エッジケース確認）
@@ -470,16 +470,16 @@ describe('BaseMetricsGenerator動的しきい値（CLAUDE.md: アルゴリズム
     };
 
     const metrics = await edgeCaseGenerator.generate(testResource);
-    const metric = metrics[0]!;
+    const metric = metrics[0];
     
     // 極小値でも適切に処理される確認（0値許可、自動修正機能）
-    expect(metric.recommended_threshold.warning).toBeGreaterThanOrEqual(0);
-    expect(metric.recommended_threshold.critical).toBeGreaterThan(metric.recommended_threshold.warning);
+    expect(metric?.recommended_threshold.warning).toBeGreaterThanOrEqual(0);
+    expect(metric?.recommended_threshold.critical).toBeGreaterThan(metric?.recommended_threshold.warning ?? Infinity);
     
     // Math.round処理により1未満でも適切な値
     // 0値の場合は自動修正される
-    expect(metric.recommended_threshold.warning).toBeGreaterThanOrEqual(0);
-    expect(metric.recommended_threshold.critical).toBeGreaterThan(metric.recommended_threshold.warning);
+    expect(metric?.recommended_threshold.warning).toBeGreaterThanOrEqual(0);
+    expect(metric?.recommended_threshold.critical).toBeGreaterThan(metric?.recommended_threshold.warning ?? Infinity);
   });
 });
 

@@ -3,10 +3,10 @@
 import { readFileSync, writeFileSync, mkdirSync, statSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
-import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 
-import { CloudSupporterError, isFileError } from '../../../src/utils/error';
 import { TemplateParser } from '../../../src/core/parser';
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import { CloudSupporterError, isFileError } from '../../../src/utils/error';
 
 // テスト全体で使用する一時ディレクトリ
 let tempDir: string;
@@ -286,8 +286,8 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
     const testDB = template.Resources.TestDB;
     expect(testDB).toBeDefined();
     expect(typeof testDB).toBe('object');
-    expect(testDB!.Type).toBe('AWS::RDS::DBInstance');
-    expect(testDB!.Properties).toBeDefined();
+    expect(testDB?.Type).toBe('AWS::RDS::DBInstance');
+    expect(testDB?.Properties).toBeDefined();
   });
 
   // CLAUDE.md: No any types検証
@@ -317,7 +317,7 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
     // リソースの型安全性
     const testDB = template.Resources.TestDB;
     expect(testDB).toBeDefined();
-    expect(testDB!.Type).toBe('AWS::RDS::DBInstance');
+    expect(testDB?.Type).toBe('AWS::RDS::DBInstance');
   });
 });
 

@@ -10,8 +10,8 @@ export class ALBMetricsGenerator {
     return ['AWS::ElasticLoadBalancingV2::LoadBalancer'];
   }
   
-  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
-    return [{
+  generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
+    return Promise.resolve([{
       metric_name: 'TargetResponseTime',
       namespace: 'AWS/ApplicationELB',
       unit: 'Seconds',
@@ -22,6 +22,6 @@ export class ALBMetricsGenerator {
       category: 'Latency',
       importance: 'High',
       dimensions: []
-    }];
+    }]);
   }
 }

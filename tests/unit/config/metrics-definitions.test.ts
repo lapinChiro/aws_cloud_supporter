@@ -215,7 +215,7 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
     // MySQL specific metrics
     const binLogMetric = RDS_METRICS.find((m: unknown) => (m as TestMetric).name === 'BinLogDiskUsage');
     expect(binLogMetric).toBeDefined();
-    expect(binLogMetric!.applicableWhen).toBeDefined();
+    expect(binLogMetric?.applicableWhen).toBeDefined();
     
     // Burstable instance metrics
     const creditMetrics = RDS_METRICS.filter((m: unknown) => (m as TestMetric).name.includes('Credit'));
@@ -223,7 +223,7 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
   });
 
   // RDS条件付きメトリクステスト（実装完了）
-  it('should define conditional RDS metrics with applicableWhen', async () => {
+  it('should define conditional RDS metrics with applicableWhen',  () => {
     
     const conditionalMetrics = RDS_METRICS.filter((m: unknown) => (m as TestMetric).applicableWhen);
     expect(conditionalMetrics.length).toBeGreaterThan(0);
@@ -235,7 +235,7 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
   });
 
   // RDSしきい値妥当性テスト（実装完了）
-  it('should define valid RDS thresholds', async () => {
+  it('should define valid RDS thresholds',  () => {
     
     RDS_METRICS.forEach((metric: unknown) => {
       expect((metric as TestMetric).threshold).toBeDefined();
@@ -251,7 +251,7 @@ describe('RDSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 describe('Lambdaメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
   // Lambda必須メトリクステスト（実装完了）
-  it('should define essential Lambda metrics', async () => {
+  it('should define essential Lambda metrics',  () => {
     const essentialMetrics = ['Duration', 'Errors', 'Invocations', 'Throttles'];
     
     essentialMetrics.forEach(metricName => {
@@ -262,30 +262,30 @@ describe('Lambdaメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
   });
 
   // Lambdaパフォーマンスメトリクステスト（実装完了）
-  it('should define Lambda performance metrics', async () => {
+  it('should define Lambda performance metrics',  () => {
     const performanceMetrics = LAMBDA_METRICS.filter((m: unknown) => (m as TestMetric).category === 'Performance');
     
     expect(performanceMetrics.length).toBeGreaterThan(0);
     
     const durationMetric = LAMBDA_METRICS.find((m: unknown) => (m as TestMetric).name === 'Duration');
     expect(durationMetric).toBeDefined();
-    expect(durationMetric!.category).toBe('Performance');
+    expect(durationMetric?.category).toBe('Performance');
   });
 
   // Lambdaエラーメトリクステスト（実装完了）
-  it('should define Lambda error metrics', async () => {
+  it('should define Lambda error metrics',  () => {
     const errorMetrics = LAMBDA_METRICS.filter((m: unknown) => (m as TestMetric).category === 'Error');
     
     expect(errorMetrics.length).toBeGreaterThan(0);
     
     const errorMetric = LAMBDA_METRICS.find((m: unknown) => (m as TestMetric).name === 'Errors');
     expect(errorMetric).toBeDefined();
-    expect(errorMetric!.category).toBe('Error');
-    expect(errorMetric!.importance).toBe('High');
+    expect(errorMetric?.category).toBe('Error');
+    expect(errorMetric?.importance).toBe('High');
   });
 
   // Lambdaしきい値妥当性テスト（実装完了）
-  it('should define valid Lambda thresholds', async () => {
+  it('should define valid Lambda thresholds',  () => {
     
     LAMBDA_METRICS.forEach((metric: unknown) => {
       expect((metric as TestMetric).threshold).toBeDefined();
@@ -299,7 +299,7 @@ describe('Lambdaメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 describe('ECSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
   // ECS必須メトリクステスト（実装完了）
-  it('should define essential ECS metrics', async () => {
+  it('should define essential ECS metrics',  () => {
     const essentialMetrics = ['CPUUtilization', 'MemoryUtilization', 'TaskCount'];
     
     essentialMetrics.forEach(metricName => {
@@ -310,7 +310,7 @@ describe('ECSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
   });
 
   // ECS Fargateメトリクステスト（実装完了）
-  it('should define ECS Fargate-specific metrics', async () => {
+  it('should define ECS Fargate-specific metrics',  () => {
     
     // Fargate specific metrics should exist
     const performanceMetrics = ECS_METRICS.filter((m: unknown) => (m as TestMetric).category === 'Performance');
@@ -318,11 +318,11 @@ describe('ECSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
     
     const cpuMetric = ECS_METRICS.find((m: unknown) => (m as TestMetric).name === 'CPUUtilization');
     expect(cpuMetric).toBeDefined();
-    expect(cpuMetric!.namespace).toBe('AWS/ECS');
+    expect(cpuMetric?.namespace).toBe('AWS/ECS');
   });
 
   // ECSしきい値妥当性テスト（実装完了）
-  it('should define valid ECS thresholds', async () => {
+  it('should define valid ECS thresholds',  () => {
     
     ECS_METRICS.forEach((metric: unknown) => {
       expect((metric as TestMetric).threshold).toBeDefined();
@@ -338,7 +338,7 @@ describe('ECSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 describe('ALBメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
   // ALB必須メトリクステスト（実装完了）
-  it('should define essential ALB metrics', async () => {
+  it('should define essential ALB metrics',  () => {
     const essentialMetrics = ['RequestCount', 'TargetResponseTime', 'HTTPCode_Target_4XX_Count', 'HTTPCode_Target_5XX_Count'];
     
     essentialMetrics.forEach(metricName => {
@@ -349,18 +349,18 @@ describe('ALBメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
   });
 
   // ALBパフォーマンスメトリクステスト（実装完了）
-  it('should define ALB performance metrics', async () => {
+  it('should define ALB performance metrics',  () => {
     const performanceMetrics = ALB_METRICS.filter((m: unknown) => (m as TestMetric).category === 'Performance');
     
     expect(performanceMetrics.length).toBeGreaterThan(0);
     
     const responseTimeMetric = ALB_METRICS.find((m: unknown) => (m as TestMetric).name === 'TargetResponseTime');
     expect(responseTimeMetric).toBeDefined();
-    expect(responseTimeMetric!.namespace).toBe('AWS/ApplicationELB');
+    expect(responseTimeMetric?.namespace).toBe('AWS/ApplicationELB');
   });
 
   // ALBしきい値妥当性テスト（実装完了）
-  it('should define valid ALB thresholds', async () => {
+  it('should define valid ALB thresholds',  () => {
     
     ALB_METRICS.forEach((metric: unknown) => {
       expect((metric as TestMetric).threshold).toBeDefined();
@@ -376,7 +376,7 @@ describe('ALBメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 describe('DynamoDBメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
 
   // DynamoDB必須メトリクステスト（実装完了）
-  it('should define essential DynamoDB metrics', async () => {
+  it('should define essential DynamoDB metrics',  () => {
     const essentialMetrics = ['ConsumedReadCapacityUnits', 'ConsumedWriteCapacityUnits', 'ReadThrottles', 'WriteThrottles'];
     
     essentialMetrics.forEach(metricName => {
@@ -387,7 +387,7 @@ describe('DynamoDBメトリクス定義（CLAUDE.md: AWS公式準拠）', () => 
   });
 
   // DynamoDBビリングモード別メトリクステスト（実装完了）
-  it('should define billing mode specific DynamoDB metrics', async () => {
+  it('should define billing mode specific DynamoDB metrics',  () => {
     
     // Saturation metrics (capacity-related)
     const saturationMetrics = DYNAMODB_METRICS.filter((m: unknown) => (m as TestMetric).category === 'Saturation');
@@ -399,7 +399,7 @@ describe('DynamoDBメトリクス定義（CLAUDE.md: AWS公式準拠）', () => 
   });
 
   // DynamoDBしきい値妥当性テスト（実装完了）
-  it('should define valid DynamoDB thresholds', async () => {
+  it('should define valid DynamoDB thresholds',  () => {
     
     DYNAMODB_METRICS.forEach((metric: unknown) => {
       expect((metric as TestMetric).threshold).toBeDefined();
@@ -449,7 +449,7 @@ describe('API Gatewayメトリクス定義（CLAUDE.md: AWS公式準拠）', () 
 describe('メトリクス定義品質（CLAUDE.md: 型安全性・妥当性）', () => {
 
   // 全メトリクスしきい値妥当性テスト（実装完了）
-  it('should ensure all metrics have valid thresholds', async () => {
+  it('should ensure all metrics have valid thresholds',  () => {
     const allMetrics = Object.values(METRICS_CONFIG_MAP).flat();
     
     allMetrics.forEach((metric: unknown) => {
@@ -463,7 +463,7 @@ describe('メトリクス定義品質（CLAUDE.md: 型安全性・妥当性）',
   });
 
   // 全メトリクス型安全性テスト（実装完了）
-  it('should ensure all metrics are type-safe', async () => {
+  it('should ensure all metrics are type-safe',  () => {
     const allMetrics = Object.values(METRICS_CONFIG_MAP).flat();
     
     allMetrics.forEach((metric: unknown) => {
@@ -476,7 +476,7 @@ describe('メトリクス定義品質（CLAUDE.md: 型安全性・妥当性）',
   });
 
   // メトリクス重複チェックテスト（実装完了）
-  it('should not have duplicate metric names within resource types', async () => {
+  it('should not have duplicate metric names within resource types',  () => {
     
     Object.entries(METRICS_CONFIG_MAP).forEach(([, metrics]) => {
       const metricArray = metrics as unknown[];
@@ -488,7 +488,7 @@ describe('メトリクス定義品質（CLAUDE.md: 型安全性・妥当性）',
   });
 
   // メトリクス設定マップ完全性テスト（実装完了）
-  it('should provide complete METRICS_CONFIG_MAP', async () => {
+  it('should provide complete METRICS_CONFIG_MAP',  () => {
     
     const expectedResourceTypes = [
       'AWS::RDS::DBInstance',
@@ -509,7 +509,7 @@ describe('メトリクス定義品質（CLAUDE.md: 型安全性・妥当性）',
   });
 
   // 条件付きメトリクス型安全性テスト（実装完了）
-  it('should ensure applicableWhen functions are type-safe', async () => {
+  it('should ensure applicableWhen functions are type-safe', () => {
     const allMetrics = Object.values(METRICS_CONFIG_MAP).flat();
     
     const conditionalMetrics = allMetrics.filter((metric: unknown) => (metric as TestMetric).applicableWhen);

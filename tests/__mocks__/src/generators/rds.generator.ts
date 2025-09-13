@@ -10,8 +10,8 @@ export class RDSMetricsGenerator {
     return ['AWS::RDS::DBInstance'];
   }
   
-  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
-    return [
+  generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
+    return Promise.resolve([
       {
         metric_name: 'CPUUtilization',
         namespace: 'AWS/RDS',
@@ -29,6 +29,6 @@ export class RDSMetricsGenerator {
           { name: 'DBInstanceIdentifier', value: 'test-db' }
         ]
       }
-    ];
+    ]);
   }
 }
