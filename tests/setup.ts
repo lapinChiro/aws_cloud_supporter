@@ -84,7 +84,7 @@ expect.extend({
 // テスト環境セットアップ
 beforeAll(() => {
   // 全テストでCLAUDE.md準拠確認
-  console.log('🧪 Jest Test Environment Setup - CLAUDE.md準拠');
+  // Jest Test Environment Setup - CLAUDE.md準拠
 });
 
 // テスト後クリーンアップ

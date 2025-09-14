@@ -17,58 +17,6 @@ import { StandardOutputHandler, FileOutputHandler, StatisticsDisplayHelper } fro
 
 
 /**
- * CLIコマンド作成（リファクタリング版）
- * SOLID原則: Dependency Injection・Single Responsibility
- * 複雑度: 大幅に削減
- * @param dependencies 依存性オブジェクト
- * @returns Commander Command インスタンス
- */
-export function createCLICommand(dependencies: CLIDependencies): Command {
-  const builder = new CommandBuilder();
-  const program = builder.buildCommand(dependencies);
-  
-  // アクション設定
-  program.action(async (templatePath: string, options: CLIOptions) => {
-    await handleCLIAction(templatePath, options, dependencies);
-  });
-  
-  return program;
-}
-
-/**
- * CLIアクション処理（メイン処理）
- * 複雑度: 5以下に削減
- */
-async function handleCLIAction(
-  templatePath: string,
-  options: CLIOptions,
-  dependencies: CLIDependencies
-): Promise<void> {
-  const { analyzer, logger, jsonFormatter, htmlFormatter } = dependencies;
-  
-  try {
-    // ログレベル設定
-    setupLogging(options, logger);
-    
-    // CDK生成の場合は専用ハンドラーに委譲
-    if (options.output === 'cdk') {
-      const cdkHandler = new CDKHandler();
-      await cdkHandler.handleCDKGeneration(templatePath, options, dependencies);
-      return;
-    }
-    
-    // 通常の分析処理
-    const result = await executeAnalysis(templatePath, options, analyzer, logger);
-    
-    // 出力処理
-    await handleOutput(result, options, jsonFormatter, htmlFormatter, logger);
-    
-  } catch (error) {
-    handleError(error, options, logger);
-  }
-}
-
-/**
  * ログレベル設定
  * 複雑度: 2
  */
@@ -172,6 +120,12 @@ function handleError(error: unknown, options: CLIOptions, logger: ILogger): void
       case ErrorType.RESOURCE_ERROR:
         log.plainError(`Resource error: ${error.message}`);
         break;
+      case ErrorType.OUTPUT_ERROR:
+        log.plainError(`Output error: ${error.message}`);
+        break;
+      case ErrorType.VALIDATION_ERROR:
+        log.plainError(`Validation error: ${error.message}`);
+        break;
       default:
         log.plainError(`Error: ${error.message}`);
     }
@@ -185,4 +139,56 @@ function handleError(error: unknown, options: CLIOptions, logger: ILogger): void
   }
   
   process.exit(1);
+}
+
+/**
+ * CLIアクション処理（メイン処理）
+ * 複雑度: 5以下に削減
+ */
+async function handleCLIAction(
+  templatePath: string,
+  options: CLIOptions,
+  dependencies: CLIDependencies
+): Promise<void> {
+  const { analyzer, logger, jsonFormatter, htmlFormatter } = dependencies;
+  
+  try {
+    // ログレベル設定
+    setupLogging(options, logger);
+    
+    // CDK生成の場合は専用ハンドラーに委譲
+    if (options.output === 'cdk') {
+      const cdkHandler = new CDKHandler();
+      await cdkHandler.handleCDKGeneration(templatePath, options, dependencies);
+      return;
+    }
+    
+    // 通常の分析処理
+    const result = await executeAnalysis(templatePath, options, analyzer, logger);
+    
+    // 出力処理
+    await handleOutput(result, options, jsonFormatter, htmlFormatter, logger);
+    
+  } catch (error) {
+    handleError(error, options, logger);
+  }
+}
+
+/**
+ * CLIコマンド作成（リファクタリング版）
+ * SOLID原則: Dependency Injection・Single Responsibility
+ * 複雑度: 大幅に削減
+ * @param dependencies 依存性オブジェクト
+ * @returns Commander Command インスタンス
+ */
+export function createCLICommand(dependencies: CLIDependencies): Command {
+  const builder = new CommandBuilder();
+  const program = builder.buildCommand(dependencies);
+  
+  // アクション設定
+  program.action(async (templatePath: string, options: CLIOptions) => {
+    await handleCLIAction(templatePath, options, dependencies);
+  });
+  
+  return program;
 }

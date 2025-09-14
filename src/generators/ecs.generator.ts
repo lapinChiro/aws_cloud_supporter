@@ -32,7 +32,7 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
         'Only Fargate services are supported',
         { 
           resourceType: resource.Type,
-          launchType: (resource as ECSService).Properties?.LaunchType || 'Unknown'
+          launchType: (resource as ECSService).Properties?.LaunchType ?? 'Unknown'
         },
         undefined,
         undefined
@@ -51,7 +51,7 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
   protected getResourceScale(resource: CloudFormationResource): number {
     const ecs = resource as ECSService;
     const properties = ecs.Properties;
-    const desiredCount = properties?.DesiredCount || 1;
+    const desiredCount = properties?.DesiredCount ?? 1;
     
     // DesiredCountベースのスケール計算
     // 1-2タスク: 小規模（係数0.7）
@@ -99,7 +99,7 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
       // Auto Scaling関連メトリクスの重要度調整
       if (['TaskCount', 'RunningCount', 'PendingCount'].includes(config.name)) {
         // DesiredCountが大きい場合、スケーリング関連メトリクスの重要度を上げる
-        if ((properties?.DesiredCount || 0) >= 10) {
+        if ((properties?.DesiredCount ?? 0) >= 10) {
           return {
             ...config,
             importance: 'High' as const

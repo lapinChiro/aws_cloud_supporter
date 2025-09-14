@@ -10,6 +10,7 @@ import { MetricsAnalyzer } from '../../src/core/analyzer';
 import { HTMLOutputFormatter } from '../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { TemplateParser } from '../../src/core/parser';
+import { CDKOfficialGenerator } from '../../src/generators/cdk-official.generator';
 import { Logger } from '../../src/utils/logger';
 
 
@@ -37,13 +38,13 @@ describe('CLI CDK Basic Integration', () => {
     // Clean up test output directory
     try {
       await fs.rm(testOutputDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch {
       // Ignore cleanup errors
     }
   });
 
   describe('CLI Option Parsing', () => {
-    it('should accept CDK output format', async () => {
+    it('should accept CDK output format', () => {
       const program = createCLICommand(dependencies);
       
       // Test help output includes CDK options
@@ -54,7 +55,7 @@ describe('CLI CDK Basic Integration', () => {
       expect(helpOutput).toContain('json|html|yaml|cdk');
     });
 
-    it('should include CDK examples in help text', async () => {
+    it('should include CDK examples in help text', () => {
       const program = createCLICommand(dependencies);
       const helpOutput = program.helpInformation();
       
@@ -68,7 +69,6 @@ describe('CLI CDK Basic Integration', () => {
   describe('CDK Generation Routing', () => {
     it('should route to CDK generation when --output cdk is specified', async () => {
       // Create a spy on CDKOfficialGenerator to verify it's called
-      const CDKOfficialGenerator = require('../../src/generators/cdk-official.generator').CDKOfficialGenerator;
       const generateSpy = jest.spyOn(CDKOfficialGenerator.prototype, 'generate');
       
       // Mock the generate method to avoid actual file operations
@@ -202,7 +202,7 @@ describe('CLI CDK Basic Integration', () => {
       let exitCode: number | undefined;
       process.exit = jest.fn((code?: number) => {
         exitCode = code;
-        throw new Error(`Process exit called with code ${code}`);
+        throw new Error(`Process exit called with code ${code ?? 0}`);
       }) as never;
       
       // Mock console.error to capture error output

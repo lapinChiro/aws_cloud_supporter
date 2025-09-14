@@ -27,7 +27,7 @@ export class BaseHTMLFormatter implements IHTMLGenerator {
    * HTML形式でのフォーマット出力
    * レスポンシブデザイン・外部依存なし
    */
-  async formatHTML(result: AnalysisResult): Promise<string> {
+  formatHTML(result: AnalysisResult): string {
     const startTime = performance.now();
     
     try {
@@ -60,7 +60,7 @@ export class BaseHTMLFormatter implements IHTMLGenerator {
                     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
                 })()}</span>
                 <span class="badge">Resources: ${result.metadata.supported_resources}/${result.metadata.total_resources}</span>
-                <span class="badge">Processing: ${result.metadata.processing_time_ms}ms</span>
+                <span class="badge">Processing: ${result.metadata.processing_time_ms ?? 'N/A'}ms</span>
                 ${result.metadata.memory_peak_mb ? `<span class="badge">Memory: ${result.metadata.memory_peak_mb}MB</span>` : ''}
             </div>
         </header>

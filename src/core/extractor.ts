@@ -38,10 +38,10 @@ export class ResourceExtractor {
         // 特殊ケース判定（ECS FargateとApplication LBのみ）
         if (this.isActuallySupported(resource)) {
           // SupportedResource型にLogicalIdを追加
-          const supportedResource = {
-            ...resource,
+          const supportedResource: SupportedResource = {
+            ...(resource as SupportedResource),
             LogicalId: logicalId
-          } as SupportedResource;
+          };
           
           supported.push(supportedResource);
         } else {

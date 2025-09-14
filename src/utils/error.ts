@@ -114,7 +114,7 @@ export class ErrorHandler {
     // 開発時のデバッグ支援
     if (process.env.NODE_ENV === 'development' || process.env.VERBOSE === 'true') {
       // eslint-disable-next-line no-console
-      console.error(colors.gray(`   Stack: ${error.stack}`));
+      console.error(colors.gray(`   Stack: ${error.stack ?? 'No stack trace available'}`));
     }
   }
 

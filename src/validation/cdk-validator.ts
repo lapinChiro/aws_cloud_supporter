@@ -41,7 +41,7 @@ export class CDKValidator {
 
     try {
       // 1. Basic syntax validation
-      await this.validateBasicSyntax(generatedCode, result);
+      this.validateBasicSyntax(generatedCode, result);
 
       // 2. AWS limits validation
       this.validateAWSLimits(generatedCode, result);
@@ -70,10 +70,10 @@ export class CDKValidator {
   /**
    * Validate basic TypeScript syntax
    */
-  private async validateBasicSyntax(
+  private validateBasicSyntax(
     code: string,
     result: CDKValidationResult
-  ): Promise<void> {
+  ): void {
     // Check for required CDK structure
     if (!code.includes('export class')) {
       result.errors.push('Generated code must contain an exported class');
@@ -120,7 +120,7 @@ export class CDKValidator {
     }
 
     // SNS topic limits
-    const snsTopicCount = (code.match(/new sns\.Topic/g) || []).length;
+    const snsTopicCount = (code.match(/new sns\.Topic/g) ?? []).length;
     if (snsTopicCount > 100) {
       result.warnings.push(
         `Generated ${snsTopicCount} SNS topics. AWS limit is 100,000 per account, but consider consolidation.`
@@ -128,7 +128,7 @@ export class CDKValidator {
     }
 
     // CDK construct limits
-    const constructCount = (code.match(/new \w+\.\w+\(/g) || []).length;
+    const constructCount = (code.match(/new \w+\.\w+\(/g) ?? []).length;
     if (constructCount > 500) {
       result.warnings.push(
         `Generated ${constructCount} constructs in single stack. Consider splitting into multiple stacks for better organization.`
@@ -145,7 +145,7 @@ export class CDKValidator {
     if (alarmConstructs) {
       const constructIds = alarmConstructs.map(match => {
         const idMatch = match.match(/'([^']+)'/);
-        return idMatch?.[1] ? idMatch[1] : '';
+        return idMatch?.[1] ?? '';
       }).filter(id => id);
 
       // Check for duplicate construct IDs
@@ -212,7 +212,7 @@ export class CDKValidator {
 
       await new Promise<void>((resolve, reject) => {
         compileProcess.on('close', (exitCode) => {
-          if (exitCode === 0 || (stderr && stderr.includes('Cannot find module'))) {
+          if (exitCode === 0 || (stderr?.includes('Cannot find module'))) {
             // Success or only missing CDK modules (expected)
             resolve();
           } else {
@@ -232,7 +232,7 @@ export class CDKValidator {
       // Clean up
       try {
         await fs.rm(tempDir, { recursive: true, force: true });
-      } catch (cleanupError) {
+      } catch {
         // Ignore cleanup errors
       }
 
@@ -250,14 +250,14 @@ export class CDKValidator {
    * Count CloudWatch alarms in generated code
    */
   private countAlarms(code: string): number {
-    return (code.match(/new cloudwatch\.Alarm/g) || []).length;
+    return (code.match(/new cloudwatch\.Alarm/g) ?? []).length;
   }
 
   /**
    * Count import statements
    */
   private countImports(code: string): number {
-    return (code.match(/^import\s+.*from/gm) || []).length;
+    return (code.match(/^import\s+.*from/gm) ?? []).length;
   }
 
   /**
@@ -265,7 +265,7 @@ export class CDKValidator {
    */
   private extractImports(code: string): string[] {
     const importMatches = code.match(/^import\s+.*from\s+['"][^'"]+['"]/gm);
-    return importMatches || [];
+    return importMatches ?? [];
   }
 
   /**

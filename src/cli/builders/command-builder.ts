@@ -6,41 +6,6 @@ import { Command } from 'commander';
 import type { CLIDependencies, ICommandBuilder, ICommandOptionsBuilder } from '../interfaces/command.interface';
 
 /**
- * CLIコマンドビルダー実装
- * Single Responsibility: Commandインスタンスの構築のみ
- */
-export class CommandBuilder implements ICommandBuilder {
-  private readonly optionsBuilder: ICommandOptionsBuilder;
-
-  constructor() {
-    this.optionsBuilder = new CommandOptionsBuilder();
-  }
-
-  /**
-   * CLIコマンドを構築
-   * @param dependencies 依存性オブジェクト
-   * @returns Commander Command インスタンス
-   */
-  buildCommand(_dependencies: CLIDependencies): Command {
-    const program = new Command();
-    
-    // 基本設定
-    program
-      .name('aws-cloud-supporter')
-      .description('Generate CloudWatch metrics recommendations for CloudFormation templates')
-      .version('1.0.0')
-      .argument('<template>', 'CloudFormation template file path (.yaml/.yml/.json)');
-    
-    // オプション設定を委譲
-    this.optionsBuilder.addBasicOptions(program);
-    this.optionsBuilder.addCDKOptions(program);
-    this.optionsBuilder.addHelpInformation(program);
-    
-    return program;
-  }
-}
-
-/**
  * コマンドオプションビルダー実装
  * Single Responsibility: オプション設定のみ
  */
@@ -98,5 +63,40 @@ export class CommandOptionsBuilder implements ICommandOptionsBuilder {
       '  $ aws-cloud-supporter template.yaml --output cdk --cdk-sns-topic-arn arn:aws:sns:us-east-1:123456789012:my-topic\n' +
       '  $ aws-cloud-supporter template.yaml --verbose --performance-mode'
     );
+  }
+}
+
+/**
+ * CLIコマンドビルダー実装
+ * Single Responsibility: Commandインスタンスの構築のみ
+ */
+export class CommandBuilder implements ICommandBuilder {
+  private readonly optionsBuilder: ICommandOptionsBuilder;
+
+  constructor() {
+    this.optionsBuilder = new CommandOptionsBuilder();
+  }
+
+  /**
+   * CLIコマンドを構築
+   * @param dependencies 依存性オブジェクト
+   * @returns Commander Command インスタンス
+   */
+  buildCommand(_dependencies: CLIDependencies): Command {
+    const program = new Command();
+    
+    // 基本設定
+    program
+      .name('aws-cloud-supporter')
+      .description('Generate CloudWatch metrics recommendations for CloudFormation templates')
+      .version('1.0.0')
+      .argument('<template>', 'CloudFormation template file path (.yaml/.yml/.json)');
+    
+    // オプション設定を委譲
+    this.optionsBuilder.addBasicOptions(program);
+    this.optionsBuilder.addCDKOptions(program);
+    this.optionsBuilder.addHelpInformation(program);
+    
+    return program;
   }
 }

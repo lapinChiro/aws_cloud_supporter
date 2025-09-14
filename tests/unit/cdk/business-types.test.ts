@@ -8,6 +8,23 @@ import {
   extractBusinessProps
 } from '../../../src/types/cdk-business';
 
+function createTestAlarmComplete(): CDKAlarmComplete {
+  return {
+    metric: new cloudwatch.Metric({
+      metricName: 'CPUUtilization',
+      namespace: 'AWS/RDS',
+      dimensionsMap: { DBInstanceIdentifier: 'test' }
+    }),
+    threshold: 80,
+    alarmDescription: 'Test alarm',
+    evaluationPeriods: 1,
+    constructId: 'TestAlarm',
+    severity: 'Warning',
+    resourceLogicalId: 'TestResource',
+    resourceType: 'AWS::RDS::DBInstance'
+  };
+}
+
 describe('CDK Business Types', () => {
   it('should create valid CDKAlarmComplete with official and business types', () => {
     const testMetric = new cloudwatch.Metric({
@@ -72,20 +89,3 @@ describe('CDK Business Types', () => {
     expect(['Warning', 'Critical'].includes(complete.severity)).toBe(true);
   });
 });
-
-function createTestAlarmComplete(): CDKAlarmComplete {
-  return {
-    metric: new cloudwatch.Metric({
-      metricName: 'CPUUtilization',
-      namespace: 'AWS/RDS',
-      dimensionsMap: { DBInstanceIdentifier: 'test' }
-    }),
-    threshold: 80,
-    alarmDescription: 'Test alarm',
-    evaluationPeriods: 1,
-    constructId: 'TestAlarm',
-    severity: 'Warning',
-    resourceLogicalId: 'TestResource',
-    resourceType: 'AWS::RDS::DBInstance'
-  };
-}

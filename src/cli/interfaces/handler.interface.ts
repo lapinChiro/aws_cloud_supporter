@@ -1,8 +1,15 @@
 // CLAUDE.md準拠: Interface Segregation・型安全性・No any types
 // T-016: CLI型定義 - ハンドラーインターフェース
 
-import type { AnalysisResult } from '../../types/metrics';
 import type { ExtendedAnalysisResult } from '../../interfaces/analyzer';
+import type { IOutputFormatter } from '../../interfaces/formatter';
+import type { ILogger } from '../../interfaces/logger';
+import type { ITemplateParser } from '../../interfaces/parser';
+import type { CDKOptions } from '../../types/cdk-business';
+import type { CloudFormationTemplate } from '../../types/cloudformation';
+import type { AnalysisResult } from '../../types/metrics';
+
+import type { CLIDependencies, CLIOptions } from './command.interface';
 
 
 /**
@@ -123,7 +130,7 @@ export interface ICDKOutputHandler {
     message: string,
     options: CLIOptions,
     logger: ILogger
-  ): void;
+  ): Promise<void>;
 }
 
 /**
@@ -171,12 +178,3 @@ export interface IFileOutputHandler {
     logger: ILogger
   ): Promise<void>;
 }
-
-// 必要な型のインポート（実際のコードベースに合わせて調整）
-import type { IOutputFormatter } from '../../interfaces/formatter';
-import type { ILogger } from '../../interfaces/logger';
-import type { ITemplateParser } from '../../interfaces/parser';
-import type { CDKOptions } from '../../types/cdk-business';
-import type { CloudFormationTemplate } from '../../types/cloudformation';
-
-import type { CLIDependencies, CLIOptions } from './command.interface';

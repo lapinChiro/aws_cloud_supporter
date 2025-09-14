@@ -168,7 +168,7 @@ describe('DynamoDBMetricsGenerator', () => {
       const largeRead = largeMetrics.find(m => m.metric_name === 'ConsumedReadCapacityUnits');
       
       expect(smallRead?.recommended_threshold.warning).toBeLessThan(
-        largeRead?.recommended_threshold.warning || 0
+        largeRead?.recommended_threshold.warning ?? 0
       );
     });
 

@@ -17,6 +17,95 @@ const createMockLogger = (): ILogger => ({
   setLevel: jest.fn()
 });
 
+function createTestMetricDefinition(metricName: string, namespace: string): MetricDefinition {
+  return {
+    metric_name: metricName,
+    namespace: namespace,
+    statistic: 'Average',
+    unit: 'Percent',
+    evaluation_period: 300,
+    recommended_threshold: {
+      warning: 70,
+      critical: 90
+    },
+    description: `${metricName} monitoring for ${namespace}`,
+    category: 'Performance',
+    importance: 'High'
+  };
+}
+
+function createTestResourceWithMetrics(resourceType: string, logicalId: string): ResourceWithMetrics {
+  return {
+    logical_id: logicalId,
+    resource_type: resourceType,
+    resource_properties: {},
+    metrics: [
+      createTestMetricDefinition('CPUUtilization', 'AWS/RDS')
+    ]
+  };
+}
+
+// Test data creation helpers
+function createTestAnalysisResult(): ExtendedAnalysisResult {
+  return {
+    resources: [
+      createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDBInstance')
+    ],
+    metadata: {
+      version: '1.0.0',
+      generated_at: new Date().toISOString(),
+      template_path: 'test-template.yaml',
+      total_resources: 1,
+      supported_resources: 1
+    },
+    unsupported_resources: []
+  };
+}
+
+function createTestAnalysisResultWithMultipleResources(): ExtendedAnalysisResult {
+  return {
+    resources: [
+      createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDB'),
+      createTestResourceWithMetrics('AWS::Lambda::Function', 'TestFunction')
+    ],
+    metadata: {
+      version: '1.0.0',
+      generated_at: new Date().toISOString(),
+      template_path: 'multi-resource-template.yaml',
+      total_resources: 2,
+      supported_resources: 2
+    },
+    unsupported_resources: []
+  };
+}
+
+function createTestAnalysisResultWithSensitiveData(): ExtendedAnalysisResult {
+  return {
+    resources: [
+      {
+        logical_id: 'SensitiveDB',
+        resource_type: 'AWS::RDS::DBInstance',
+        resource_properties: {
+          MasterUsername: 'admin',
+          MasterUserPassword: 'secret123',
+          DBName: 'myapp'
+        },
+        metrics: [
+          createTestMetricDefinition('CPUUtilization', 'AWS/RDS')
+        ]
+      }
+    ],
+    metadata: {
+      version: '1.0.0',
+      generated_at: new Date().toISOString(),
+      template_path: 'sensitive-template.yaml',
+      total_resources: 1,
+      supported_resources: 1
+    },
+    unsupported_resources: []
+  };
+}
+
 describe('CDKOfficialGenerator Template Integration', () => {
   let generator: CDKOfficialGenerator;
   let mockLogger: ILogger;
@@ -115,92 +204,3 @@ describe('CDKOfficialGenerator Template Integration', () => {
     });
   });
 });
-
-// Test data creation helpers
-function createTestAnalysisResult(): ExtendedAnalysisResult {
-  return {
-    resources: [
-      createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDBInstance')
-    ],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'test-template.yaml',
-      total_resources: 1,
-      supported_resources: 1
-    },
-    unsupported_resources: []
-  };
-}
-
-function createTestAnalysisResultWithMultipleResources(): ExtendedAnalysisResult {
-  return {
-    resources: [
-      createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDB'),
-      createTestResourceWithMetrics('AWS::Lambda::Function', 'TestFunction')
-    ],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'multi-resource-template.yaml',
-      total_resources: 2,
-      supported_resources: 2
-    },
-    unsupported_resources: []
-  };
-}
-
-function createTestAnalysisResultWithSensitiveData(): ExtendedAnalysisResult {
-  return {
-    resources: [
-      {
-        logical_id: 'SensitiveDB',
-        resource_type: 'AWS::RDS::DBInstance',
-        resource_properties: {
-          MasterUsername: 'admin',
-          MasterUserPassword: 'secret123',
-          DBName: 'myapp'
-        },
-        metrics: [
-          createTestMetricDefinition('CPUUtilization', 'AWS/RDS')
-        ]
-      }
-    ],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'sensitive-template.yaml',
-      total_resources: 1,
-      supported_resources: 1
-    },
-    unsupported_resources: []
-  };
-}
-
-function createTestResourceWithMetrics(resourceType: string, logicalId: string): ResourceWithMetrics {
-  return {
-    logical_id: logicalId,
-    resource_type: resourceType,
-    resource_properties: {},
-    metrics: [
-      createTestMetricDefinition('CPUUtilization', 'AWS/RDS')
-    ]
-  };
-}
-
-function createTestMetricDefinition(metricName: string, namespace: string): MetricDefinition {
-  return {
-    metric_name: metricName,
-    namespace: namespace,
-    statistic: 'Average',
-    unit: 'Percent',
-    evaluation_period: 300,
-    recommended_threshold: {
-      warning: 70,
-      critical: 90
-    },
-    description: `${metricName} monitoring for ${namespace}`,
-    category: 'Performance',
-    importance: 'High'
-  };
-}

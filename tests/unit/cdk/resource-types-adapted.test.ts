@@ -17,6 +17,106 @@ const createMockLogger = (): ILogger => ({
   setLevel: jest.fn()
 });
 
+// ヘルパー関数
+function getTestLogicalId(resourceType: string): string {
+  const mapping = {
+    'AWS::RDS::DBInstance': 'TestDB',
+    'AWS::Lambda::Function': 'TestFunc', 
+    'AWS::Serverless::Function': 'TestSAMFunc',
+    'AWS::ECS::Service': 'TestECS',
+    'AWS::ElasticLoadBalancingV2::LoadBalancer': 'TestLB',
+    'AWS::DynamoDB::Table': 'TestTable',
+    'AWS::ApiGateway::RestApi': 'TestAPI',
+    'AWS::Serverless::Api': 'TestSAMAPI'
+  };
+  return mapping[resourceType as keyof typeof mapping] || 'TestResource';
+}
+
+function getExpectedDimension(resourceType: string): string {
+  const mapping = {
+    'AWS::RDS::DBInstance': 'DBInstanceIdentifier',
+    'AWS::Lambda::Function': 'FunctionName',
+    'AWS::Serverless::Function': 'FunctionName',
+    'AWS::ECS::Service': 'ServiceName',
+    'AWS::ElasticLoadBalancingV2::LoadBalancer': 'LoadBalancer',
+    'AWS::DynamoDB::Table': 'TableName',
+    'AWS::ApiGateway::RestApi': 'ApiName',
+    'AWS::Serverless::Api': 'ApiName'
+  };
+  return mapping[resourceType as keyof typeof mapping] || 'ResourceId';
+}
+
+function createMockMetric(metricName: string = 'CPUUtilization'): MetricDefinition {
+  return {
+    metric_name: metricName,
+    namespace: 'AWS/EC2',
+    statistic: 'Average',
+    unit: 'Percent',
+    evaluation_period: 300,
+    recommended_threshold: {
+      warning: 70,
+      critical: 90
+    },
+    description: `${metricName} monitoring`,
+    category: 'Performance',
+    importance: 'High'
+  };
+}
+
+function createMockAnalysisWithResource(resourceType: string, logicalId?: string): ExtendedAnalysisResult {
+  const id = logicalId ?? getTestLogicalId(resourceType);
+  
+  return {
+    resources: [{
+      logical_id: id,
+      resource_type: resourceType,
+      resource_properties: {},
+      metrics: [createMockMetric('CPUUtilization')]
+    }],
+    metadata: {
+      version: '1.0.0',
+      generated_at: new Date().toISOString(),
+      template_path: 'single-resource-template.yaml',
+      total_resources: 1,
+      supported_resources: 1
+    },
+    unsupported_resources: []
+  };
+}
+
+function createMockAnalysisWithMixedResourceTypes(): ExtendedAnalysisResult {
+  return {
+    resources: [
+      {
+        logical_id: 'TestDB',
+        resource_type: 'AWS::RDS::DBInstance',
+        resource_properties: {},
+        metrics: [createMockMetric('CPUUtilization')]
+      },
+      {
+        logical_id: 'TestFunc',
+        resource_type: 'AWS::Lambda::Function',
+        resource_properties: {},
+        metrics: [createMockMetric('Duration')]
+      },
+      {
+        logical_id: 'TestTable',
+        resource_type: 'AWS::DynamoDB::Table',
+        resource_properties: {},
+        metrics: [createMockMetric('ConsumedReadCapacityUnits')]
+      }
+    ],
+    metadata: {
+      version: '1.0.0',
+      generated_at: new Date().toISOString(),
+      template_path: 'mixed-types-template.yaml',
+      total_resources: 3,
+      supported_resources: 3
+    },
+    unsupported_resources: []
+  };
+}
+
 describe('All Resource Types CDK Generation (Official Types)', () => {
   let generator: CDKOfficialGenerator;
 
@@ -106,107 +206,7 @@ describe('All Resource Types CDK Generation (Official Types)', () => {
       // 3 resources × 1 metric × 2 severities = 6 alarms
       const alarmMatches = result.match(/new cloudwatch\.Alarm/g);
       expect(alarmMatches).not.toBeNull();
-      expect(alarmMatches!.length).toBe(6);
+      expect(alarmMatches?.length).toBe(6);
     });
   });
 });
-
-// ヘルパー関数
-function getTestLogicalId(resourceType: string): string {
-  const mapping = {
-    'AWS::RDS::DBInstance': 'TestDB',
-    'AWS::Lambda::Function': 'TestFunc', 
-    'AWS::Serverless::Function': 'TestSAMFunc',
-    'AWS::ECS::Service': 'TestECS',
-    'AWS::ElasticLoadBalancingV2::LoadBalancer': 'TestLB',
-    'AWS::DynamoDB::Table': 'TestTable',
-    'AWS::ApiGateway::RestApi': 'TestAPI',
-    'AWS::Serverless::Api': 'TestSAMAPI'
-  };
-  return mapping[resourceType as keyof typeof mapping] || 'TestResource';
-}
-
-function getExpectedDimension(resourceType: string): string {
-  const mapping = {
-    'AWS::RDS::DBInstance': 'DBInstanceIdentifier',
-    'AWS::Lambda::Function': 'FunctionName',
-    'AWS::Serverless::Function': 'FunctionName',
-    'AWS::ECS::Service': 'ServiceName',
-    'AWS::ElasticLoadBalancingV2::LoadBalancer': 'LoadBalancer',
-    'AWS::DynamoDB::Table': 'TableName',
-    'AWS::ApiGateway::RestApi': 'ApiName',
-    'AWS::Serverless::Api': 'ApiName'
-  };
-  return mapping[resourceType as keyof typeof mapping] || 'ResourceId';
-}
-
-function createMockAnalysisWithResource(resourceType: string, logicalId?: string): ExtendedAnalysisResult {
-  const id = logicalId || getTestLogicalId(resourceType);
-  
-  return {
-    resources: [{
-      logical_id: id,
-      resource_type: resourceType,
-      resource_properties: {},
-      metrics: [createMockMetric('CPUUtilization')]
-    }],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'single-resource-template.yaml',
-      total_resources: 1,
-      supported_resources: 1
-    },
-    unsupported_resources: []
-  };
-}
-
-function createMockAnalysisWithMixedResourceTypes(): ExtendedAnalysisResult {
-  return {
-    resources: [
-      {
-        logical_id: 'TestDB',
-        resource_type: 'AWS::RDS::DBInstance',
-        resource_properties: {},
-        metrics: [createMockMetric('CPUUtilization')]
-      },
-      {
-        logical_id: 'TestFunc',
-        resource_type: 'AWS::Lambda::Function',
-        resource_properties: {},
-        metrics: [createMockMetric('Duration')]
-      },
-      {
-        logical_id: 'TestTable',
-        resource_type: 'AWS::DynamoDB::Table',
-        resource_properties: {},
-        metrics: [createMockMetric('ConsumedReadCapacityUnits')]
-      }
-    ],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'mixed-types-template.yaml',
-      total_resources: 3,
-      supported_resources: 3
-    },
-    unsupported_resources: []
-  };
-}
-
-function createMockMetric(metricName: string = 'CPUUtilization'): MetricDefinition {
-  return {
-    metric_name: metricName,
-    namespace: 'AWS/EC2',
-    statistic: 'Average',
-    unit: 'Percent',
-    evaluation_period: 300,
-    recommended_threshold: {
-      warning: 70,
-      critical: 90
-    },
-    description: `${metricName} monitoring`,
-    category: 'Performance',
-    importance: 'High'
-  };
-}

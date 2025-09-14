@@ -46,16 +46,9 @@ export interface CloudFormationOutput {
   Condition?: string;
 }
 
-export interface CloudFormationCondition {
-  // Conditions are complex expressions
-  [key: string]: unknown;
-}
+export type CloudFormationCondition = Record<string, unknown>;
 
-export interface CloudFormationMapping {
-  [key: string]: {
-    [key: string]: unknown;
-  };
-}
+export type CloudFormationMapping = Record<string, Record<string, unknown>>;
 
 export interface CloudFormationCreationPolicy {
   AutoScalingCreationPolicy?: {

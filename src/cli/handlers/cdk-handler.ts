@@ -24,6 +24,80 @@ import type {
 import { CDKOptionsValidator } from './validation';
 
 /**
+ * CDK出力ハンドラー実装
+ * Single Responsibility: CDK出力処理のみ
+ * 複雑度: 4以下
+ */
+export class CDKOutputHandler implements ICDKOutputHandler {
+  async outputCDKResult(
+    _projectDir: string,
+    files: Record<string, string>,
+    _message: string,
+    options: CLIOptions,
+    logger: ILogger
+  ): Promise<void> {
+    // ファイル出力モード
+    if (options.cdkOutputDir) {
+      await this.writeFiles(options.cdkOutputDir, files, options, logger);
+    } else {
+      // 標準出力モード
+      const cdkCode = Object.values(files)[0];
+      if (cdkCode) {
+        log.plain(cdkCode);
+      }
+    }
+  }
+  
+  /**
+   * ファイル書き込み処理（複雑度: 3）
+   */
+  private async writeFiles(
+    outputDir: string,
+    files: Record<string, string>,
+    options: CLIOptions,
+    logger: ILogger
+  ): Promise<void> {
+    // ディレクトリ作成
+    await fs.mkdir(outputDir, { recursive: true });
+    
+    for (const [fileName, content] of Object.entries(files)) {
+      const filePath = path.join(outputDir, fileName);
+      
+      // ファイル書き込み
+      await fs.writeFile(filePath, content, 'utf-8');
+      
+      // パーミッション設定
+      await this.setSecurePermissions(filePath, options, logger);
+      
+      log.success(`CDK Stack generated: ${filePath}`);
+    }
+    
+    if (options.verbose) {
+      logger.success('CDK generation completed successfully');
+    }
+  }
+  
+  /**
+   * セキュアなファイルパーミッション設定（複雑度: 2）
+   */
+  private async setSecurePermissions(
+    filePath: string,
+    options: CLIOptions,
+    logger: ILogger
+  ): Promise<void> {
+    try {
+      await fs.chmod(filePath, 0o600);
+      if (options.verbose) {
+        logger.debug(`Set secure file permissions (600) for ${filePath}`);
+      }
+    } catch (error) {
+      // Windows環境では警告のみ
+      logger.warn(`Could not set file permissions for ${filePath}: ${(error as Error).message}`);
+    }
+  }
+}
+
+/**
  * CDKハンドラー実装
  * Single Responsibility: CDK生成処理のオーケストレーション
  * 複雑度: handleCDKGenerationは25 → 5以下に削減
@@ -64,7 +138,7 @@ export class CDKHandler implements ICDKHandler {
       
       // 5. 出力処理
       await this.outputHandler.outputCDKResult(
-        options.cdkOutputDir || '',
+        options.cdkOutputDir ?? '',
         { [cdkOptions.stackName + '.ts']: cdkCode },
         'CDK Stack generated successfully',
         options,
@@ -102,7 +176,7 @@ export class CDKHandler implements ICDKHandler {
       enabled: true,
       includeLowImportance: options.includeLow,
       verbose: options.verbose,
-      stackName: options.cdkStackName || 'CloudWatchAlarmsStack'
+      stackName: options.cdkStackName ?? 'CloudWatchAlarmsStack'
     };
     
     // オプショナルプロパティの設定
@@ -249,83 +323,9 @@ export class CDKCodeGenerator implements ICDKCodeGenerator {
     const cdkCode = await cdkGenerator.generate(result as ExtendedAnalysisResult, cdkOptions);
     
     return {
-      projectDir: cdkOptions.outputDir || '.',
+      projectDir: cdkOptions.outputDir ?? '.',
       files: { [cdkOptions.stackName + '.ts']: cdkCode },
       message: 'CDK Stack generated successfully'
     };
-  }
-}
-
-/**
- * CDK出力ハンドラー実装
- * Single Responsibility: CDK出力処理のみ
- * 複雑度: 4以下
- */
-export class CDKOutputHandler implements ICDKOutputHandler {
-  async outputCDKResult(
-    _projectDir: string,
-    files: Record<string, string>,
-    _message: string,
-    options: CLIOptions,
-    logger: ILogger
-  ): Promise<void> {
-    // ファイル出力モード
-    if (options.cdkOutputDir) {
-      await this.writeFiles(options.cdkOutputDir, files, options, logger);
-    } else {
-      // 標準出力モード
-      const cdkCode = Object.values(files)[0];
-      if (cdkCode) {
-        log.plain(cdkCode);
-      }
-    }
-  }
-  
-  /**
-   * ファイル書き込み処理（複雑度: 3）
-   */
-  private async writeFiles(
-    outputDir: string,
-    files: Record<string, string>,
-    options: CLIOptions,
-    logger: ILogger
-  ): Promise<void> {
-    // ディレクトリ作成
-    await fs.mkdir(outputDir, { recursive: true });
-    
-    for (const [fileName, content] of Object.entries(files)) {
-      const filePath = path.join(outputDir, fileName);
-      
-      // ファイル書き込み
-      await fs.writeFile(filePath, content, 'utf-8');
-      
-      // パーミッション設定
-      await this.setSecurePermissions(filePath, options, logger);
-      
-      log.success(`CDK Stack generated: ${filePath}`);
-    }
-    
-    if (options.verbose) {
-      logger.success('CDK generation completed successfully');
-    }
-  }
-  
-  /**
-   * セキュアなファイルパーミッション設定（複雑度: 2）
-   */
-  private async setSecurePermissions(
-    filePath: string,
-    options: CLIOptions,
-    logger: ILogger
-  ): Promise<void> {
-    try {
-      await fs.chmod(filePath, 0o600);
-      if (options.verbose) {
-        logger.debug(`Set secure file permissions (600) for ${filePath}`);
-      }
-    } catch (error) {
-      // Windows環境では警告のみ
-      logger.warn(`Could not set file permissions for ${filePath}: ${(error as Error).message}`);
-    }
   }
 }

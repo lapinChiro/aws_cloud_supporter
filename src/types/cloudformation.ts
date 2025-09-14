@@ -58,14 +58,14 @@ export interface CloudFormationMetadata {
 export interface CloudFormationResource {
   Type: string;
   Properties?: unknown; // プロパティは型別に厳密定義
-  LogicalId?: string; // ランタイムで使用されるLogicalId（テンプレートキーから設定）
-  Condition?: string;
-  DependsOn?: string | string[];
-  Metadata?: CloudFormationMetadata;
+  LogicalId?: string | undefined; // ランタイムで使用されるLogicalId（テンプレートキーから設定）
+  Condition?: string | undefined;
+  DependsOn?: string | string[] | undefined;
+  Metadata?: CloudFormationMetadata | undefined;
   CreationPolicy?: unknown;
   UpdatePolicy?: unknown;
-  DeletionPolicy?: 'Delete' | 'Retain' | 'Snapshot';
-  UpdateReplacePolicy?: 'Delete' | 'Retain' | 'Snapshot';
+  DeletionPolicy?: 'Delete' | 'Retain' | 'Snapshot' | undefined;
+  UpdateReplacePolicy?: 'Delete' | 'Retain' | 'Snapshot' | undefined;
 }
 
 // =============================================================================
@@ -126,8 +126,7 @@ export type DBInstanceClass =
   // r5系（メモリ最適化）
   | 'db.r5.large' | 'db.r5.xlarge' | 'db.r5.2xlarge' | 'db.r5.4xlarge' | 'db.r5.8xlarge' | 'db.r5.12xlarge' | 'db.r5.16xlarge' | 'db.r5.24xlarge'
   // r6g系（Graviton2）
-  | 'db.r6g.large' | 'db.r6g.xlarge' | 'db.r6g.2xlarge' | 'db.r6g.4xlarge'
-  | string; // 将来のインスタンスクラス対応
+  | 'db.r6g.large' | 'db.r6g.xlarge' | 'db.r6g.2xlarge' | 'db.r6g.4xlarge';
 
 export type DatabaseEngine = 'mysql' | 'postgresql' | 'mariadb' | 'oracle-ee' | 'oracle-se2' | 'sqlserver-ex' | 'sqlserver-web' | 'sqlserver-se' | 'sqlserver-ee';
 export type StorageType = 'standard' | 'gp2' | 'gp3' | 'io1' | 'io2';
@@ -194,8 +193,7 @@ export type LambdaRuntime =
   // Ruby
   | 'ruby3.2'
   // カスタムランタイム
-  | 'provided.al2' | 'provided.al2023'
-  | string; // 新しいランタイム対応
+  | 'provided.al2' | 'provided.al2023';
 
 // =============================================================================
 // その他サポートリソース型定義

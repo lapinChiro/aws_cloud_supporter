@@ -57,10 +57,13 @@ export class StandardOutputHandler implements IStandardOutputHandler {
         return await jsonFormatter.format(result);
       case 'html':
         return await htmlFormatter.format(result);
+      case 'yaml':
+        // YAML formatはjsonFormatterでYAML形式として出力
+        return await jsonFormatter.format(result);
       default:
         throw new CloudSupporterError(
           ErrorType.OUTPUT_ERROR,
-          `Unsupported output format: ${format}`,
+          `Unsupported output format: ${String(format)}`,
           { format }
         );
     }
@@ -156,10 +159,13 @@ export class FileOutputHandler implements IFileOutputHandler {
         return await jsonFormatter.format(result);
       case 'html':
         return await htmlFormatter.format(result);
+      case 'yaml':
+        // YAML formatはjsonFormatterでYAML形式として出力
+        return await jsonFormatter.format(result);
       default:
         throw new CloudSupporterError(
           ErrorType.OUTPUT_ERROR,
-          `Unsupported output format: ${format}`,
+          `Unsupported output format: ${String(format)}`,
           { format }
         );
     }
@@ -214,7 +220,7 @@ export class StatisticsDisplayHelper {
       'Total Resources': result.metadata.total_resources,
       'Supported Resources': result.metadata.supported_resources,
       'Unsupported Resources': result.unsupported_resources.length,
-      'Processing Time': `${result.metadata.processing_time_ms}ms`
+      'Processing Time': `${result.metadata.processing_time_ms ?? 'N/A'}ms`
     });
   }
 }

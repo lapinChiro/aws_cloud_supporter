@@ -120,7 +120,7 @@ describe('ECSMetricsGenerator', () => {
       const largeCpu = largeMetrics.find(m => m.metric_name === 'CPUUtilization');
       
       expect(smallCpu?.recommended_threshold.warning).toBeLessThan(
-        largeCpu?.recommended_threshold.warning || 0
+        largeCpu?.recommended_threshold.warning ?? 0
       );
     });
 

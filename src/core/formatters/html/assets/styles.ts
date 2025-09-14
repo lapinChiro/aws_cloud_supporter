@@ -6,16 +6,10 @@ import type { IHTMLAssetProvider } from '../interfaces';
 import { getEmbeddedJS } from './scripts';
 
 /**
- * HTMLアセット提供クラス
- * Single Responsibility: CSS/JSアセット管理のみ
+ * Base and layout styles
  */
-export class HTMLAssetProvider implements IHTMLAssetProvider {
-  /**
-   * 組み込みCSS（外部依存なし・T-014準拠完全版）
-   * レスポンシブ・重要度色分け・インタラクティブ対応
-   */
-  getEmbeddedCSS(): string {
-    return `
+function getBaseStyles(): string {
+  return `
         /* ベース設定 */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
@@ -28,7 +22,14 @@ export class HTMLAssetProvider implements IHTMLAssetProvider {
         
         /* コンテナ・レイアウト */
         .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-        
+  `;
+}
+
+/**
+ * Header section styles
+ */
+function getHeaderStyles(): string {
+  return `
         /* ヘッダーセクション */
         .header { 
           background: white; 
@@ -61,7 +62,14 @@ export class HTMLAssetProvider implements IHTMLAssetProvider {
         .badge.medium-importance { background: #fff3e0; color: #ef6c00; }
         .badge.low-importance { background: #e8f5e8; color: #2e7d32; }
         .badge.metrics-count { background: #f3e5f5; color: #7b1fa2; }
-        
+  `;
+}
+
+/**
+ * Control section styles
+ */
+function getControlStyles(): string {
+  return `
         /* コントロールセクション */
         .controls { 
           display: flex; 
@@ -87,7 +95,14 @@ export class HTMLAssetProvider implements IHTMLAssetProvider {
         }
         .search-input { flex: 1; min-width: 250px; }
         .filter-select { min-width: 180px; }
-        
+  `;
+}
+
+/**
+ * Resource card styles
+ */
+function getResourceCardStyles(): string {
+  return `
         /* リソースカード */
         .resource-card { 
           background: white; 
@@ -144,7 +159,14 @@ export class HTMLAssetProvider implements IHTMLAssetProvider {
           padding: 20px;
           transition: max-height 0.3s ease;
         }
-        
+  `;
+}
+
+/**
+ * Metrics card styles
+ */
+function getMetricsCardStyles(): string {
+  return `
         /* メトリクスグリッド */
         .metrics-grid { 
           display: grid; 
@@ -175,7 +197,14 @@ export class HTMLAssetProvider implements IHTMLAssetProvider {
         .metric-card.category-error { border-top: 2px solid #e53e3e; }
         .metric-card.category-saturation { border-top: 2px solid #d69e2e; }
         .metric-card.category-latency { border-top: 2px solid #9f7aea; }
-        
+  `;
+}
+
+/**
+ * Metric details styles
+ */
+function getMetricDetailsStyles(): string {
+  return `
         /* メトリクスヘッダー */
         .metric-header { 
           display: flex; 
@@ -246,7 +275,14 @@ export class HTMLAssetProvider implements IHTMLAssetProvider {
         .info-value.category-error { color: #e53e3e; font-weight: 500; }
         .info-value.category-saturation { color: #d69e2e; font-weight: 500; }
         .info-value.category-latency { color: #9f7aea; font-weight: 500; }
-        
+  `;
+}
+
+/**
+ * Threshold and dimensions styles
+ */
+function getThresholdStyles(): string {
+  return `
         /* しきい値セクション */
         .threshold-section { 
           background: white; 
@@ -299,7 +335,14 @@ export class HTMLAssetProvider implements IHTMLAssetProvider {
           font-size: 0.8rem;
           font-family: 'Monaco', 'Consolas', monospace;
         }
-        
+  `;
+}
+
+/**
+ * Unsupported section and responsive styles
+ */
+function getUnsupportedAndResponsiveStyles(): string {
+  return `
         /* サポート対象外セクション */
         .unsupported-section { 
           background: white; 
@@ -358,7 +401,29 @@ export class HTMLAssetProvider implements IHTMLAssetProvider {
             .resource-card, .header { box-shadow: none; border: 1px solid #e2e8f0; }
             .toggle-button { display: none; }
         }
-    `;
+  `;
+}
+
+/**
+ * HTMLアセット提供クラス
+ * Single Responsibility: CSS/JSアセット管理のみ
+ */
+export class HTMLAssetProvider implements IHTMLAssetProvider {
+  /**
+   * 組み込みCSS（外部依存なし・T-014準拠完全版）
+   * レスポンシブ・重要度色分け・インタラクティブ対応
+   */
+  getEmbeddedCSS(): string {
+    return [
+      getBaseStyles(),
+      getHeaderStyles(),
+      getControlStyles(),
+      getResourceCardStyles(),
+      getMetricsCardStyles(),
+      getMetricDetailsStyles(),
+      getThresholdStyles(),
+      getUnsupportedAndResponsiveStyles()
+    ].join('\n');
   }
 
   /**

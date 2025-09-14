@@ -11,7 +11,7 @@ export interface IHTMLGenerator {
    * @param result 分析結果
    * @returns HTML文字列
    */
-  formatHTML(result: AnalysisResult): Promise<string>;
+  formatHTML(result: AnalysisResult): string;
 }
 
 /**
@@ -104,12 +104,12 @@ export interface IHTMLOutputFormatter {
    * @param result 分析結果
    * @returns HTML文字列
    */
-  format(result: AnalysisResult): Promise<string>;
+  format(result: AnalysisResult): string;
   
   /**
    * HTML形式でのフォーマット出力
    * @param result 分析結果
    * @returns HTML文字列
    */
-  formatHTML(result: AnalysisResult): Promise<string>;
+  formatHTML(result: AnalysisResult): string;
 }

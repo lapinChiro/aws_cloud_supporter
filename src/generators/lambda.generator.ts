@@ -29,7 +29,7 @@ export class LambdaMetricsGenerator extends BaseMetricsGenerator {
   protected getResourceScale(resource: CloudFormationResource): number {
     const lambda = resource as LambdaFunction;
     const properties = lambda.Properties;
-    const memorySize = properties?.MemorySize || 128; // デフォルト128MB
+    const memorySize = properties?.MemorySize ?? 128; // デフォルト128MB
     
     // メモリサイズベースのスケール計算（AWS Lambda制限準拠）
     // 最小: 128MB、最大: 10240MB (10GB)

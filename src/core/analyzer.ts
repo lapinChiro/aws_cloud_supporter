@@ -191,7 +191,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
         totalTime: Math.round(performance.now() - startTime),
         memoryPeak,
         resourceCount: supportedResources.length,
-        concurrentTasks: options.concurrency || 6
+        concurrentTasks: options.concurrency ?? 6
       };
     }
     
@@ -211,12 +211,12 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
     };
     
     // 完了ログ
-    this.logger.info(`Analysis completed in ${result.metadata.processing_time_ms}ms`);
-    this.logger.info(`Analysis completed with peak memory usage: ${result.metadata.memory_peak_mb}MB`);
+    this.logger.info(`Analysis completed in ${result.metadata.processing_time_ms ?? 'unknown'}ms`);
+    this.logger.info(`Analysis completed with peak memory usage: ${result.metadata.memory_peak_mb ?? 'unknown'}MB`);
     
     // パフォーマンス警告
     if (result.metadata.processing_time_ms && result.metadata.processing_time_ms > 30000) {
-      this.logger.warn(`Processing time exceeded 30s target: ${result.metadata.processing_time_ms}ms`);
+      this.logger.warn(`Processing time exceeded 30s target: ${result.metadata.processing_time_ms ?? 'unknown'}ms`);
     }
     
     return result;
@@ -293,7 +293,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
     options: AnalysisOptions,
     errors: AnalysisError[]
   ): Promise<ResourceWithMetrics[]> {
-    const concurrency = options.concurrency || 6;
+    const concurrency = options.concurrency ?? 6;
     
     this.logger.info(`Generating metrics with ${concurrency} parallel processing`);
     
@@ -326,7 +326,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
         const result = {
           logical_id: logicalId,
           resource_type: resource.Type,
-          resource_properties: this.sanitizeProperties((resource.Properties || {}) as Record<string, unknown>),
+          resource_properties: this.sanitizeProperties((resource.Properties ?? {}) as Record<string, unknown>),
           metrics
         };
         
@@ -388,7 +388,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
     const counts: Record<string, number> = {};
     
     for (const resource of Object.values(resources)) {
-      counts[resource.Type] = (counts[resource.Type] || 0) + 1;
+      counts[resource.Type] = (counts[resource.Type] ?? 0) + 1;
     }
     
     return counts;

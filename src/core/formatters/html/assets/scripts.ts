@@ -2,10 +2,9 @@
 // T-016: HTMLフォーマッター実装 - スクリプトアセット
 
 /**
- * 組み込みJavaScript（T-014準拠完全版）
- * インタラクティブフィルタ・検索・トグル機能実装
+ * Filter initialization script
  */
-export function getEmbeddedJS(): string {
+function getFilterInitScript(): string {
   return `
       console.log('🔍 CloudWatch Metrics Report initialized');
       
@@ -22,7 +21,14 @@ export function getEmbeddedJS(): string {
           initializeStatistics();
           console.log('✅ Interactive features enabled');
       });
-      
+  `;
+}
+
+/**
+ * Core filter functions script
+ */
+function getFilterFunctionsScript(): string {
+  return `
       /**
        * イベントリスナーの初期化
        */
@@ -121,6 +127,14 @@ export function getEmbeddedJS(): string {
           addFilterAnimation();
       }
       
+  `;
+}
+
+/**
+ * UI interaction functions script
+ */
+function getUIFunctionsScript(): string {
+  return `
       /**
        * メトリクストグル機能
        */
@@ -161,6 +175,14 @@ export function getEmbeddedJS(): string {
           console.log('🔄 Filters reset');
       }
       
+  `;
+}
+
+/**
+ * Statistics and visual feedback script
+ */
+function getStatisticsFunctionsScript(): string {
+  return `
       /**
        * 統計情報の初期化
        */
@@ -220,6 +242,14 @@ export function getEmbeddedJS(): string {
           });
       }
       
+  `;
+}
+
+/**
+ * Keyboard shortcuts and initialization script
+ */
+function getKeyboardShortcutsScript(): string {
+  return `
       /**
        * キーボードショートカット
        */
@@ -240,7 +270,14 @@ export function getEmbeddedJS(): string {
               resetFilters();
           }
       });
-      
+  `;
+}
+
+/**
+ * CSS animations and global exports script
+ */
+function getCSSAndGlobalsScript(): string {
+  return `
       // CSSアニメーション定義
       const style = document.createElement('style');
       style.textContent = \`
@@ -268,4 +305,18 @@ export function getEmbeddedJS(): string {
       
       console.log('🎯 Interactive CloudWatch Metrics Report ready!');
   `;
+}
+
+/**
+ * Main embedded JavaScript generator
+ */
+export function getEmbeddedJS(): string {
+  return [
+    getFilterInitScript(),
+    getFilterFunctionsScript(),
+    getUIFunctionsScript(),
+    getStatisticsFunctionsScript(),
+    getKeyboardShortcutsScript(),
+    getCSSAndGlobalsScript()
+  ].join('\n');
 }
