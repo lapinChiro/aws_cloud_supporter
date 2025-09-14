@@ -32,9 +32,9 @@ export function createMockLogger(): jest.Mocked<ILogger> {
  * パフォーマンステスト統一関数
  * DRY原則: 44箇所の重複するperformance.now()パターンを1箇所に集約
  */
-export async function measureGeneratorPerformance<T extends CloudFormationResource>(
+export async function measureGeneratorPerformance(
   generator: IMetricsGenerator,
-  resource: T,
+  resource: CloudFormationResource,
   expectedTimeMs = 1000,
   _logPattern?: RegExp
 ): Promise<{ metrics: MetricDefinition[]; duration: number }> {
@@ -77,7 +77,7 @@ export function createRDSInstance(
   return {
     Type: 'AWS::RDS::DBInstance',
     LogicalId: logicalId,
-    Properties: props || {}
+    Properties: props ?? {}
   };
 }
 
@@ -91,7 +91,7 @@ export function createLambdaFunction(
   return {
     Type: 'AWS::Lambda::Function',
     LogicalId: logicalId,
-    Properties: props || {}
+    Properties: props ?? {}
   };
 }
 
@@ -105,7 +105,7 @@ export function createECSService(
   return {
     Type: 'AWS::ECS::Service',
     LogicalId: logicalId,
-    Properties: props || {}
+    Properties: props ?? {}
   };
 }
 

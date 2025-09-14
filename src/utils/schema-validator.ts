@@ -47,7 +47,15 @@ export interface AnalysisResultSchema {
 export interface ValidationError {
   path: string;
   message: string;
-  value: unknown;
+  value?: unknown;
+}
+
+/**
+ * バリデーション結果
+ */
+export interface ValidationResult {
+  isValid: boolean;
+  errors: ValidationError[];
 }
 
 /**
@@ -60,7 +68,7 @@ export class JsonSchemaValidator {
    * AnalysisResult JSON出力の完全スキーマ検証
    * requirement.md 4.2節準拠
    */
-  validateAnalysisResult(data: unknown): ValidationError[] {
+  validateAnalysisResult(data: unknown): ValidationResult {
     const errors: ValidationError[] = [];
     
     if (!data || typeof data !== 'object') {
@@ -69,7 +77,10 @@ export class JsonSchemaValidator {
         message: 'Root must be an object',
         value: data
       });
-      return errors;
+      return {
+        isValid: false,
+        errors
+      };
     }
     
     const obj = data as Record<string, unknown>;
@@ -83,7 +94,10 @@ export class JsonSchemaValidator {
     // unsupported_resources検証
     this.validateUnsupportedResources(obj.unsupported_resources, 'unsupported_resources', errors);
     
-    return errors;
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
   }
   
   /**
@@ -496,12 +510,12 @@ export class JsonSchemaValidator {
  */
 export function validateJsonSchema(data: unknown): { isValid: boolean; errors: ValidationError[]; summary: string } {
   const validator = new JsonSchemaValidator();
-  const errors = validator.validateAnalysisResult(data);
-  const summary = validator.getValidationSummary(errors);
+  const result = validator.validateAnalysisResult(data);
+  const summary = validator.getValidationSummary(result.errors);
   
   return {
-    isValid: summary.isValid,
-    errors,
+    isValid: result.isValid,
+    errors: result.errors,
     summary: summary.isValid 
       ? '✅ JSON Schema validation passed'
       : `❌ ${summary.errorCount} validation errors found: ${Object.entries(summary.categories).map(([cat, count]) => `${cat}(${count})`).join(', ')}`
@@ -513,11 +527,11 @@ export function validateJsonSchema(data: unknown): { isValid: boolean; errors: V
  */
 export function validateMetricsOutput(data: unknown): { valid: boolean; errors: string[] } {
   const validator = new JsonSchemaValidator();
-  const validationErrors = validator.validateAnalysisResult(data);
+  const result = validator.validateAnalysisResult(data);
   
   return {
-    valid: validationErrors.length === 0,
-    errors: validationErrors.map(error => error.message)
+    valid: result.isValid,
+    errors: result.errors.map(error => error.message)
   };
 }
 

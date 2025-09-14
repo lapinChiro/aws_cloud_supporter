@@ -79,8 +79,10 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       const result = JSON.parse(stdout) as CliOutputResult;
       expect(result.metadata.version).toBe('1.0.0');
       expect(result.resources).toHaveLength(1);
-      expect(result.resources[0]!.resource_type).toBe('AWS::Lambda::Function');
-      expect(result.resources[0]!.metrics.length).toBeGreaterThan(10);
+      const firstResource = result.resources[0];
+      expect(firstResource).toBeDefined();
+      expect(firstResource?.resource_type).toBe('AWS::Lambda::Function');
+      expect(firstResource?.metrics.length).toBeGreaterThan(10);
     });
 
     test('1-2: JSON output to file', async () => {
@@ -177,8 +179,12 @@ describe('CLI E2E Tests - 10 Patterns', () => {
       const resultWith = JSON.parse(stdoutWith) as CliOutputResult;
       
       // Should have more metrics with low importance included
-      expect(resultWith.resources[0]!.metrics.length).toBeGreaterThanOrEqual(
-        resultWithout.resources[0]!.metrics.length
+      const withResource = resultWith.resources[0];
+      const withoutResource = resultWithout.resources[0];
+      expect(withResource).toBeDefined();
+      expect(withoutResource).toBeDefined();
+      expect(withResource?.metrics.length).toBeGreaterThanOrEqual(
+        withoutResource?.metrics.length ?? 0
       );
     });
 
@@ -276,7 +282,7 @@ describe('CLI E2E Tests - 10 Patterns', () => {
         (r) => r.resource_type === 'AWS::Serverless::Function'
       );
       expect(serverlessFunction).toBeDefined();
-      expect(serverlessFunction!.metrics.length).toBeGreaterThan(10);
+      expect(serverlessFunction?.metrics.length).toBeGreaterThan(10);
     });
   });
 });

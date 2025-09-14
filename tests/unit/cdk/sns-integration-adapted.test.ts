@@ -17,6 +17,79 @@ const createMockLogger = (): ILogger => ({
   setLevel: jest.fn()
 });
 
+function createMockMetric(metricName: string, namespace: string): MetricDefinition {
+  return {
+    metric_name: metricName,
+    namespace: namespace,
+    statistic: 'Average',
+    unit: 'Count',
+    evaluation_period: 300,
+    recommended_threshold: {
+      warning: 70,
+      critical: 90
+    },
+    description: `${metricName} monitoring for ${namespace}`,
+    category: 'Performance',
+    importance: 'High'
+  };
+}
+
+// テストデータ作成関数
+function createMockAnalysisWithRDS(): ExtendedAnalysisResult {
+  return {
+    resources: [{
+      logical_id: 'TestDB',
+      resource_type: 'AWS::RDS::DBInstance',
+      resource_properties: {},
+      metrics: [
+        createMockMetric('CPUUtilization', 'AWS/RDS'),
+        createMockMetric('DatabaseConnections', 'AWS/RDS')
+      ]
+    }],
+    metadata: {
+      version: '1.0.0',
+      generated_at: new Date().toISOString(),
+      template_path: 'rds-template.yaml',
+      total_resources: 1,
+      supported_resources: 1
+    },
+    unsupported_resources: []
+  };
+}
+
+function createMockAnalysisWithMultipleRDSResources(): ExtendedAnalysisResult {
+  return {
+    resources: [
+      {
+        logical_id: 'TestDB1',
+        resource_type: 'AWS::RDS::DBInstance',
+        resource_properties: {},
+        metrics: [
+          createMockMetric('CPUUtilization', 'AWS/RDS'),
+          createMockMetric('DatabaseConnections', 'AWS/RDS')
+        ]
+      },
+      {
+        logical_id: 'TestDB2',
+        resource_type: 'AWS::RDS::DBInstance',
+        resource_properties: {},
+        metrics: [
+          createMockMetric('CPUUtilization', 'AWS/RDS'),
+          createMockMetric('DatabaseConnections', 'AWS/RDS')
+        ]
+      }
+    ],
+    metadata: {
+      version: '1.0.0',
+      generated_at: new Date().toISOString(),
+      template_path: 'multiple-rds-template.yaml',
+      total_resources: 2,
+      supported_resources: 2
+    },
+    unsupported_resources: []
+  };
+}
+
 describe('CDK SNS Integration (Official Types)', () => {
   let generator: CDKOfficialGenerator;
 
@@ -140,76 +213,3 @@ describe('CDK SNS Integration (Official Types)', () => {
     });
   });
 });
-
-// テストデータ作成関数
-function createMockAnalysisWithRDS(): ExtendedAnalysisResult {
-  return {
-    resources: [{
-      logical_id: 'TestDB',
-      resource_type: 'AWS::RDS::DBInstance',
-      resource_properties: {},
-      metrics: [
-        createMockMetric('CPUUtilization', 'AWS/RDS'),
-        createMockMetric('DatabaseConnections', 'AWS/RDS')
-      ]
-    }],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'rds-template.yaml',
-      total_resources: 1,
-      supported_resources: 1
-    },
-    unsupported_resources: []
-  };
-}
-
-function createMockAnalysisWithMultipleRDSResources(): ExtendedAnalysisResult {
-  return {
-    resources: [
-      {
-        logical_id: 'TestDB1',
-        resource_type: 'AWS::RDS::DBInstance',
-        resource_properties: {},
-        metrics: [
-          createMockMetric('CPUUtilization', 'AWS/RDS'),
-          createMockMetric('DatabaseConnections', 'AWS/RDS')
-        ]
-      },
-      {
-        logical_id: 'TestDB2',
-        resource_type: 'AWS::RDS::DBInstance',
-        resource_properties: {},
-        metrics: [
-          createMockMetric('CPUUtilization', 'AWS/RDS'),
-          createMockMetric('DatabaseConnections', 'AWS/RDS')
-        ]
-      }
-    ],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'multiple-rds-template.yaml',
-      total_resources: 2,
-      supported_resources: 2
-    },
-    unsupported_resources: []
-  };
-}
-
-function createMockMetric(metricName: string, namespace: string): MetricDefinition {
-  return {
-    metric_name: metricName,
-    namespace: namespace,
-    statistic: 'Average',
-    unit: 'Count',
-    evaluation_period: 300,
-    recommended_threshold: {
-      warning: 70,
-      critical: 90
-    },
-    description: `${metricName} monitoring for ${namespace}`,
-    category: 'Performance',
-    importance: 'High'
-  };
-}

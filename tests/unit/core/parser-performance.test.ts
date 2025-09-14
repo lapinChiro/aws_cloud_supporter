@@ -116,10 +116,14 @@ Description: 'Template without Resources section'
     const parser = new TemplateParser();
     
     // 中規模テンプレート（1000リソース程度）
-    const mediumTemplate = {
+    const mediumTemplate: {
+      AWSTemplateFormatVersion: string;
+      Description: string;
+      Resources: Record<string, unknown>;
+    } = {
       AWSTemplateFormatVersion: "2010-09-09",
       Description: "Medium size template",
-      Resources: {} satisfies Record<string, unknown>
+      Resources: {}
     };
     
     for (let i = 0; i < 1000; i++) {

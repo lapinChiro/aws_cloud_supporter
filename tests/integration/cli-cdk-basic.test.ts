@@ -38,7 +38,7 @@ describe('CLI CDK Basic Integration', () => {
     // Clean up test output directory
     try {
       await fs.rm(testOutputDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch {
       // Ignore cleanup errors
     }
   });
@@ -202,7 +202,7 @@ describe('CLI CDK Basic Integration', () => {
       let exitCode: number | undefined;
       process.exit = jest.fn((code?: number) => {
         exitCode = code;
-        throw new Error(`Process exit called with code ${code}`);
+        throw new Error(`Process exit called with code ${code ?? 0}`);
       }) as never;
       
       // Mock console.error to capture error output

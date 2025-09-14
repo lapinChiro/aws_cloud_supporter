@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import * as yaml from 'yaml';
 
-import type { CloudFormationTemplate, CloudFormationResource } from '../../../src/types/cloudformation';
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 
 interface ResourceDistribution {
   rds: number;
@@ -289,7 +289,7 @@ function generateLargeTemplate(resourceCount: number = 500): void {
   resourceIndex = generateDynamoDBTables(template, distribution.dynamodb, resourceIndex);
   resourceIndex = generateECSServices(template, distribution.ecs, resourceIndex);
   resourceIndex = generateALBs(template, distribution.alb, resourceIndex);
-  resourceIndex = generateOtherResources(template, distribution, resourceIndex);
+  generateOtherResources(template, distribution, resourceIndex);
   
   // Add network resources
   addNetworkResources(template);
@@ -298,6 +298,7 @@ function generateLargeTemplate(resourceCount: number = 500): void {
   const outputPath = path.join(__dirname, 'large-template-500-resources.yaml');
   fs.writeFileSync(outputPath, yaml.stringify(template));
   
+  // eslint-disable-next-line no-console
   console.log(`Generated large template with ${Object.keys(template.Resources).length} resources`);
 }
 

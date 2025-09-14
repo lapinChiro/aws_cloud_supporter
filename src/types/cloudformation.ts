@@ -58,14 +58,14 @@ export interface CloudFormationMetadata {
 export interface CloudFormationResource {
   Type: string;
   Properties?: unknown; // プロパティは型別に厳密定義
-  LogicalId?: string; // ランタイムで使用されるLogicalId（テンプレートキーから設定）
-  Condition?: string;
-  DependsOn?: string | string[];
-  Metadata?: CloudFormationMetadata;
+  LogicalId?: string | undefined; // ランタイムで使用されるLogicalId（テンプレートキーから設定）
+  Condition?: string | undefined;
+  DependsOn?: string | string[] | undefined;
+  Metadata?: CloudFormationMetadata | undefined;
   CreationPolicy?: unknown;
   UpdatePolicy?: unknown;
-  DeletionPolicy?: 'Delete' | 'Retain' | 'Snapshot';
-  UpdateReplacePolicy?: 'Delete' | 'Retain' | 'Snapshot';
+  DeletionPolicy?: 'Delete' | 'Retain' | 'Snapshot' | undefined;
+  UpdateReplacePolicy?: 'Delete' | 'Retain' | 'Snapshot' | undefined;
 }
 
 // =============================================================================

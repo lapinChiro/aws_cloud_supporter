@@ -39,7 +39,7 @@ export class ResourceExtractor {
         if (this.isActuallySupported(resource)) {
           // SupportedResource型にLogicalIdを追加
           const supportedResource: SupportedResource = {
-            ...resource,
+            ...(resource as SupportedResource),
             LogicalId: logicalId
           };
           

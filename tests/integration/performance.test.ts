@@ -185,8 +185,8 @@ describe('Performance Tests', () => {
       }
 
       console.log('=== Memory Leak Test ===');
-      console.log(`Initial Memory: ${firstReading?.toFixed(2)}MB`);
-      console.log(`Final Memory: ${lastReading?.toFixed(2)}MB`);
+      console.log(`Initial Memory: ${(firstReading ?? 0).toFixed(2)}MB`);
+      console.log(`Final Memory: ${(lastReading ?? 0).toFixed(2)}MB`);
       console.log(`Growth: ${memoryGrowth.toFixed(2)}MB over ${iterations} iterations`);
       console.log('=======================');
       
