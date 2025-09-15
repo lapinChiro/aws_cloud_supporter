@@ -107,7 +107,11 @@ describe('MetricsAnalyzer Integration - Real Generator', () => {
       expect(totalMetrics).toBeGreaterThan(1000); // 少なくとも1000個以上のメトリクス
       
     } finally {
-      await fs.unlink(tempPath);
+      try {
+        await fs.unlink(tempPath);
+      } catch {
+        // ファイルが存在しない場合は無視
+      }
     }
   });
 
@@ -125,7 +129,11 @@ describe('MetricsAnalyzer Integration - Real Generator', () => {
       })).rejects.toThrow('Memory usage already exceeds limit');
       
     } finally {
-      await fs.unlink(tempPath);
+      try {
+        await fs.unlink(tempPath);
+      } catch {
+        // ファイルが存在しない場合は無視
+      }
     }
   });
 
@@ -180,7 +188,11 @@ describe('MetricsAnalyzer Integration - Real Generator', () => {
       expect(result.resources.every(r => r.metrics.length > 0)).toBe(true);
       
     } finally {
-      await fs.unlink(tempPath);
+      try {
+        await fs.unlink(tempPath);
+      } catch {
+        // ファイルが存在しない場合は無視
+      }
     }
   });
 });
