@@ -1,9 +1,10 @@
 // CLAUDE.md準拠TemplateParserパフォーマンス最適化テスト（BLUE段階）
 
-import { TemplateParser } from '../../../src/core/parser';
 import { writeFileSync, mkdirSync } from 'fs';
-import path from 'path';
 import { tmpdir } from 'os';
+import path from 'path';
+
+import { TemplateParser, isJSONFile, isYAMLFile, isSupportedTemplateFile } from '../../../src/core/parser';
 import { CloudSupporterError } from '../../../src/utils/error';
 
 describe('TemplateParser最適化（CLAUDE.md: BLUE段階）', () => {
@@ -36,8 +37,6 @@ describe('TemplateParser最適化（CLAUDE.md: BLUE段階）', () => {
 
   // ファイル形式判定関数テスト（型安全性）
   it('should accurately detect file formats', () => {
-    const { isJSONFile, isYAMLFile, isSupportedTemplateFile } = require('../../../src/core/parser');
-
     expect(isJSONFile('template.json')).toBe(true);
     expect(isJSONFile('template.JSON')).toBe(true); // 大文字小文字対応
     expect(isJSONFile('template.yaml')).toBe(false);
@@ -117,10 +116,14 @@ Description: 'Template without Resources section'
     const parser = new TemplateParser();
     
     // 中規模テンプレート（1000リソース程度）
-    const mediumTemplate = {
+    const mediumTemplate: {
+      AWSTemplateFormatVersion: string;
+      Description: string;
+      Resources: Record<string, unknown>;
+    } = {
       AWSTemplateFormatVersion: "2010-09-09",
       Description: "Medium size template",
-      Resources: {} as Record<string, unknown>
+      Resources: {}
     };
     
     for (let i = 0; i < 1000; i++) {

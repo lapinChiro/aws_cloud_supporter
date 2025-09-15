@@ -1,11 +1,12 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
-import { BaseMetricsGenerator } from './base.generator';
-import { CloudFormationResource, ECSService, ECSServiceProperties } from '../types/cloudformation';
-import { MetricConfig, MetricDefinition } from '../types/metrics';
-import { METRICS_CONFIG_MAP } from '../config/metrics-definitions';
+import { METRICS_CONFIG_MAP } from '../config/metrics';
+import type { CloudFormationResource, ECSService} from '../types/cloudformation';
+import { /* ECSServiceProperties, */ isFargateService } from '../types/cloudformation';
+import type { MetricConfig, MetricDefinition } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
-import { isFargateService } from '../types/cloudformation';
+
+import { BaseMetricsGenerator } from './base.generator';
 
 /**
  * ECS Service用メトリクス生成器（Fargate特化）
@@ -31,7 +32,7 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
         'Only Fargate services are supported',
         { 
           resourceType: resource.Type,
-          launchType: (resource as ECSService).Properties?.LaunchType || 'Unknown'
+          launchType: (resource as ECSService).Properties?.LaunchType ?? 'Unknown'
         },
         undefined,
         undefined
@@ -49,8 +50,8 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
    */
   protected getResourceScale(resource: CloudFormationResource): number {
     const ecs = resource as ECSService;
-    const properties = ecs.Properties as ECSServiceProperties | undefined;
-    const desiredCount = properties?.DesiredCount || 1;
+    const properties = ecs.Properties;
+    const desiredCount = properties?.DesiredCount ?? 1;
     
     // DesiredCountベースのスケール計算
     // 1-2タスク: 小規模（係数0.7）
@@ -91,14 +92,14 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
     }
     
     const ecs = resource as ECSService;
-    const properties = ecs.Properties as ECSServiceProperties | undefined;
+    const properties = ecs.Properties;
     
     // CLAUDE.md準拠: 型安全性（スプレッド演算子による不変性）
     return baseConfigs.map(config => {
       // Auto Scaling関連メトリクスの重要度調整
       if (['TaskCount', 'RunningCount', 'PendingCount'].includes(config.name)) {
         // DesiredCountが大きい場合、スケーリング関連メトリクスの重要度を上げる
-        if ((properties?.DesiredCount || 0) >= 10) {
+        if ((properties?.DesiredCount ?? 0) >= 10) {
           return {
             ...config,
             importance: 'High' as const

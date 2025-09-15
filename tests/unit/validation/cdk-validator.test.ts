@@ -1,7 +1,8 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + 型安全性
 // tasks.md T-010: TypeScript検証・品質向上テスト
 
-import { CDKValidator, createCDKValidator } from '../../../src/validation/cdk-validator';
+import type { CDKValidator} from '../../../src/validation/cdk-validator';
+import { createCDKValidator } from '../../../src/validation/cdk-validator';
 
 describe('CDK Validator', () => {
   let validator: CDKValidator;
@@ -49,7 +50,7 @@ const someFunction = () => {
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.errors.some(error => error.includes('exported class'))).toBe(true);
-      expect(result.errors.some(error => error.includes('extends cdk.Stack'))).toBe(true);
+      expect(result.errors.some(error => error.includes('must extend cdk.Stack'))).toBe(true);
     });
   });
 

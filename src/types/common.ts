@@ -7,8 +7,7 @@ export type Primitive = string | number | boolean | null | undefined;
 export type AWSRegion = 
   | 'us-east-1' | 'us-east-2' | 'us-west-1' | 'us-west-2'
   | 'eu-west-1' | 'eu-west-2' | 'eu-west-3' | 'eu-central-1'
-  | 'ap-southeast-1' | 'ap-southeast-2' | 'ap-northeast-1' | 'ap-northeast-2'
-  | string; // 新リージョン対応
+  | 'ap-southeast-1' | 'ap-southeast-2' | 'ap-northeast-1' | 'ap-northeast-2';
 
 export type AWSAccountId = string; // 12桁数字だが文字列として扱う
 

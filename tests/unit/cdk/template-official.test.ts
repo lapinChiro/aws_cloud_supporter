@@ -1,8 +1,9 @@
 // tests/unit/cdk/template-official.test.ts (新規作成)
-import { CDKOfficialHandlebarsHelpers } from '../../../src/templates/handlebars-official-helpers';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as sns from 'aws-cdk-lib/aws-sns';
+import type * as sns from 'aws-cdk-lib/aws-sns';
 import * as Handlebars from 'handlebars';
+
+import { CDKOfficialHandlebarsHelpers } from '../../../src/templates/handlebars-official-helpers';
 
 describe('CDK Official Handlebars Template', () => {
   beforeEach(() => {
@@ -78,18 +79,30 @@ describe('CDK Official Handlebars Template', () => {
         dimensionsMap: { DBInstanceIdentifier: 'test-db' }
       });
 
-      const result = CDKOfficialHandlebarsHelpers.processMetricForTemplate(metric);
+      // 型アサーションを使用して型安全性を確保
+      const result = CDKOfficialHandlebarsHelpers.processMetricForTemplate(metric) as {
+        metricName: string;
+        namespace: string;
+        dimensionsMap: Record<string, string>;
+        statistic: string;
+        period: { seconds: number };
+      };
       
       // MetricConfigの実際の構造をログ出力して確認
       console.log('Processed metric result:', result);
       
-      expect(result).toMatchObject({
-        metricName: expect.any(String),
-        namespace: expect.any(String),
-        dimensionsMap: expect.any(Object),
-        statistic: expect.any(String),
-        period: { seconds: expect.any(Number) }
-      });
+      // より具体的なアサーションを使用
+      expect(typeof result.metricName).toBe('string');
+      expect(typeof result.namespace).toBe('string');
+      expect(typeof result.dimensionsMap).toBe('object');
+      expect(typeof result.statistic).toBe('string');
+      expect(typeof result.period).toBe('object');
+      expect(typeof result.period.seconds).toBe('number');
+      
+      // 具体的な値もテスト
+      expect(result.metricName).toBe('CPUUtilization');
+      expect(result.namespace).toBe('AWS/RDS');
+      expect(result.dimensionsMap).toEqual({ DBInstanceIdentifier: 'test-db' });
     });
   });
 

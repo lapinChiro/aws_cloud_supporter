@@ -1,14 +1,14 @@
 // CLAUDE.md準拠: 型安全性・SOLID原則・Interface Segregation
 // requirement.md準拠: MetricsAnalyzer統合インターフェース
 
-import { AnalysisResult } from '../types/metrics';
+import type { AnalysisResult } from '../types/metrics';
 
 /**
  * 分析オプションインターフェース
  * requirement.md 4.3節準拠
  */
 export interface AnalysisOptions {
-  outputFormat: 'json' | 'html';
+  outputFormat: 'json' | 'html' | 'yaml' | 'cdk';
   includeUnsupported?: boolean;
   includeLowImportance?: boolean;  // 低重要度メトリクスを含める
   resourceTypes?: string[];  // フィルタリング対象のリソースタイプ

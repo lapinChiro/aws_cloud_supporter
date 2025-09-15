@@ -1,13 +1,14 @@
 // Performance Tests for Large Scale Templates
 // CLAUDE.md準拠: No any types、TDD実践
 
-import { MetricsAnalyzer } from '../../src/core/analyzer';
-import { TemplateParser } from '../../src/core/parser';
-import { JSONOutputFormatter } from '../../src/core/json-formatter';
-import { HTMLOutputFormatter } from '../../src/core/html-formatter';
-import { Logger } from '../../src/utils/logger';
 import * as path from 'path';
 import { performance } from 'perf_hooks';
+
+import { MetricsAnalyzer } from '../../src/core/analyzer';
+import { HTMLOutputFormatter } from '../../src/core/formatters/html';
+import { JSONOutputFormatter } from '../../src/core/json-formatter';
+import { TemplateParser } from '../../src/core/parser';
+import { Logger } from '../../src/utils/logger';
 
 // Memory usage tracking
 interface MemoryMetrics {
@@ -123,9 +124,13 @@ describe('Performance Tests', () => {
       console.log('========================================');
       
       // Higher concurrency should generally be faster
-      const single = results.find(r => r.concurrency === 1)!;
-      const parallel = results.find(r => r.concurrency === 10)!;
-      expect(parallel.time).toBeLessThan(single.time * 0.8); // At least 20% faster
+      const single = results.find(r => r.concurrency === 1);
+      const parallel = results.find(r => r.concurrency === 10);
+      expect(single).toBeDefined();
+      expect(parallel).toBeDefined();
+      if (single && parallel) {
+        expect(parallel.time).toBeLessThan(single.time * 0.8); // At least 20% faster
+      }
     });
   });
 
@@ -180,8 +185,8 @@ describe('Performance Tests', () => {
       }
 
       console.log('=== Memory Leak Test ===');
-      console.log(`Initial Memory: ${firstReading?.toFixed(2)}MB`);
-      console.log(`Final Memory: ${lastReading?.toFixed(2)}MB`);
+      console.log(`Initial Memory: ${(firstReading ?? 0).toFixed(2)}MB`);
+      console.log(`Final Memory: ${(lastReading ?? 0).toFixed(2)}MB`);
       console.log(`Growth: ${memoryGrowth.toFixed(2)}MB over ${iterations} iterations`);
       console.log('=======================');
       
@@ -202,7 +207,7 @@ describe('Performance Tests', () => {
       // Time JSON generation
       const jsonFormatter = new JSONOutputFormatter();
       const jsonStartTime = performance.now();
-      const jsonOutput = await jsonFormatter.format(analysisResult);
+      const jsonOutput = jsonFormatter.format(analysisResult);
       const jsonTime = performance.now() - jsonStartTime;
       
       // Check performance
@@ -212,7 +217,7 @@ describe('Performance Tests', () => {
       console.log(`JSON generation: ${jsonTime.toFixed(0)}ms for ${(jsonOutput.length / 1024).toFixed(0)}KB`);
       
       // Verify JSON is valid
-      expect(() => JSON.parse(jsonOutput)).not.toThrow();
+      expect(() => { JSON.parse(jsonOutput); }).not.toThrow();
     });
 
     test('Should generate large HTML outputs efficiently', async () => {
@@ -226,7 +231,7 @@ describe('Performance Tests', () => {
       // Time HTML generation
       const htmlFormatter = new HTMLOutputFormatter();
       const htmlStartTime = performance.now();
-      const htmlOutput = await htmlFormatter.format(analysisResult);
+      const htmlOutput = htmlFormatter.format(analysisResult);
       const htmlTime = performance.now() - htmlStartTime;
       
       // Check performance

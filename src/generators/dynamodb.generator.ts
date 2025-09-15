@@ -1,10 +1,11 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
-import { BaseMetricsGenerator } from './base.generator';
-import { CloudFormationResource } from '../types/cloudformation';
-import { MetricConfig } from '../types/metrics';
-import { METRICS_CONFIG_MAP } from '../config/metrics-definitions';
+import { METRICS_CONFIG_MAP } from '../config/metrics';
+import type { CloudFormationResource } from '../types/cloudformation';
+import type { MetricConfig } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
+
+import { BaseMetricsGenerator } from './base.generator';
 
 /**
  * DynamoDB Table用メトリクス生成器
@@ -69,8 +70,8 @@ export class DynamoDBMetricsGenerator extends BaseMetricsGenerator {
     
     // Provisionedモードのスケール計算
     const provisionedThroughput = properties?.ProvisionedThroughput as Record<string, number> | undefined;
-    const readCapacity = provisionedThroughput?.ReadCapacityUnits || 5;
-    const writeCapacity = provisionedThroughput?.WriteCapacityUnits || 5;
+    const readCapacity = provisionedThroughput?.ReadCapacityUnits ?? 5;
+    const writeCapacity = provisionedThroughput?.WriteCapacityUnits ?? 5;
     
     // GSI（グローバルセカンダリインデックス）の考慮
     const gsiList = properties?.GlobalSecondaryIndexes as Array<Record<string, unknown>> | undefined;
@@ -80,7 +81,7 @@ export class DynamoDBMetricsGenerator extends BaseMetricsGenerator {
       for (const gsi of gsiList) {
         const gsiThroughput = gsi.ProvisionedThroughput as Record<string, number> | undefined;
         if (gsiThroughput) {
-          totalGsiCapacity += (gsiThroughput.ReadCapacityUnits || 0) + (gsiThroughput.WriteCapacityUnits || 0);
+          totalGsiCapacity += (gsiThroughput.ReadCapacityUnits ?? 0) + (gsiThroughput.WriteCapacityUnits ?? 0);
         }
       }
     }

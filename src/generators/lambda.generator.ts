@@ -1,10 +1,12 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
-import { BaseMetricsGenerator } from './base.generator';
-import { CloudFormationResource, LambdaFunction, LambdaProperties } from '../types/cloudformation';
-import { MetricConfig } from '../types/metrics';
-import { METRICS_CONFIG_MAP } from '../config/metrics-definitions';
+import { METRICS_CONFIG_MAP } from '../config/metrics';
+import type { CloudFormationResource, LambdaFunction} from '../types/cloudformation';
+// import { LambdaProperties } from '../types/cloudformation';
+import type { MetricConfig } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
+
+import { BaseMetricsGenerator } from './base.generator';
 
 /**
  * Lambda Function用メトリクス生成器
@@ -26,8 +28,8 @@ export class LambdaMetricsGenerator extends BaseMetricsGenerator {
    */
   protected getResourceScale(resource: CloudFormationResource): number {
     const lambda = resource as LambdaFunction;
-    const properties = lambda.Properties as LambdaProperties | undefined;
-    const memorySize = properties?.MemorySize || 128; // デフォルト128MB
+    const properties = lambda.Properties;
+    const memorySize = properties?.MemorySize ?? 128; // デフォルト128MB
     
     // メモリサイズベースのスケール計算（AWS Lambda制限準拠）
     // 最小: 128MB、最大: 10240MB (10GB)
@@ -63,7 +65,7 @@ export class LambdaMetricsGenerator extends BaseMetricsGenerator {
    */
   private isContainerFunction(resource: CloudFormationResource): boolean {
     const lambda = resource as LambdaFunction;
-    const properties = lambda.Properties as LambdaProperties | undefined;
+    const properties = lambda.Properties;
     return properties?.PackageType === 'Image';
   }
 
@@ -72,7 +74,7 @@ export class LambdaMetricsGenerator extends BaseMetricsGenerator {
    */
   private hasProvisionedConcurrency(resource: CloudFormationResource): boolean {
     const lambda = resource as LambdaFunction;
-    const properties = lambda.Properties as LambdaProperties | undefined;
+    const properties = lambda.Properties;
     return (properties?.ReservedConcurrentExecutions ?? 0) > 0;
   }
 

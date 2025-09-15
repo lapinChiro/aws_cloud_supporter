@@ -2,21 +2,22 @@
 // requirement.md準拠: MetricsAnalyzer統合実装
 
 import { performance } from 'perf_hooks';
-import { ITemplateParser } from '../interfaces/parser';
-import { ILogger } from '../interfaces/logger';
-import { IMetricsAnalyzer, AnalysisOptions, AnalysisStatistics, ExtendedAnalysisResult, AnalysisError } from '../interfaces/analyzer';
-import { IMetricsGenerator } from '../interfaces/generator';
-import { CloudFormationTemplate, CloudFormationResource } from '../types/cloudformation';
-import { ResourceWithMetrics } from '../types/metrics';
+
+import { ALBMetricsGenerator } from '../generators/alb.generator';
+import { APIGatewayMetricsGenerator } from '../generators/apigateway.generator';
+import { DynamoDBMetricsGenerator } from '../generators/dynamodb.generator';
+import { ECSMetricsGenerator } from '../generators/ecs.generator';
+import { LambdaMetricsGenerator } from '../generators/lambda.generator';
+import { RDSMetricsGenerator } from '../generators/rds.generator';
+import type { IMetricsAnalyzer, AnalysisOptions, AnalysisStatistics, ExtendedAnalysisResult, AnalysisError } from '../interfaces/analyzer';
+import type { IMetricsGenerator } from '../interfaces/generator';
+import type { ILogger } from '../interfaces/logger';
+import type { ITemplateParser } from '../interfaces/parser';
+import type { CloudFormationTemplate, CloudFormationResource } from '../types/cloudformation';
+import type { ResourceWithMetrics } from '../types/metrics';
 import { CloudSupporterError, ErrorType } from '../utils/error';
 
 // Generators
-import { RDSMetricsGenerator } from '../generators/rds.generator';
-import { LambdaMetricsGenerator } from '../generators/lambda.generator';
-import { ECSMetricsGenerator } from '../generators/ecs.generator';
-import { ALBMetricsGenerator } from '../generators/alb.generator';
-import { DynamoDBMetricsGenerator } from '../generators/dynamodb.generator';
-import { APIGatewayMetricsGenerator } from '../generators/apigateway.generator';
 
 /**
  * MetricsAnalyzer実装
@@ -24,13 +25,13 @@ import { APIGatewayMetricsGenerator } from '../generators/apigateway.generator';
  * requirement.md: Phase 4統合実装
  */
 export class MetricsAnalyzer implements IMetricsAnalyzer {
-  private generators: Map<string, IMetricsGenerator> = new Map();
+  private readonly generators: Map<string, IMetricsGenerator> = new Map();
   private lastAnalysisStats: AnalysisStatistics | null = null;
   private memoryMonitorInterval: NodeJS.Timeout | null = null;
   
   constructor(
-    private parser: ITemplateParser,
-    private logger: ILogger
+    private readonly parser: ITemplateParser,
+    private readonly logger: ILogger
   ) {
     this.initializeGenerators();
   }
@@ -190,7 +191,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
         totalTime: Math.round(performance.now() - startTime),
         memoryPeak,
         resourceCount: supportedResources.length,
-        concurrentTasks: options.concurrency || 6
+        concurrentTasks: options.concurrency ?? 6
       };
     }
     
@@ -210,12 +211,12 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
     };
     
     // 完了ログ
-    this.logger.info(`Analysis completed in ${result.metadata.processing_time_ms}ms`);
-    this.logger.info(`Analysis completed with peak memory usage: ${result.metadata.memory_peak_mb}MB`);
+    this.logger.info(`Analysis completed in ${result.metadata.processing_time_ms ?? 'unknown'}ms`);
+    this.logger.info(`Analysis completed with peak memory usage: ${result.metadata.memory_peak_mb ?? 'unknown'}MB`);
     
     // パフォーマンス警告
     if (result.metadata.processing_time_ms && result.metadata.processing_time_ms > 30000) {
-      this.logger.warn(`Processing time exceeded 30s target: ${result.metadata.processing_time_ms}ms`);
+      this.logger.warn(`Processing time exceeded 30s target: ${result.metadata.processing_time_ms ?? 'unknown'}ms`);
     }
     
     return result;
@@ -292,7 +293,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
     options: AnalysisOptions,
     errors: AnalysisError[]
   ): Promise<ResourceWithMetrics[]> {
-    const concurrency = options.concurrency || 6;
+    const concurrency = options.concurrency ?? 6;
     
     this.logger.info(`Generating metrics with ${concurrency} parallel processing`);
     
@@ -322,11 +323,16 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
           );
         }
         
+        // Filter out low importance metrics if not included
+        const filteredMetrics = options.includeLowImportance === false 
+          ? metrics.filter(m => m.importance !== 'Low')
+          : metrics;
+        
         const result = {
           logical_id: logicalId,
           resource_type: resource.Type,
-          resource_properties: this.sanitizeProperties((resource.Properties || {}) as Record<string, unknown>),
-          metrics
+          resource_properties: this.sanitizeProperties((resource.Properties ?? {}) as Record<string, unknown>),
+          metrics: filteredMetrics
         };
         
         return result;
@@ -387,7 +393,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
     const counts: Record<string, number> = {};
     
     for (const resource of Object.values(resources)) {
-      counts[resource.Type] = (counts[resource.Type] || 0) + 1;
+      counts[resource.Type] = (counts[resource.Type] ?? 0) + 1;
     }
     
     return counts;

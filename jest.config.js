@@ -1,14 +1,64 @@
 // CLAUDE.md準拠Jest設定（TDD基盤、品質保証強化）
-module.exports = {
+// パフォーマンス最適化版 - プロジェクト分割による並列実行
+
+const commonConfig = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/src', '<rootDir>/tests'],
   
-  // TDD対応テストパターン
-  testMatch: [
-    '**/__tests__/**/*.ts',
-    '**/?(*.)+(spec|test).ts'
+  // 型安全性強化
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest',
+  },
+  
+  // ESMモジュール対応（chalk v5等）
+  extensionsToTreatAsEsm: ['.ts'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(chalk|p-limit|yocto-queue)/)'
   ],
+  
+  // キャッシュ設定
+  cacheDirectory: '<rootDir>/.jest-cache',
+};
+
+module.exports = {
+  // プロジェクト分割による並列実行最適化
+  projects: [
+    {
+      ...commonConfig,
+      displayName: 'unit',
+      testMatch: ['<rootDir>/tests/unit/**/*.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+      maxWorkers: 2,  // 単体テストの並列度を下げて安定性向上
+    },
+    {
+      ...commonConfig,
+      displayName: 'integration',
+      testMatch: ['<rootDir>/tests/integration/**/*.test.ts'],
+      setupFilesAfterEnv: [
+        '<rootDir>/tests/setup.ts',
+        '<rootDir>/tests/integration/setup-optimized.ts'  // 統合テスト用セットアップ
+      ],
+      maxWorkers: 2,  // 統合テストは並列度を制限
+    },
+    {
+      ...commonConfig,
+      displayName: 'e2e',
+      testMatch: ['<rootDir>/tests/e2e/**/*.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+      maxWorkers: 1,  // E2Eテストは逐次実行
+    },
+    {
+      ...commonConfig,
+      displayName: 'security',
+      testMatch: ['<rootDir>/tests/security/**/*.test.ts'],
+      setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+      maxWorkers: 2,
+    }
+  ],
+  
+  // グローバルタイムアウト設定
+  testTimeout: 180000,  // デフォルト180秒に延長（integration testタイムアウト対策）
   
   // CLAUDE.md: 品質指標（カバレッジ90%+）
   collectCoverageFrom: [
@@ -37,26 +87,12 @@ module.exports = {
     'json-summary'    // 数値確認
   ],
   
-  // カスタムマッチャー設定
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
-  
-  // デバッグ・開発効率
-  verbose: true,
-  testTimeout: 10000,
-  
-  // 型安全性強化
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-  transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+  // グローバル設定（一時ディレクトリ対応）
+  globals: {
+    TEST_TMP_DIR: '<rootDir>/tmp/test-' + process.pid + '-' + Date.now()
   },
   
-  // パフォーマンス最適化
-  maxWorkers: '50%',
-  cacheDirectory: '<rootDir>/.jest-cache',
-  
-  // ESMモジュール対応（chalk v5等）
-  extensionsToTreatAsEsm: ['.ts'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(chalk|p-limit|yocto-queue)/)'
-  ]
+  // 全体設定
+  verbose: true,
+  roots: ['<rootDir>/src', '<rootDir>/tests'],
 };

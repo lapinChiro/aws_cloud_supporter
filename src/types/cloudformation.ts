@@ -58,14 +58,14 @@ export interface CloudFormationMetadata {
 export interface CloudFormationResource {
   Type: string;
   Properties?: unknown; // プロパティは型別に厳密定義
-  LogicalId?: string; // ランタイムで使用されるLogicalId（テンプレートキーから設定）
-  Condition?: string;
-  DependsOn?: string | string[];
-  Metadata?: CloudFormationMetadata;
+  LogicalId?: string | undefined; // ランタイムで使用されるLogicalId（テンプレートキーから設定）
+  Condition?: string | undefined;
+  DependsOn?: string | string[] | undefined;
+  Metadata?: CloudFormationMetadata | undefined;
   CreationPolicy?: unknown;
   UpdatePolicy?: unknown;
-  DeletionPolicy?: 'Delete' | 'Retain' | 'Snapshot';
-  UpdateReplacePolicy?: 'Delete' | 'Retain' | 'Snapshot';
+  DeletionPolicy?: 'Delete' | 'Retain' | 'Snapshot' | undefined;
+  UpdateReplacePolicy?: 'Delete' | 'Retain' | 'Snapshot' | undefined;
 }
 
 // =============================================================================
@@ -126,8 +126,7 @@ export type DBInstanceClass =
   // r5系（メモリ最適化）
   | 'db.r5.large' | 'db.r5.xlarge' | 'db.r5.2xlarge' | 'db.r5.4xlarge' | 'db.r5.8xlarge' | 'db.r5.12xlarge' | 'db.r5.16xlarge' | 'db.r5.24xlarge'
   // r6g系（Graviton2）
-  | 'db.r6g.large' | 'db.r6g.xlarge' | 'db.r6g.2xlarge' | 'db.r6g.4xlarge'
-  | string; // 将来のインスタンスクラス対応
+  | 'db.r6g.large' | 'db.r6g.xlarge' | 'db.r6g.2xlarge' | 'db.r6g.4xlarge';
 
 export type DatabaseEngine = 'mysql' | 'postgresql' | 'mariadb' | 'oracle-ee' | 'oracle-se2' | 'sqlserver-ex' | 'sqlserver-web' | 'sqlserver-se' | 'sqlserver-ee';
 export type StorageType = 'standard' | 'gp2' | 'gp3' | 'io1' | 'io2';
@@ -194,8 +193,7 @@ export type LambdaRuntime =
   // Ruby
   | 'ruby3.2'
   // カスタムランタイム
-  | 'provided.al2' | 'provided.al2023'
-  | string; // 新しいランタイム対応
+  | 'provided.al2' | 'provided.al2023';
 
 // =============================================================================
 // その他サポートリソース型定義
@@ -320,35 +318,35 @@ export enum ResourceType {
 
 // リソース識別ヘルパー（型安全性確保）
 export function isRDSInstance(resource: CloudFormationResource): resource is RDSDBInstance {
-  return resource.Type === ResourceType.RDS_DB_INSTANCE;
+  return resource.Type === ResourceType.RDS_DB_INSTANCE as string;
 }
 
 export function isLambdaFunction(resource: CloudFormationResource): resource is LambdaFunction {
-  return resource.Type === ResourceType.LAMBDA_FUNCTION;
+  return resource.Type === ResourceType.LAMBDA_FUNCTION as string;
 }
 
 export function isServerlessFunction(resource: CloudFormationResource): resource is ServerlessFunction {
-  return resource.Type === ResourceType.SERVERLESS_FUNCTION;
+  return resource.Type === ResourceType.SERVERLESS_FUNCTION as string;
 }
 
 export function isECSService(resource: CloudFormationResource): resource is ECSService {
-  return resource.Type === ResourceType.ECS_SERVICE;
+  return resource.Type === ResourceType.ECS_SERVICE as string;
 }
 
 export function isALB(resource: CloudFormationResource): resource is ApplicationLoadBalancer {
-  return resource.Type === ResourceType.ALB;
+  return resource.Type === ResourceType.ALB as string;
 }
 
 export function isDynamoDBTable(resource: CloudFormationResource): resource is DynamoDBTable {
-  return resource.Type === ResourceType.DYNAMODB_TABLE;
+  return resource.Type === ResourceType.DYNAMODB_TABLE as string;
 }
 
 export function isAPIGateway(resource: CloudFormationResource): resource is APIGatewayRestAPI {
-  return resource.Type === ResourceType.API_GATEWAY;
+  return resource.Type === ResourceType.API_GATEWAY as string;
 }
 
 export function isServerlessAPI(resource: CloudFormationResource): resource is ServerlessAPI {
-  return resource.Type === ResourceType.SERVERLESS_API;
+  return resource.Type === ResourceType.SERVERLESS_API as string;
 }
 
 // 型安全なリソース判定（CLAUDE.md: Type-Driven Development）
@@ -371,7 +369,7 @@ export function isSupportedResource(resource: CloudFormationResource): resource 
 export function isFargateService(resource: CloudFormationResource): boolean {
   if (!isECSService(resource)) return false;
   
-  const props = resource.Properties as ECSServiceProperties;
+  const props = resource.Properties;
   if (!props) return false;
   
   // LaunchType直接指定
@@ -392,7 +390,7 @@ export function isFargateService(resource: CloudFormationResource): boolean {
 export function isApplicationLoadBalancer(resource: CloudFormationResource): boolean {
   if (!isALB(resource)) return false;
   
-  const props = resource.Properties as ALBProperties;
+  const props = resource.Properties;
   if (!props) return true; // デフォルトはApplication
   
   return !props.Type || props.Type === 'application';

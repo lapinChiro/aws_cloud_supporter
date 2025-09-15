@@ -59,9 +59,9 @@ jest.mock('../../../src/generators/apigateway.generator', () => ({
 }));
 
 import { MetricsAnalyzer } from '../../../src/core/analyzer';
-import { ITemplateParser } from '../../../src/interfaces/parser';
-import { ILogger } from '../../../src/interfaces/logger';
-import { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { ITemplateParser } from '../../../src/interfaces/parser';
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 import { createMockLogger } from '../../helpers';
 
 describe('MetricsAnalyzer (Mocked Unit Tests)', () => {

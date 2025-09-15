@@ -1,17 +1,17 @@
-import { ILogger } from '../../../../src/interfaces/logger';
-import { CloudFormationResource } from '../../../../src/types/cloudformation';
-import { MetricDefinition } from '../../../../src/types/metrics';
+import type { ILogger } from '../../../../src/interfaces/logger';
+import type { CloudFormationResource } from '../../../../src/types/cloudformation';
+import type { MetricDefinition } from '../../../../src/types/metrics';
 
 export class RDSMetricsGenerator {
-  // @ts-ignore
-  constructor(private _logger: ILogger) {}
+  // @ts-expect-error
+  constructor(private readonly _logger: ILogger) {}
   
   getSupportedTypes(): string[] {
     return ['AWS::RDS::DBInstance'];
   }
   
-  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
-    return [
+  generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
+    return Promise.resolve([
       {
         metric_name: 'CPUUtilization',
         namespace: 'AWS/RDS',
@@ -29,6 +29,6 @@ export class RDSMetricsGenerator {
           { name: 'DBInstanceIdentifier', value: 'test-db' }
         ]
       }
-    ];
+    ]);
   }
 }

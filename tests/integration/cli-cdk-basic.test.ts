@@ -1,15 +1,18 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + 型安全性
 // tasks.md T-004: CLI統合テスト
 
+import * as fs from 'fs/promises';
+import * as os from 'os';
+import * as path from 'path';
+
 import { createCLICommand } from '../../src/cli/commands';
 import { MetricsAnalyzer } from '../../src/core/analyzer';
-import { TemplateParser } from '../../src/core/parser';
+import { HTMLOutputFormatter } from '../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
-import { HTMLOutputFormatter } from '../../src/core/html-formatter';
+import { TemplateParser } from '../../src/core/parser';
+import { CDKOfficialGenerator } from '../../src/generators/cdk-official.generator';
 import { Logger } from '../../src/utils/logger';
-import * as fs from 'fs/promises';
-import * as path from 'path';
-import * as os from 'os';
+
 
 describe('CLI CDK Basic Integration', () => {
   let testOutputDir: string;
@@ -35,13 +38,13 @@ describe('CLI CDK Basic Integration', () => {
     // Clean up test output directory
     try {
       await fs.rm(testOutputDir, { recursive: true, force: true });
-    } catch (error) {
+    } catch {
       // Ignore cleanup errors
     }
   });
 
   describe('CLI Option Parsing', () => {
-    it('should accept CDK output format', async () => {
+    it('should accept CDK output format', () => {
       const program = createCLICommand(dependencies);
       
       // Test help output includes CDK options
@@ -52,7 +55,7 @@ describe('CLI CDK Basic Integration', () => {
       expect(helpOutput).toContain('json|html|yaml|cdk');
     });
 
-    it('should include CDK examples in help text', async () => {
+    it('should include CDK examples in help text', () => {
       const program = createCLICommand(dependencies);
       const helpOutput = program.helpInformation();
       
@@ -65,9 +68,8 @@ describe('CLI CDK Basic Integration', () => {
 
   describe('CDK Generation Routing', () => {
     it('should route to CDK generation when --output cdk is specified', async () => {
-      // Create a spy on CDKGenerator to verify it's called
-      const CDKGenerator = require('../../src/generators/cdk.generator').CDKGenerator;
-      const generateSpy = jest.spyOn(CDKGenerator.prototype, 'generate');
+      // Create a spy on CDKOfficialGenerator to verify it's called
+      const generateSpy = jest.spyOn(CDKOfficialGenerator.prototype, 'generate');
       
       // Mock the generate method to avoid actual file operations
       generateSpy.mockResolvedValue('export class TestStack extends cdk.Stack {}');
@@ -200,7 +202,7 @@ describe('CLI CDK Basic Integration', () => {
       let exitCode: number | undefined;
       process.exit = jest.fn((code?: number) => {
         exitCode = code;
-        throw new Error(`Process exit called with code ${code}`);
+        throw new Error(`Process exit called with code ${code ?? 0}`);
       }) as never;
       
       // Mock console.error to capture error output

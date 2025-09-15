@@ -1,33 +1,33 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import * as yaml from 'yaml';
+
+import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+
+interface ResourceDistribution {
+  rds: number;
+  lambda: number;
+  dynamodb: number;
+  ecs: number;
+  alb: number;
+  apigateway: number;
+  s3: number;
+  ec2: number;
+  other: number;
+}
+
 /**
- * Generate a large CloudFormation template for performance testing
+ * Generate RDS instances for the template
  */
-function generateLargeTemplate(resourceCount: number = 500): void {
-  const template: any = {
-    AWSTemplateFormatVersion: "2010-09-09",
-    Description: `Large template with ${resourceCount}+ resources for performance testing`,
-    Resources: {}
-  };
-
-  // Distribution of resources
-  const distribution = {
-    rds: 50,
-    lambda: 100,
-    dynamodb: 75,
-    ecs: 50,
-    alb: 25,
-    apigateway: 25,
-    s3: 50,        // unsupported
-    ec2: 50,       // unsupported
-    other: 75      // other unsupported
-  };
-
-  let resourceIndex = 0;
-
-  // Generate RDS instances
-  for (let i = 1; i <= distribution.rds && resourceIndex < resourceCount; i++, resourceIndex++) {
+function generateRDSInstances(
+  template: CloudFormationTemplate, 
+  count: number, 
+  startIndex: number
+): number {
+  let resourceIndex = startIndex;
+  
+  for (let i = 1; i <= count && resourceIndex < 500; i++, resourceIndex++) {
     template.Resources[`RDSInstance${i}`] = {
       Type: "AWS::RDS::DBInstance",
       Properties: {
@@ -40,9 +40,21 @@ function generateLargeTemplate(resourceCount: number = 500): void {
       }
     };
   }
+  
+  return resourceIndex;
+}
 
-  // Generate Lambda functions
-  for (let i = 1; i <= distribution.lambda && resourceIndex < resourceCount; i++, resourceIndex++) {
+/**
+ * Generate Lambda functions for the template
+ */
+function generateLambdaFunctions(
+  template: CloudFormationTemplate, 
+  count: number, 
+  startIndex: number
+): number {
+  let resourceIndex = startIndex;
+  
+  for (let i = 1; i <= count && resourceIndex < 500; i++, resourceIndex++) {
     template.Resources[`LambdaFunction${i}`] = {
       Type: "AWS::Lambda::Function",
       Properties: {
@@ -57,9 +69,21 @@ function generateLargeTemplate(resourceCount: number = 500): void {
       }
     };
   }
+  
+  return resourceIndex;
+}
 
-  // Generate DynamoDB tables
-  for (let i = 1; i <= distribution.dynamodb && resourceIndex < resourceCount; i++, resourceIndex++) {
+/**
+ * Generate DynamoDB tables for the template
+ */
+function generateDynamoDBTables(
+  template: CloudFormationTemplate, 
+  count: number, 
+  startIndex: number
+): number {
+  let resourceIndex = startIndex;
+  
+  for (let i = 1; i <= count && resourceIndex < 500; i++, resourceIndex++) {
     template.Resources[`DynamoDBTable${i}`] = {
       Type: "AWS::DynamoDB::Table",
       Properties: {
@@ -76,15 +100,30 @@ function generateLargeTemplate(resourceCount: number = 500): void {
     
     // Add ProvisionedThroughput for PROVISIONED mode
     if (i % 2 !== 0) {
-      template.Resources[`DynamoDBTable${i}`].Properties.ProvisionedThroughput = {
-        ReadCapacityUnits: 5,
-        WriteCapacityUnits: 5
-      };
+      const tableResource = template.Resources[`DynamoDBTable${i}`];
+      if (tableResource?.Properties) {
+        (tableResource.Properties as Record<string, unknown>).ProvisionedThroughput = {
+          ReadCapacityUnits: 5,
+          WriteCapacityUnits: 5
+        };
+      }
     }
   }
+  
+  return resourceIndex;
+}
 
-  // Generate ECS services
-  for (let i = 1; i <= distribution.ecs && resourceIndex < resourceCount; i++, resourceIndex++) {
+/**
+ * Generate ECS services for the template
+ */
+function generateECSServices(
+  template: CloudFormationTemplate, 
+  count: number, 
+  startIndex: number
+): number {
+  let resourceIndex = startIndex;
+  
+  for (let i = 1; i <= count && resourceIndex < 500; i++, resourceIndex++) {
     // Task Definition
     template.Resources[`ECSTaskDefinition${i}`] = {
       Type: "AWS::ECS::TaskDefinition",
@@ -113,9 +152,21 @@ function generateLargeTemplate(resourceCount: number = 500): void {
       }
     };
   }
+  
+  return resourceIndex;
+}
 
-  // Generate ALBs
-  for (let i = 1; i <= distribution.alb && resourceIndex < resourceCount; i++, resourceIndex++) {
+/**
+ * Generate ALBs for the template
+ */
+function generateALBs(
+  template: CloudFormationTemplate, 
+  count: number, 
+  startIndex: number
+): number {
+  let resourceIndex = startIndex;
+  
+  for (let i = 1; i <= count && resourceIndex < 500; i++, resourceIndex++) {
     template.Resources[`ApplicationLoadBalancer${i}`] = {
       Type: "AWS::ElasticLoadBalancingV2::LoadBalancer",
       Properties: {
@@ -126,9 +177,22 @@ function generateLargeTemplate(resourceCount: number = 500): void {
       }
     };
   }
+  
+  return resourceIndex;
+}
 
+/**
+ * Generate API Gateways and unsupported resources
+ */
+function generateOtherResources(
+  template: CloudFormationTemplate,
+  distribution: ResourceDistribution,
+  startIndex: number
+): number {
+  let resourceIndex = startIndex;
+  
   // Generate API Gateways
-  for (let i = 1; i <= distribution.apigateway && resourceIndex < resourceCount; i++, resourceIndex++) {
+  for (let i = 1; i <= distribution.apigateway && resourceIndex < 500; i++, resourceIndex++) {
     template.Resources[`APIGateway${i}`] = {
       Type: "AWS::ApiGateway::RestApi",
       Properties: {
@@ -141,7 +205,7 @@ function generateLargeTemplate(resourceCount: number = 500): void {
   }
 
   // Generate S3 buckets (unsupported)
-  for (let i = 1; i <= distribution.s3 && resourceIndex < resourceCount; i++, resourceIndex++) {
+  for (let i = 1; i <= distribution.s3 && resourceIndex < 500; i++, resourceIndex++) {
     template.Resources[`S3Bucket${i}`] = {
       Type: "AWS::S3::Bucket",
       Properties: {
@@ -151,7 +215,7 @@ function generateLargeTemplate(resourceCount: number = 500): void {
   }
 
   // Generate EC2 instances (unsupported)
-  for (let i = 1; i <= distribution.ec2 && resourceIndex < resourceCount; i++, resourceIndex++) {
+  for (let i = 1; i <= distribution.ec2 && resourceIndex < 500; i++, resourceIndex++) {
     template.Resources[`EC2Instance${i}`] = {
       Type: "AWS::EC2::Instance",
       Properties: {
@@ -160,8 +224,14 @@ function generateLargeTemplate(resourceCount: number = 500): void {
       }
     };
   }
+  
+  return resourceIndex;
+}
 
-  // Add basic network resources
+/**
+ * Add network resources to the template
+ */
+function addNetworkResources(template: CloudFormationTemplate): void {
   template.Resources.VPC = {
     Type: "AWS::EC2::VPC",
     Properties: {
@@ -186,12 +256,49 @@ function generateLargeTemplate(resourceCount: number = 500): void {
       AvailabilityZone: { "Fn::Select": [1, { "Fn::GetAZs": "" }] }
     }
   };
+}
+
+/**
+ * Generate a large CloudFormation template for performance testing
+ */
+function generateLargeTemplate(resourceCount: number = 500): void {
+  const template: CloudFormationTemplate = {
+    AWSTemplateFormatVersion: "2010-09-09",
+    Description: `Large template with ${resourceCount}+ resources for performance testing`,
+    Resources: {}
+  };
+
+  // Distribution of resources
+  const distribution: ResourceDistribution = {
+    rds: 50,
+    lambda: 100,
+    dynamodb: 75,
+    ecs: 50,
+    alb: 25,
+    apigateway: 25,
+    s3: 50,        // unsupported
+    ec2: 50,       // unsupported
+    other: 75      // other unsupported
+  };
+
+  let resourceIndex = 0;
+
+  // Generate all resource types
+  resourceIndex = generateRDSInstances(template, distribution.rds, resourceIndex);
+  resourceIndex = generateLambdaFunctions(template, distribution.lambda, resourceIndex);
+  resourceIndex = generateDynamoDBTables(template, distribution.dynamodb, resourceIndex);
+  resourceIndex = generateECSServices(template, distribution.ecs, resourceIndex);
+  resourceIndex = generateALBs(template, distribution.alb, resourceIndex);
+  generateOtherResources(template, distribution, resourceIndex);
+  
+  // Add network resources
+  addNetworkResources(template);
 
   // Save the template
   const outputPath = path.join(__dirname, 'large-template-500-resources.yaml');
-  const yaml = require('yaml');
   fs.writeFileSync(outputPath, yaml.stringify(template));
   
+  // eslint-disable-next-line no-console
   console.log(`Generated large template with ${Object.keys(template.Resources).length} resources`);
 }
 

@@ -1,10 +1,11 @@
 // tests/unit/cdk/cdk-official-generator.test.ts (新規作成)
-import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.generator';
-import { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
-import { CDKOptions } from '../../../src/types/cdk-business';
-import { ResourceWithMetrics, MetricDefinition } from '../../../src/types/metrics';
-import { ILogger } from '../../../src/interfaces/logger';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
+import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.generator';
+import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { CDKOptions } from '../../../src/types/cdk-business';
+import type { ResourceWithMetrics, MetricDefinition } from '../../../src/types/metrics';
 
 // テスト用モックロガー
 const createMockLogger = (): ILogger => ({
@@ -15,6 +16,52 @@ const createMockLogger = (): ILogger => ({
   success: jest.fn(),
   setLevel: jest.fn()
 });
+
+function createTestMetricDefinition(metricName: string, namespace: string): MetricDefinition {
+  return {
+    metric_name: metricName,
+    namespace: namespace,
+    statistic: 'Average',
+    unit: 'Percent',
+    evaluation_period: 300,
+    recommended_threshold: {
+      warning: 70,
+      critical: 90
+    },
+    description: `${metricName} monitoring for ${namespace}`,
+    category: 'Performance',
+    importance: 'High'
+  };
+}
+
+function createTestResourceWithMetrics(resourceType: string, logicalId: string): ResourceWithMetrics {
+  return {
+    logical_id: logicalId,
+    resource_type: resourceType,
+    resource_properties: {},
+    metrics: [
+      createTestMetricDefinition('CPUUtilization', 'AWS/RDS')
+    ]
+  };
+}
+
+// Test data creation helpers
+function createTestAnalysisResult(): ExtendedAnalysisResult {
+  return {
+    resources: [
+      createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDBInstance'),
+      createTestResourceWithMetrics('AWS::Lambda::Function', 'TestLambdaFunction')
+    ],
+    metadata: {
+      version: '1.0.0',
+      generated_at: new Date().toISOString(),
+      template_path: 'test-template.yaml',
+      total_resources: 2,
+      supported_resources: 2
+    },
+    unsupported_resources: []
+  };
+}
 
 describe('CDKOfficialGenerator', () => {
   let generator: CDKOfficialGenerator;
@@ -49,7 +96,7 @@ describe('CDKOfficialGenerator', () => {
       const invalidOptions: CDKOptions = { enabled: true };
 
       await expect(
-        generator.generate(null as any, invalidOptions)
+        generator.generate(null as unknown as ExtendedAnalysisResult, invalidOptions)
       ).rejects.toThrow('Analysis result is required');
     });
 
@@ -143,49 +190,3 @@ describe('CDKOfficialGenerator', () => {
     });
   });
 });
-
-// Test data creation helpers
-function createTestAnalysisResult(): ExtendedAnalysisResult {
-  return {
-    resources: [
-      createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDBInstance'),
-      createTestResourceWithMetrics('AWS::Lambda::Function', 'TestLambdaFunction')
-    ],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'test-template.yaml',
-      total_resources: 2,
-      supported_resources: 2
-    },
-    unsupported_resources: []
-  };
-}
-
-function createTestResourceWithMetrics(resourceType: string, logicalId: string): ResourceWithMetrics {
-  return {
-    logical_id: logicalId,
-    resource_type: resourceType,
-    resource_properties: {},
-    metrics: [
-      createTestMetricDefinition('CPUUtilization', 'AWS/RDS')
-    ]
-  };
-}
-
-function createTestMetricDefinition(metricName: string, namespace: string): MetricDefinition {
-  return {
-    metric_name: metricName,
-    namespace: namespace,
-    statistic: 'Average',
-    unit: 'Percent',
-    evaluation_period: 300,
-    recommended_threshold: {
-      warning: 70,
-      critical: 90
-    },
-    description: `${metricName} monitoring for ${namespace}`,
-    category: 'Performance',
-    importance: 'High'
-  };
-}

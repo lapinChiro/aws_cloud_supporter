@@ -1,6 +1,6 @@
 import { APIGatewayMetricsGenerator } from '../../../src/generators/apigateway.generator';
-import { CloudFormationResource } from '../../../src/types/cloudformation';
-import { ILogger } from '../../../src/interfaces/logger';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { CloudFormationResource } from '../../../src/types/cloudformation';
 import { createMockLogger, measureGeneratorPerformance, createAPIGateway } from '../../helpers';
 
 describe('APIGatewayMetricsGenerator', () => {
@@ -96,7 +96,7 @@ describe('APIGatewayMetricsGenerator', () => {
       const devCount = devMetrics.find(m => m.metric_name === 'Count');
       
       expect(prodCount?.recommended_threshold.warning).toBeGreaterThan(
-        devCount?.recommended_threshold.warning || 0
+        devCount?.recommended_threshold.warning ?? 0
       );
     });
 

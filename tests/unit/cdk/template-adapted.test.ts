@@ -3,9 +3,86 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as Handlebars from 'handlebars';
-import { CDKOfficialHandlebarsHelpers } from '../../../src/templates/handlebars-official-helpers';
+
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as Handlebars from 'handlebars';
+
+import { CDKOfficialHandlebarsHelpers } from '../../../src/templates/handlebars-official-helpers';
+
+// テストデータ作成関数（公式型対応）
+function createTestStackData() {
+  const testMetric = new cloudwatch.Metric({
+    metricName: 'CPUUtilization',
+    namespace: 'AWS/RDS',
+    dimensionsMap: { DBInstanceIdentifier: 'TestResource' }
+  });
+
+  return {
+    stackClassName: 'TestStack',
+    alarms: [{
+      // Template用に事前処理されたデータ
+      constructId: 'TestResourceCPUUtilizationWarningAlarm',
+      threshold: 70,
+      alarmDescription: 'CPU utilization monitoring',
+      evaluationPeriods: 1,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+      datapointsToAlarm: 1,
+      severity: 'Warning',
+      resourceLogicalId: 'TestResource',
+      resourceType: 'AWS::RDS::DBInstance',
+      metricForTemplate: CDKOfficialHandlebarsHelpers.processMetricForTemplate(testMetric)
+    }],
+    metadata: {
+      generatedAt: new Date().toISOString(),
+      templatePath: 'test.yaml',
+      totalResources: 1,
+      totalAlarms: 1,
+      toolVersion: '1.0.0'
+    }
+  };
+}
+
+function createTestStackDataWithSNS() {
+  const baseData = createTestStackData();
+  return {
+    ...baseData,
+    snsConfiguration: {
+      variableName: 'alarmTopic',
+      isExisting: false,
+      topicProps: {
+        topicName: 'CloudWatchAlarmNotifications',
+        displayName: 'CloudWatch Alarm Notifications'
+      }
+    }
+  };
+}
+
+function createTestStackDataWithExistingSNS() {
+  const baseData = createTestStackData();
+  return {
+    ...baseData,
+    snsConfiguration: {
+      variableName: 'alarmTopic',
+      isExisting: true,
+      topicArn: 'arn:aws:sns:us-east-1:123456789012:existing-topic'
+    }
+  };
+}
+
+function createTestStackDataEmpty() {
+  return {
+    stackClassName: 'EmptyStack',
+    alarms: [],
+    metadata: {
+      generatedAt: new Date().toISOString(),
+      templatePath: 'empty.yaml',
+      totalResources: 0,
+      totalAlarms: 0,
+      toolVersion: '1.0.0'
+    }
+  };
+}
 
 describe('CDK Official Template MVP', () => {
   let templateContent: string;
@@ -64,8 +141,8 @@ describe('CDK Official Template MVP', () => {
       
       expect(result).toContain('export class TestStack extends cdk.Stack');
       expect(result).toContain('TestResourceCPUUtilizationWarningAlarm');
-      expect(result).toContain('cloudwatch.TreatMissingData.notBreaching');
-      expect(result).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
+      expect(result).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
+      expect(result).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
     });
 
     it('should render SNS integration correctly', () => {
@@ -99,78 +176,3 @@ describe('CDK Official Template MVP', () => {
     });
   });
 });
-
-// テストデータ作成関数（公式型対応）
-function createTestStackData(): any {
-  const testMetric = new cloudwatch.Metric({
-    metricName: 'CPUUtilization',
-    namespace: 'AWS/RDS',
-    dimensionsMap: { DBInstanceIdentifier: 'TestResource' }
-  });
-
-  return {
-    stackClassName: 'TestStack',
-    alarms: [{
-      // Template用に事前処理されたデータ
-      constructId: 'TestResourceCPUUtilizationWarningAlarm',
-      threshold: 70,
-      alarmDescription: 'CPU utilization monitoring',
-      evaluationPeriods: 1,
-      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
-      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-      datapointsToAlarm: 1,
-      severity: 'Warning',
-      resourceLogicalId: 'TestResource',
-      resourceType: 'AWS::RDS::DBInstance',
-      metricForTemplate: CDKOfficialHandlebarsHelpers.processMetricForTemplate(testMetric)
-    }],
-    metadata: {
-      generatedAt: new Date().toISOString(),
-      templatePath: 'test.yaml',
-      totalResources: 1,
-      totalAlarms: 1,
-      toolVersion: '1.0.0'
-    }
-  };
-}
-
-function createTestStackDataWithSNS(): any {
-  const baseData = createTestStackData();
-  return {
-    ...baseData,
-    snsConfiguration: {
-      variableName: 'alarmTopic',
-      isExisting: false,
-      topicProps: {
-        topicName: 'CloudWatchAlarmNotifications',
-        displayName: 'CloudWatch Alarm Notifications'
-      }
-    }
-  };
-}
-
-function createTestStackDataWithExistingSNS(): any {
-  const baseData = createTestStackData();
-  return {
-    ...baseData,
-    snsConfiguration: {
-      variableName: 'alarmTopic',
-      isExisting: true,
-      topicArn: 'arn:aws:sns:us-east-1:123456789012:existing-topic'
-    }
-  };
-}
-
-function createTestStackDataEmpty(): any {
-  return {
-    stackClassName: 'EmptyStack',
-    alarms: [],
-    metadata: {
-      generatedAt: new Date().toISOString(),
-      templatePath: 'empty.yaml',
-      totalResources: 0,
-      totalAlarms: 0,
-      toolVersion: '1.0.0'
-    }
-  };
-}

@@ -2,6 +2,7 @@
 
 import { readFileSync } from 'fs';
 import path from 'path';
+
 import { 
   CloudSupporterError, 
   ErrorType, 
@@ -159,20 +160,13 @@ describe('エラー処理フロー（CLAUDE.md: 型安全性）', () => {
 
   // 型ガード関数の型安全性テスト
   it('should provide type-safe error type guards', () => {
-    const { 
-      createFileError,
-      isFileError,
-      isParseError,
-      isResourceError,
-      isOutputError 
-    } = require('../../../src/utils/error');
+    // 静的importで型安全なアクセス
+    const testFileError = createFileError('test');
     
-    const fileError = createFileError('test');
-    
-    expect(isFileError(fileError)).toBe(true);
-    expect(isParseError(fileError)).toBe(false);
-    expect(isResourceError(fileError)).toBe(false);
-    expect(isOutputError(fileError)).toBe(false);
+    expect(isFileError(testFileError)).toBe(true);
+    expect(isParseError(testFileError)).toBe(false);
+    expect(isResourceError(testFileError)).toBe(false);
+    expect(isOutputError(testFileError)).toBe(false);
     
     // 非エラーオブジェクトでfalse
     expect(isFileError(null)).toBe(false);

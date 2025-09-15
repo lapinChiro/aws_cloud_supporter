@@ -1,17 +1,17 @@
-import { ILogger } from '../../../../src/interfaces/logger';
-import { CloudFormationResource } from '../../../../src/types/cloudformation';
-import { MetricDefinition } from '../../../../src/types/metrics';
+import type { ILogger } from '../../../../src/interfaces/logger';
+import type { CloudFormationResource } from '../../../../src/types/cloudformation';
+import type { MetricDefinition } from '../../../../src/types/metrics';
 
 export class APIGatewayMetricsGenerator {
-  // @ts-ignore
-  constructor(private _logger: ILogger) {}
+  // @ts-expect-error
+  constructor(private readonly _logger: ILogger) {}
   
   getSupportedTypes(): string[] {
     return ['AWS::ApiGateway::RestApi', 'AWS::Serverless::Api'];
   }
   
-  async generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
-    return [{
+  generate(_resource: CloudFormationResource): Promise<MetricDefinition[]> {
+    return Promise.resolve([{
       metric_name: '4XXError',
       namespace: 'AWS/ApiGateway',
       unit: 'Count',
@@ -22,6 +22,6 @@ export class APIGatewayMetricsGenerator {
       category: 'Error',
       importance: 'High',
       dimensions: []
-    }];
+    }]);
   }
 }

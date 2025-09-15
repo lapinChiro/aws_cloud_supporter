@@ -1,6 +1,7 @@
 // tests/unit/cdk/official-types-compatibility.test.ts (新規作成)
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import { 
+
+import type { 
   CDKAlarmPropsOfficial, 
   CDKTopicPropsOfficial 
 } from '../../../src/types/aws-cdk-official';
@@ -34,9 +35,24 @@ describe('AWS CDK Official Types Compatibility', () => {
 
   it('should maintain type compatibility with original aws-cdk-lib', () => {
     // 型エイリアスが元の型と同等であることを確認
-    const officialAlarmProps: cloudwatch.AlarmProps = {} as CDKAlarmPropsOfficial;
-    const aliasAlarmProps: CDKAlarmPropsOfficial = {} as cloudwatch.AlarmProps;
+    const testMetric = new cloudwatch.Metric({
+      metricName: 'TestMetric',
+      namespace: 'Test/Namespace'
+    });
+    
+    const officialAlarmProps: cloudwatch.AlarmProps = {
+      metric: testMetric,
+      threshold: 0,
+      evaluationPeriods: 0
+    } satisfies CDKAlarmPropsOfficial;
+    
+    const aliasAlarmProps: CDKAlarmPropsOfficial = {
+      metric: testMetric,
+      threshold: 0,
+      evaluationPeriods: 0
+    };
     
     expect(typeof officialAlarmProps).toBe(typeof aliasAlarmProps);
+    expect(officialAlarmProps.threshold).toBe(aliasAlarmProps.threshold);
   });
 });

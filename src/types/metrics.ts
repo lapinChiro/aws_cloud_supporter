@@ -1,6 +1,6 @@
 // CLAUDE.md準拠メトリクス型定義（Type-Driven Development、any型完全排除）
-import { CloudFormationResource } from './cloudformation';
-import { 
+import type { CloudFormationResource } from './cloudformation';
+import type { 
   MetricStatistic, 
   MetricCategory, 
   ImportanceLevel, 
@@ -98,14 +98,14 @@ export interface ResourceWithMetrics {
 
 export interface TemplateAnalysisResult {
   template: import('./cloudformation').CloudFormationTemplate;
-  supportedResources: import('./cloudformation').SupportedResource[];
+  supportedResources: Array<import('./cloudformation').SupportedResource>;
   unsupportedResources: string[];
   totalResources: number;
   extractionTimeMs: number;
 }
 
 export interface ExtractResult {
-  supported: import('./cloudformation').SupportedResource[];
+  supported: Array<import('./cloudformation').SupportedResource>;
   unsupported: string[]; // logical IDs
   totalCount: number;
   extractionTimeMs: number;
@@ -115,7 +115,7 @@ export interface ExtractResult {
 // 出力フォーマッタ型
 // =============================================================================
 
-export type OutputFormat = 'json' | 'html' | 'yaml';
+export type OutputFormat = 'json' | 'html' | 'yaml' | 'cdk';
 
 export interface JSONOutputData {
   metadata: AnalysisMetadata;
@@ -178,7 +178,7 @@ export interface IMetricsGenerator {
 }
 
 export interface IMetricsProcessor {
-  process(resources: import('./cloudformation').SupportedResource[], options: ProcessOptions): Promise<ResourceWithMetrics[]>;
+  process(resources: Array<import('./cloudformation').SupportedResource>, options: ProcessOptions): Promise<ResourceWithMetrics[]>;
 }
 
 export interface IJSONFormatter {

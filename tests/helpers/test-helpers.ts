@@ -1,8 +1,8 @@
 // CLAUDE.md準拠テストヘルパー（DRY原則改善）
 
-import { ILogger } from '../../src/interfaces/logger';
-import { IMetricsGenerator } from '../../src/interfaces/generator';
-import { 
+import type { IMetricsGenerator } from '../../src/interfaces/generator';
+import type { ILogger } from '../../src/interfaces/logger';
+import type { 
   CloudFormationResource,
   RDSDBInstance,
   RDSProperties,
@@ -11,7 +11,7 @@ import {
   ECSService,
   ECSServiceProperties
 } from '../../src/types/cloudformation';
-import { MetricDefinition } from '../../src/types/metrics';
+import type { MetricDefinition } from '../../src/types/metrics';
 
 /**
  * mockLogger統一作成関数
@@ -32,9 +32,9 @@ export function createMockLogger(): jest.Mocked<ILogger> {
  * パフォーマンステスト統一関数
  * DRY原則: 44箇所の重複するperformance.now()パターンを1箇所に集約
  */
-export async function measureGeneratorPerformance<T extends CloudFormationResource>(
+export async function measureGeneratorPerformance(
   generator: IMetricsGenerator,
-  resource: T,
+  resource: CloudFormationResource,
   expectedTimeMs = 1000,
   _logPattern?: RegExp
 ): Promise<{ metrics: MetricDefinition[]; duration: number }> {
@@ -77,7 +77,7 @@ export function createRDSInstance(
   return {
     Type: 'AWS::RDS::DBInstance',
     LogicalId: logicalId,
-    Properties: props || {}
+    Properties: props ?? {}
   };
 }
 
@@ -91,7 +91,7 @@ export function createLambdaFunction(
   return {
     Type: 'AWS::Lambda::Function',
     LogicalId: logicalId,
-    Properties: props || {}
+    Properties: props ?? {}
   };
 }
 
@@ -105,7 +105,7 @@ export function createECSService(
   return {
     Type: 'AWS::ECS::Service',
     LogicalId: logicalId,
-    Properties: props || {}
+    Properties: props ?? {}
   };
 }
 

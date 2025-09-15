@@ -1,6 +1,6 @@
 import { RDSMetricsGenerator } from '../../../src/generators/rds.generator';
-import { RDSDBInstance } from '../../../src/types/cloudformation';
-import { ILogger } from '../../../src/interfaces/logger';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { RDSDBInstance, DBInstanceClass } from '../../../src/types/cloudformation';
 import { createMockLogger, measureGeneratorPerformance, createRDSInstance } from '../../helpers';
 
 describe('RDSMetricsGenerator', () => {
@@ -91,7 +91,7 @@ describe('RDSMetricsGenerator', () => {
 
     it('should handle unknown instance classes with default scale', async () => {
       const resource = createRDSInstance('FutureInstanceDB', {
-        DBInstanceClass: 'db.future.large',
+        DBInstanceClass: 'db.future.large' as DBInstanceClass,
         Engine: 'mysql'
       });
 

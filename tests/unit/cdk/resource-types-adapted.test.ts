@@ -2,10 +2,10 @@
 // tasks.md M-006: 全リソースタイプ対応テスト（公式型適応版）
 
 import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.generator';
-import { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
-import { MetricDefinition } from '../../../src/types/metrics';
-import { CDKOptions } from '../../../src/types/cdk-business';
-import { ILogger } from '../../../src/interfaces/logger';
+import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { CDKOptions } from '../../../src/types/cdk-business';
+import type { MetricDefinition } from '../../../src/types/metrics';
 
 // テスト用モックロガー
 const createMockLogger = (): ILogger => ({
@@ -15,100 +15,6 @@ const createMockLogger = (): ILogger => ({
   error: jest.fn(),
   success: jest.fn(),
   setLevel: jest.fn()
-});
-
-describe('All Resource Types CDK Generation (Official Types)', () => {
-  let generator: CDKOfficialGenerator;
-
-  beforeEach(() => {
-    generator = new CDKOfficialGenerator(createMockLogger());
-  });
-
-  describe('Individual Resource Type Support', () => {
-    const resourceTypes = [
-      'AWS::RDS::DBInstance',
-      'AWS::Lambda::Function',
-      'AWS::Serverless::Function',
-      'AWS::ECS::Service',
-      'AWS::ElasticLoadBalancingV2::LoadBalancer',
-      'AWS::DynamoDB::Table',
-      'AWS::ApiGateway::RestApi',
-      'AWS::Serverless::Api'
-    ];
-
-    test.each(resourceTypes)('should generate CDK alarms for %s using official types', async (resourceType) => {
-      const mockAnalysis = createMockAnalysisWithResource(resourceType);
-      const options: CDKOptions = { enabled: true };
-      
-      const result = await generator.generate(mockAnalysis, options);
-      
-      // Basic CDK structure verification
-      expect(result).toContain('export class CloudWatchAlarmsStack extends cdk.Stack');
-      expect(result).toContain('import * as cdk from \'aws-cdk-lib\'');
-      expect(result).toContain('import * as cloudwatch from \'aws-cdk-lib/aws-cloudwatch\'');
-      
-      // Official types usage verification
-      expect(result).toContain('cloudwatch.TreatMissingData.notBreaching');
-      expect(result).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
-      
-      // Resource-specific alarm verification
-      const logicalId = getTestLogicalId(resourceType);
-      expect(result).toContain(`${logicalId}CPUUtilizationWarningAlarm`);
-      expect(result).toContain(`${logicalId}CPUUtilizationCriticalAlarm`);
-      
-      // Resource-specific dimension verification (allowing for HTML escaping)
-      const expectedDimension = getExpectedDimension(resourceType);
-      expect(result).toMatch(new RegExp(`${expectedDimension}.*${logicalId}`));
-    });
-  });
-
-  describe('Resource Type Dimension Mapping', () => {
-    const dimensionTests = [
-      { resourceType: 'AWS::RDS::DBInstance', expectedDimension: 'DBInstanceIdentifier', logicalId: 'TestDB' },
-      { resourceType: 'AWS::Lambda::Function', expectedDimension: 'FunctionName', logicalId: 'TestFunc' },
-      { resourceType: 'AWS::DynamoDB::Table', expectedDimension: 'TableName', logicalId: 'TestTable' },
-      { resourceType: 'AWS::ElasticLoadBalancingV2::LoadBalancer', expectedDimension: 'LoadBalancer', logicalId: 'TestLB' }
-    ];
-
-    test.each(dimensionTests)('should use correct dimensions for $resourceType', async ({ resourceType, expectedDimension, logicalId }) => {
-      const mockAnalysis = createMockAnalysisWithResource(resourceType, logicalId);
-      const options: CDKOptions = { enabled: true };
-      
-      const result = await generator.generate(mockAnalysis, options);
-      
-      expect(result).toMatch(new RegExp(`${expectedDimension}.*${logicalId}`));
-    });
-  });
-
-  describe('Multi-Resource Type Processing', () => {
-    it('should handle mixed resource types correctly with official types', async () => {
-      const mockAnalysis = createMockAnalysisWithMixedResourceTypes();
-      const options: CDKOptions = { enabled: true };
-      
-      const result = await generator.generate(mockAnalysis, options);
-      
-      // Should contain alarms for all resource types
-      expect(result).toContain('DBInstanceIdentifier:'); // RDS
-      expect(result).toContain('FunctionName:'); // Lambda
-      expect(result).toContain('TableName:'); // DynamoDB
-      
-      // Should use official types
-      expect(result).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
-      expect(result).toContain('cloudwatch.TreatMissingData.notBreaching');
-    });
-
-    it('should generate correct alarm counts for mixed resources', async () => {
-      const mockAnalysis = createMockAnalysisWithMixedResourceTypes();
-      const options: CDKOptions = { enabled: true };
-      
-      const result = await generator.generate(mockAnalysis, options);
-      
-      // 3 resources × 1 metric × 2 severities = 6 alarms
-      const alarmMatches = result.match(/new cloudwatch\.Alarm/g);
-      expect(alarmMatches).not.toBeNull();
-      expect(alarmMatches!.length).toBe(6);
-    });
-  });
 });
 
 // ヘルパー関数
@@ -140,8 +46,25 @@ function getExpectedDimension(resourceType: string): string {
   return mapping[resourceType as keyof typeof mapping] || 'ResourceId';
 }
 
+function createMockMetric(metricName: string = 'CPUUtilization'): MetricDefinition {
+  return {
+    metric_name: metricName,
+    namespace: 'AWS/EC2',
+    statistic: 'Average',
+    unit: 'Percent',
+    evaluation_period: 300,
+    recommended_threshold: {
+      warning: 70,
+      critical: 90
+    },
+    description: `${metricName} monitoring`,
+    category: 'Performance',
+    importance: 'High'
+  };
+}
+
 function createMockAnalysisWithResource(resourceType: string, logicalId?: string): ExtendedAnalysisResult {
-  const id = logicalId || getTestLogicalId(resourceType);
+  const id = logicalId ?? getTestLogicalId(resourceType);
   
   return {
     resources: [{
@@ -194,19 +117,96 @@ function createMockAnalysisWithMixedResourceTypes(): ExtendedAnalysisResult {
   };
 }
 
-function createMockMetric(metricName: string = 'CPUUtilization'): MetricDefinition {
-  return {
-    metric_name: metricName,
-    namespace: 'AWS/EC2',
-    statistic: 'Average',
-    unit: 'Percent',
-    evaluation_period: 300,
-    recommended_threshold: {
-      warning: 70,
-      critical: 90
-    },
-    description: `${metricName} monitoring`,
-    category: 'Performance',
-    importance: 'High'
-  };
-}
+describe('All Resource Types CDK Generation (Official Types)', () => {
+  let generator: CDKOfficialGenerator;
+
+  beforeEach(() => {
+    generator = new CDKOfficialGenerator(createMockLogger());
+  });
+
+  describe('Individual Resource Type Support', () => {
+    const resourceTypes = [
+      'AWS::RDS::DBInstance',
+      'AWS::Lambda::Function',
+      'AWS::Serverless::Function',
+      'AWS::ECS::Service',
+      'AWS::ElasticLoadBalancingV2::LoadBalancer',
+      'AWS::DynamoDB::Table',
+      'AWS::ApiGateway::RestApi',
+      'AWS::Serverless::Api'
+    ];
+
+    test.each(resourceTypes)('should generate CDK alarms for %s using official types', async (resourceType) => {
+      const mockAnalysis = createMockAnalysisWithResource(resourceType);
+      const options: CDKOptions = { enabled: true };
+      
+      const result = await generator.generate(mockAnalysis, options);
+      
+      // Basic CDK structure verification
+      expect(result).toContain('export class CloudWatchAlarmsStack extends cdk.Stack');
+      expect(result).toContain('import * as cdk from \'aws-cdk-lib\'');
+      expect(result).toContain('import * as cloudwatch from \'aws-cdk-lib/aws-cloudwatch\'');
+      
+      // Official types usage verification
+      expect(result).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
+      expect(result).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
+      
+      // Resource-specific alarm verification
+      const logicalId = getTestLogicalId(resourceType);
+      expect(result).toContain(`${logicalId}CPUUtilizationWarningAlarm`);
+      expect(result).toContain(`${logicalId}CPUUtilizationCriticalAlarm`);
+      
+      // Resource-specific dimension verification (allowing for HTML escaping)
+      const expectedDimension = getExpectedDimension(resourceType);
+      expect(result).toMatch(new RegExp(`${expectedDimension}.*${logicalId}`));
+    });
+  });
+
+  describe('Resource Type Dimension Mapping', () => {
+    const dimensionTests = [
+      { resourceType: 'AWS::RDS::DBInstance', expectedDimension: 'DBInstanceIdentifier', logicalId: 'TestDB' },
+      { resourceType: 'AWS::Lambda::Function', expectedDimension: 'FunctionName', logicalId: 'TestFunc' },
+      { resourceType: 'AWS::DynamoDB::Table', expectedDimension: 'TableName', logicalId: 'TestTable' },
+      { resourceType: 'AWS::ElasticLoadBalancingV2::LoadBalancer', expectedDimension: 'LoadBalancer', logicalId: 'TestLB' }
+    ];
+
+    test.each(dimensionTests)('should use correct dimensions for $resourceType', async ({ resourceType, expectedDimension, logicalId }) => {
+      const mockAnalysis = createMockAnalysisWithResource(resourceType, logicalId);
+      const options: CDKOptions = { enabled: true };
+      
+      const result = await generator.generate(mockAnalysis, options);
+      
+      expect(result).toMatch(new RegExp(`${expectedDimension}.*${logicalId}`));
+    });
+  });
+
+  describe('Multi-Resource Type Processing', () => {
+    it('should handle mixed resource types correctly with official types', async () => {
+      const mockAnalysis = createMockAnalysisWithMixedResourceTypes();
+      const options: CDKOptions = { enabled: true };
+      
+      const result = await generator.generate(mockAnalysis, options);
+      
+      // Should contain alarms for all resource types
+      expect(result).toContain('DBInstanceIdentifier:'); // RDS
+      expect(result).toContain('FunctionName:'); // Lambda
+      expect(result).toContain('TableName:'); // DynamoDB
+      
+      // Should use official types
+      expect(result).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
+      expect(result).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
+    });
+
+    it('should generate correct alarm counts for mixed resources', async () => {
+      const mockAnalysis = createMockAnalysisWithMixedResourceTypes();
+      const options: CDKOptions = { enabled: true };
+      
+      const result = await generator.generate(mockAnalysis, options);
+      
+      // 3 resources × 1 metric × 2 severities = 6 alarms
+      const alarmMatches = result.match(/new cloudwatch\.Alarm/g);
+      expect(alarmMatches).not.toBeNull();
+      expect(alarmMatches?.length).toBe(6);
+    });
+  });
+});

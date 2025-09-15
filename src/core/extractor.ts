@@ -1,12 +1,13 @@
 // CLAUDE.md準拠ResourceExtractor（UNIX Philosophy + Type-Driven Development）
 
-import { 
+import type { 
   CloudFormationTemplate, 
-  SupportedResource,
+  SupportedResource} from '../types/cloudformation';
+import {
   isFargateService,
   isApplicationLoadBalancer
 } from '../types/cloudformation';
-import { ExtractResult } from '../types/metrics';
+import type { ExtractResult } from '../types/metrics';
 
 // UNIX Philosophy: 一つのことをうまくやる（リソース抽出のみ）
 export class ResourceExtractor {
@@ -37,10 +38,10 @@ export class ResourceExtractor {
         // 特殊ケース判定（ECS FargateとApplication LBのみ）
         if (this.isActuallySupported(resource)) {
           // SupportedResource型にLogicalIdを追加
-          const supportedResource = {
-            ...resource,
+          const supportedResource: SupportedResource = {
+            ...(resource as SupportedResource),
             LogicalId: logicalId
-          } as SupportedResource;
+          };
           
           supported.push(supportedResource);
         } else {
@@ -57,6 +58,7 @@ export class ResourceExtractor {
     
     // パフォーマンス監視（CLAUDE.md: 性能要件）
     if (extractionTimeMs > 3000) {
+      // eslint-disable-next-line no-console
       console.warn(`⚠️  Resource extraction took ${extractionTimeMs.toFixed(0)}ms (target: <3000ms)`);
     }
 
