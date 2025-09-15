@@ -1,45 +1,6 @@
 // CLAUDE.md準拠: 型安全性・SOLID原則・DRY原則
 // requirement.md JSON Schema定義に基づく検証システム
 
-import { CloudSupporterError, ErrorType } from './error';
-
-/**
- * requirement.md準拠JSON Schemaインターフェース
- */
-export interface AnalysisResultSchema {
-  metadata: {
-    version: string;
-    generated_at: string;
-    template_path: string;
-    total_resources: number;
-    supported_resources: number;
-    processing_time_ms?: number;
-  };
-  resources: Array<{
-    logical_id: string;
-    resource_type: string;
-    resource_properties: Record<string, unknown>;
-    metrics: Array<{
-      metric_name: string;
-      namespace: string;
-      unit: string;
-      description: string;
-      statistic: string;
-      recommended_threshold: {
-        warning: number;
-        critical: number;
-      };
-      evaluation_period: number;
-      category: 'Performance' | 'Error' | 'Saturation' | 'Latency';
-      importance: 'High' | 'Medium' | 'Low';
-      dimensions?: Array<{
-        name: string;
-        value: string;
-      }>;
-    }>;
-  }>;
-  unsupported_resources: string[];
-}
 
 /**
  * JSONスキーマ検証エラー詳細
@@ -535,19 +496,3 @@ export function validateMetricsOutput(data: unknown): { valid: boolean; errors: 
   };
 }
 
-/**
- * 検証失敗時のCloudSupporterError生成
- */
-export function createSchemaValidationError(errors: ValidationError[]): CloudSupporterError {
-  const validator = new JsonSchemaValidator();
-  const formattedErrors = validator.formatValidationErrors(errors);
-  
-  return new CloudSupporterError(
-    ErrorType.OUTPUT_ERROR,
-    `JSON output does not conform to requirement.md schema specification`,
-    { 
-      validationErrors: formattedErrors,
-      errorCount: errors.length 
-    }
-  );
-}

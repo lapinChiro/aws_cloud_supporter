@@ -1,12 +1,8 @@
 // CLAUDE.md準拠: Interface Segregation・型安全性・No any types
 // T-016: CLI型定義 - ハンドラーインターフェース
 
-import type { ExtendedAnalysisResult } from '../../interfaces/analyzer';
 import type { IOutputFormatter } from '../../interfaces/formatter';
 import type { ILogger } from '../../interfaces/logger';
-import type { ITemplateParser } from '../../interfaces/parser';
-import type { CDKOptions } from '../../types/cdk-business';
-import type { CloudFormationTemplate } from '../../types/cloudformation';
 import type { AnalysisResult } from '../../types/metrics';
 
 import type { CLIDependencies, CLIOptions } from './command.interface';
@@ -46,70 +42,7 @@ export interface ICDKOptionsValidator {
   ): void;
 }
 
-/**
- * テンプレートローダーインターフェース
- * Single Responsibility: テンプレート読み込みのみ
- */
-export interface ITemplateLoader {
-  /**
-   * CloudFormationテンプレートを読み込む
-   * @param templatePath ファイルパス
-   * @param parser パーサー
-   * @param logger ロガー
-   * @returns パース済みテンプレート
-   */
-  loadCloudFormationTemplate(
-    templatePath: string,
-    parser: ITemplateParser,
-    logger: ILogger
-  ): Promise<CloudFormationTemplate>;
-}
 
-/**
- * CDKタイプ判定インターフェース
- * Single Responsibility: CDKタイプ判定のみ
- */
-export interface ICDKTypeDeterminer {
-  /**
-   * CDK生成タイプを判定
-   * @param result 分析結果
-   * @param options CLIオプション
-   * @param logger ロガー
-   * @returns CDKタイプ
-   */
-  determineCDKType(
-    result: AnalysisResult | ExtendedAnalysisResult,
-    options: CLIOptions,
-    logger: ILogger
-  ): 'official' | 'classic';
-}
-
-/**
- * CDKコード生成インターフェース
- * Single Responsibility: CDKコード生成のみ
- */
-export interface ICDKCodeGenerator {
-  /**
-   * CDKコードを生成
-   * @param templatePath テンプレートパス
-   * @param cdkType CDKタイプ
-   * @param result 分析結果
-   * @param cdkOptions CDKオプション
-   * @param dependencies 依存性
-   * @returns 生成結果
-   */
-  generateCDKCode(
-    templatePath: string,
-    cdkType: 'official' | 'classic',
-    result: AnalysisResult | ExtendedAnalysisResult,
-    cdkOptions: CDKOptions,
-    dependencies: CLIDependencies
-  ): Promise<{
-    projectDir: string;
-    files: Record<string, string>;
-    message: string;
-  }>;
-}
 
 /**
  * CDK出力ハンドラーインターフェース

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "project": [
+    "src/**/*.ts"
+  ],
+  "ignore": [
+    "tests/**/*.ts",
+    "coverage/**/*",
+    "dist/**/*",
+    "**/*.d.ts",
+    "src/types/generated/index.ts",
+    "src/types/internal/**/*"
+  ],
+  "ignoreDependencies": [
+    "@types/handlebars"
+  ],
+  "ignoreExportsUsedInFile": true,
+  "treatConfigHintsAsErrors": false,
+  "rules": {
+    "files": "warn",
+    "dependencies": "error", 
+    "devDependencies": "warn",
+    "exports": "warn",
+    "nsExports": "warn",
+    "types": "warn"
+  }
+}

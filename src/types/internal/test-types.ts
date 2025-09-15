@@ -1,6 +1,6 @@
 // Test-specific type definitions
 
-import type { CloudFormationResource } from '../aws/cloudformation';
+import type { CloudFormationResource } from '../cloudformation';
 
 import type { AnalysisResultData } from './parser';
 
@@ -146,7 +146,7 @@ export const defaultMockResource: TestResourceFactory = (overrides = {}) => {
     Properties: {
       Runtime: 'nodejs18.x',
       Handler: 'index.handler',
-      ...overrides.Properties
+      ...(overrides.Properties as Record<string, unknown> || {})
     },
     ...overrides
   };
