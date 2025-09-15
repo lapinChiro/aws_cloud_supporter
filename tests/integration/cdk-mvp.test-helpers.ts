@@ -6,6 +6,11 @@ import type { ChildProcess } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { createLogger } from '../../src/utils/logger';
+
+// Create logger for test debugging
+const testLogger = createLogger('error', false); // No colors in CI
+
 // Helper function to run CLI commands
 export async function runCLICommand(args: string[]): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
@@ -14,17 +19,13 @@ export async function runCLICommand(args: string[]): Promise<{ exitCode: number;
     
     // Check if CLI file exists (for debugging CI issues)
     if (!fs.existsSync(cliPath)) {
-      // eslint-disable-next-line no-console
-      console.error(`CLI file not found at: ${cliPath}`);
-      // eslint-disable-next-line no-console
-      console.error(`__dirname: ${__dirname}`);
-      // eslint-disable-next-line no-console
-      console.error(`process.cwd(): ${process.cwd()}`);
+      testLogger.error(`CLI file not found at: ${cliPath}`);
+      testLogger.error(`__dirname: ${__dirname}`);
+      testLogger.error(`process.cwd(): ${process.cwd()}`);
       // Try alternative path resolution
       const altPath = path.resolve(process.cwd(), 'dist/cli/index.js');
       if (fs.existsSync(altPath)) {
-        // eslint-disable-next-line no-console
-        console.error(`But found at alternative path: ${altPath}`);
+        testLogger.error(`But found at alternative path: ${altPath}`);
       }
     }
     
@@ -63,14 +64,10 @@ export async function runCLICommand(args: string[]): Promise<{ exitCode: number;
       
       // Debug logging for CI failures
       if (code !== 0 && stderr) {
-        // eslint-disable-next-line no-console, @typescript-eslint/restrict-template-expressions
-        console.error(`CLI failed with exit code ${code}`);
-        // eslint-disable-next-line no-console
-        console.error(`stderr: ${stderr}`);
-        // eslint-disable-next-line no-console
-        console.error(`CLI path: ${cliPath}`);
-        // eslint-disable-next-line no-console
-        console.error(`Working directory: ${process.cwd()}`);
+        testLogger.error(`CLI failed with exit code ${code ?? 'null'}`);
+        testLogger.error(`stderr: ${stderr}`);
+        testLogger.error(`CLI path: ${cliPath}`);
+        testLogger.error(`Working directory: ${process.cwd()}`);
       }
       
       resolve({

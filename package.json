@@ -7,7 +7,7 @@
 		"aws-cloud-supporter": "dist/cli/index.js"
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.build.json",
+		"build": "tsc --project tsconfig.build.json && cp -r src/templates/*.hbs dist/templates/",
 		"dev": "ts-node src/cli/index.ts",
 		"test": "npm run test:essential",
 		"test:all": "jest --runInBand --silent",
