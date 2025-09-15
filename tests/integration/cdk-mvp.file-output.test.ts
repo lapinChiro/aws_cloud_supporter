@@ -45,10 +45,15 @@ describe('CDK MVP - File Output Functionality', () => {
     expect(fileContent).toContain('new cloudwatch.Alarm');
     
     // Verify file basic syntax (CDK libs not available)
-    const compileResult = await runCommand('npx', ['tsc', '--noEmit', '--skipLibCheck', expectedFilePath]);
+    // Use node_modules/.bin/tsc directly to avoid npx verbose logging
+    const tscPath = path.join(process.cwd(), 'node_modules', '.bin', 'tsc');
+    const compileResult = await runCommand(tscPath, ['--noEmit', '--skipLibCheck', expectedFilePath]);
     
     // Accept success or CDK module missing errors
-    if (compileResult.exitCode === 0 || compileResult.stderr.includes('Cannot find module')) {
+    // Note: TypeScript errors may appear in stdout or stderr depending on the version
+    if (compileResult.exitCode === 0 || 
+        compileResult.stderr.includes('Cannot find module') ||
+        compileResult.stdout.includes('Cannot find module')) {
       expect(true).toBe(true); // Basic syntax is valid
     } else {
       console.error('TypeScript syntax errors:', compileResult.stderr);

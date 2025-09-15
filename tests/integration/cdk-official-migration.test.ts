@@ -214,8 +214,8 @@ function createVeryLargeAnalysis(): ExtendedAnalysisResult {
       const officialOutput = await officialGenerator.generate(testAnalysis, options);
 
       // 公式型使用確認
-      expect(officialOutput).toContain('cloudwatch.TreatMissingData.notBreaching');
-      expect(officialOutput).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
+      expect(officialOutput).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
+      expect(officialOutput).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
       expect(officialOutput).toContain('export class CloudWatchAlarmsStack');
       expect(extractAlarmCount(officialOutput)).toBeGreaterThan(0);
     });

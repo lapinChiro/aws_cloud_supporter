@@ -70,7 +70,7 @@ describe('CDK Full Features - Cross-Template Verification', () => {
       results.forEach((result, index) => {
         expect(result.exitCode).toBe(0);
         expect(result.stderr).toBe('');
-        console.log(`✅ Template ${templates[index]} processed successfully`);
+        console.log(`✅ Template ${templates[index] ?? 'templates not found: index = ' + String(index) } processed successfully`);
       });
 
       // All should generate valid CDK code

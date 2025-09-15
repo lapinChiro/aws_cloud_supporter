@@ -323,11 +323,16 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
           );
         }
         
+        // Filter out low importance metrics if not included
+        const filteredMetrics = options.includeLowImportance === false 
+          ? metrics.filter(m => m.importance !== 'Low')
+          : metrics;
+        
         const result = {
           logical_id: logicalId,
           resource_type: resource.Type,
           resource_properties: this.sanitizeProperties((resource.Properties ?? {}) as Record<string, unknown>),
-          metrics
+          metrics: filteredMetrics
         };
         
         return result;

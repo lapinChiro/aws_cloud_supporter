@@ -19,8 +19,9 @@ describe('Memory Monitoring Coverage', () => {
 
     mockParser.parse.mockResolvedValue(template);
     
+    // 現在のメモリ使用量より大きい制限を設定（テスト環境では200MB+を使用）
     await analyzer.analyze('template.yaml', {
-      memoryLimit: 100 * 1024 * 1024,
+      memoryLimit: 500 * 1024 * 1024, // 500MB
       outputFormat: 'json'
     });
     
@@ -36,7 +37,7 @@ describe('Memory Monitoring Coverage', () => {
     mockParser.parse.mockRejectedValue(new Error('Parse failed'));
     
     await expect(analyzer.analyze('template.yaml', {
-      memoryLimit: 100 * 1024 * 1024,
+      memoryLimit: 500 * 1024 * 1024, // 500MB
       outputFormat: 'json'
     }))
       .rejects.toThrow();

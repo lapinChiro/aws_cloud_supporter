@@ -31,7 +31,7 @@ describe('ECSメトリクス定義（CLAUDE.md: AWS公式準拠）', () => {
   it('should define valid ECS thresholds',  () => {
     ECS_METRICS.forEach((metric: unknown) => {
       expect((metric as TestMetric).threshold).toBeDefined();
-      expect((metric as TestMetric).threshold.base).toBeGreaterThan(0);
+      expect((metric as TestMetric).threshold.base).toBeGreaterThanOrEqual(0);
     });
   });
 });

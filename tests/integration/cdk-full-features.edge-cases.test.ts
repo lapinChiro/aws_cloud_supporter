@@ -71,7 +71,7 @@ Resources:
       // Should generate alarms for RDS, ignore EC2
       const alarmCount = (result.stdout.match(/new cloudwatch\.Alarm/g) ?? []).length;
       expect(alarmCount).toBeGreaterThan(0);
-      expect(result.stdout).toContain('DBInstanceIdentifier: \'SupportedDB\'');
+      expect(result.stdout).toContain('DBInstanceIdentifier: "SupportedDB"');
     });
 
     it('should validate file output with custom stack names', async () => {

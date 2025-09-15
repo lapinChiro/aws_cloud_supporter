@@ -1,5 +1,6 @@
 // CDK Full Features Integration Test Helpers
 import { spawn } from 'child_process';
+import * as path from 'path';
 
 /**
  * Run CLI command with timeout
@@ -9,8 +10,12 @@ export async function runCLICommand(
   timeoutMs: number = 30000
 ): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
-    const child = spawn('npm', ['run', 'dev', '--', ...args], {
-      cwd: process.cwd()
+    // Use built CLI directly to avoid npm output
+    const cliPath = path.join(__dirname, '../../dist/cli/index.js');
+    const child = spawn('node', [cliPath, ...args], {
+      cwd: process.cwd(),
+      // Ensure pipes are properly closed
+      stdio: ['ignore', 'pipe', 'pipe']
     });
     
     let stdout = '';
@@ -24,7 +29,21 @@ export async function runCLICommand(
       stderr += data.toString();
     });
     
+    // Set timeout
+    const timeoutId = setTimeout(() => {
+      // Force kill the process
+      child.kill('SIGKILL');
+      // Destroy streams
+      child.stdout?.destroy();
+      child.stderr?.destroy();
+      reject(new Error(`Command timeout after ${timeoutMs}ms`));
+    }, timeoutMs);
+    
     child.on('close', (code) => {
+      clearTimeout(timeoutId);
+      // Ensure streams are closed
+      child.stdout?.destroy();
+      child.stderr?.destroy();
       resolve({
         exitCode: code ?? 0,
         stdout: stdout.trim(),
@@ -33,14 +52,13 @@ export async function runCLICommand(
     });
     
     child.on('error', (error) => {
+      clearTimeout(timeoutId);
+      // Ensure process is killed and streams are closed
+      child.kill('SIGKILL');
+      child.stdout?.destroy();
+      child.stderr?.destroy();
       reject(error);
     });
-    
-    // Set timeout
-    setTimeout(() => {
-      child.kill();
-      reject(new Error(`Command timeout after ${timeoutMs}ms`));
-    }, timeoutMs);
   });
 }
 

@@ -41,7 +41,7 @@ describe('JSONOutputFormatter - Validation', () => {
     });
     
     expect(() => { formatter.formatJSON(mockResult); }).toThrow(
-      'JSON output validation failed: Invalid metric structure, Missing required field'
+      'JSON output validation failed: Invalid metric structure; Missing required field'
     );
   });
 

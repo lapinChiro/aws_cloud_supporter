@@ -24,7 +24,7 @@ describe('HTMLOutputFormatter - Structure', () => {
     expect(html).toContain('</html>');
 
     // Meta tags
-    expect(html).toContain('<meta charset="utf-8">');
+    expect(html).toContain('<meta charset="UTF-8">');
     expect(html).toContain('<meta name="viewport"');
 
     // Title
@@ -40,8 +40,8 @@ describe('HTMLOutputFormatter - Structure', () => {
     expect(html).toContain('body {');
     expect(html).toContain('.container {');
     expect(html).toContain('.resource-card {');
-    expect(html).toContain('.metric-item {');
-    expect(html).toContain('.importance-high {');
+    expect(html).toContain('.badge {');
+    expect(html).toContain('.header {');
     expect(html).toContain('</style>');
   });
 
@@ -51,9 +51,9 @@ describe('HTMLOutputFormatter - Structure', () => {
 
     // JavaScript should be present
     expect(html).toContain('<script>');
-    expect(html).toContain('function searchMetrics');
-    expect(html).toContain('function filterByImportance');
-    expect(html).toContain('function filterByCategory');
+    expect(html).toContain('function initializeEventListeners');
+    expect(html).toContain('function applyFilters');
+    expect(html).toContain('currentFilters');
     expect(html).toContain('</script>');
   });
 });

@@ -72,14 +72,19 @@ describe('CDK MVP - Basic CDK Generation Functionality', () => {
     await fs.writeFile(testFilePath, result.stdout, 'utf-8');
     
     // Verify TypeScript compilation (basic syntax check only - CDK libs not installed)
-    const compileResult = await runCommand('npx', ['tsc', '--noEmit', '--skipLibCheck', testFilePath]);
+    // Use node_modules/.bin/tsc directly to avoid npx verbose logging
+    const tscPath = path.join(process.cwd(), 'node_modules', '.bin', 'tsc');
+    const compileResult = await runCommand(tscPath, ['--noEmit', '--skipLibCheck', testFilePath]);
     
     // For MVP testing, we check basic syntax is valid (CDK dependencies not available)
-    if (compileResult.exitCode === 0 || compileResult.stderr.includes('Cannot find module')) {
+    // Note: TypeScript errors may appear in stdout or stderr depending on the version
+    if (compileResult.exitCode === 0 || 
+        compileResult.stderr.includes('Cannot find module') ||
+        compileResult.stdout.includes('Cannot find module')) {
       // Either compiles successfully, or fails only due to missing CDK modules (expected)
       expect(true).toBe(true); // Test passes
     } else {
-      console.error('Unexpected TypeScript compilation errors:', compileResult.stderr);
+      console.error('Unexpected TypeScript compilation errors:', compileResult.stderr || compileResult.stdout);
       expect(compileResult.exitCode).toBe(0);
     }
   }, 25000); // 25 second timeout for compilation test

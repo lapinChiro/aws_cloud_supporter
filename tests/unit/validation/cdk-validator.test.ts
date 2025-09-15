@@ -50,7 +50,7 @@ const someFunction = () => {
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.errors.some(error => error.includes('exported class'))).toBe(true);
-      expect(result.errors.some(error => error.includes('extends cdk.Stack'))).toBe(true);
+      expect(result.errors.some(error => error.includes('must extend cdk.Stack'))).toBe(true);
     });
   });
 

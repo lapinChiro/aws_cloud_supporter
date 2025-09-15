@@ -339,10 +339,18 @@ describe('TemplateParserパフォーマンステスト（CLAUDE.md: 性能要件
   // メモリ効率テスト（適切なリソース管理）  
   it('should handle files efficiently without memory leaks', async () => {
     
-    // 複数回の解析でメモリリークがないことを確認
+    // メモリ使用量の増加を計測（絶対値ではなく相対値で判定）
     const parser = new TemplateParser();
     const yamlPath = path.join(tempDir, 'valid-template.yaml');
     
+    // ガベージコレクションを実行して初期状態を安定化
+    if (global.gc) {
+      global.gc();
+    }
+    
+    const initialMemory = process.memoryUsage().heapUsed / 1024 / 1024;
+    
+    // 複数回の解析を実行
     for (let i = 0; i < 10; i++) {
       const template = await parser.parse(yamlPath);
       expect(template.Resources).toBeDefined();
@@ -353,9 +361,11 @@ describe('TemplateParserパフォーマンステスト（CLAUDE.md: 性能要件
       global.gc();
     }
     
-    // メモリ使用量が合理的範囲内（CLAUDE.md: 実用的制限）
-    const memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
-    expect(memoryUsage).toBeLessThan(160); // 現実的な制限に調整
+    const finalMemory = process.memoryUsage().heapUsed / 1024 / 1024;
+    const memoryIncrease = finalMemory - initialMemory;
+    
+    // メモリリークがないことを確認（10回の解析で50MB以上増加しない）
+    expect(memoryIncrease).toBeLessThan(50);
   });
 
   // 並行解析テスト（型安全性）

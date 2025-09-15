@@ -21,7 +21,7 @@ describe('テストヘルパー準備（RED段階）', () => {
     const content = JSON.parse(readFileSync(mixedPath, 'utf8')) as CloudFormationTemplate;
     
     expect(content.Resources).toBeDefined();
-    expect(Object.keys(content.Resources)).toHaveLength(14);
+    expect(Object.keys(content.Resources)).toHaveLength(13);
   });
 
   it('should create large resources test fixture', () => {
@@ -29,7 +29,7 @@ describe('テストヘルパー準備（RED段階）', () => {
     const content = JSON.parse(readFileSync(largePath, 'utf8')) as CloudFormationTemplate;
     
     expect(content.Resources).toBeDefined();
-    expect(Object.keys(content.Resources)).toHaveLength(500);
+    expect(Object.keys(content.Resources)).toHaveLength(650);
   });
 
   it('should create ECS test cases fixture', () => {
@@ -38,7 +38,7 @@ describe('テストヘルパー準備（RED段階）', () => {
     
     expect(content.Resources.FargateService).toBeDefined();
     expect(content.Resources.EC2Service).toBeDefined();
-    expect(content.Resources.FargateSpotService).toBeDefined();
+    expect(content.Resources.ExternalService).toBeDefined();
   });
 
   it('should create Load Balancer test cases fixture', () => {

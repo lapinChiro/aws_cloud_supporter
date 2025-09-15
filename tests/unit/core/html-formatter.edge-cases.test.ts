@@ -28,8 +28,8 @@ describe('HTMLOutputFormatter - Edge Cases', () => {
     const emptyResult = createEmptyAnalysisResult();
     const html = formatter.formatHTML(emptyResult);
 
-    expect(html).toContain('Total Resources: 0');
-    expect(html).toContain('No resources found');
+    expect(html).toContain('Resources: 0/0');
+    expect(html).toContain('No supported resources found');
     expect(html).toContain('<!DOCTYPE html>'); // Still valid HTML
   });
 });

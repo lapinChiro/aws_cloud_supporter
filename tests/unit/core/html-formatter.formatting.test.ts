@@ -32,9 +32,9 @@ describe('HTMLOutputFormatter - Formatting', () => {
     const mockResult = createMockAnalysisResult();
     const html = formatter.formatHTML(mockResult);
 
-    // Processing time should be formatted
-    expect(html).toContain('1.234s'); // 1234ms formatted
-    expect(html).toContain('100MB'); // Memory formatted
+    // Processing time should be formatted  
+    expect(html).toContain('Processing: 1234ms'); // 1234ms formatted
+    expect(html).toContain('Memory: 100MB'); // Memory formatted
   });
 
   test('should escape HTML in resource names', () => {

@@ -16,9 +16,9 @@ describe('HTMLOutputFormatter - Content', () => {
     const mockResult = createMockAnalysisResult();
     const html = formatter.formatHTML(mockResult);
 
-    expect(html).toContain('Total Resources: 2');
-    expect(html).toContain('Supported: 2');
-    expect(html).toContain('Generated: 2024-01-01T00:00:00Z');
+    expect(html).toContain('Resources: 2/2');
+    expect(html).toContain('Generated: 2024年1月1日');
+    expect(html).toContain('Processing: 1234ms');
   });
 
   test('should render resource cards with metrics', () => {
@@ -48,7 +48,7 @@ describe('HTMLOutputFormatter - Content', () => {
     expect(html).toContain('id="searchInput"');
     expect(html).toContain('id="importanceFilter"');
     expect(html).toContain('id="categoryFilter"');
-    expect(html).toContain('placeholder="Search metrics..."');
+    expect(html).toContain('placeholder="🔍 Search metrics..."');
   });
 
   test('should handle metrics without dimensions', () => {

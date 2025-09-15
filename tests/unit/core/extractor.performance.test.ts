@@ -29,7 +29,7 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
     
     const performance = ExtractionPerformanceMonitor.measureExtractionPerformance(extractor, template);
     
-    expect(performance.result.totalCount).toBe(500);
+    expect(performance.result.totalCount).toBe(650);
     expect(performance.result.extractionTimeMs).toBeLessThan(3000); // 3秒以内
     expect(performance.performanceGrade).not.toBe('F'); // 性能要件達成
   });
@@ -52,8 +52,8 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
     
     // 全て同じ結果が得られることを確認（状態汚染なし）
     results.forEach(result => {
-      expect(result.totalCount).toBe(14);
-      expect(result.supported.length).toBe(8);
+      expect(result.totalCount).toBe(13);
+      expect(result.supported.length).toBe(6);
     });
   });
 

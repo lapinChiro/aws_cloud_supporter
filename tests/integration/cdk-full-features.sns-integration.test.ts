@@ -23,7 +23,7 @@ describe('CDK Full Features - SNS Integration', () => {
         expect(result.stdout).toContain('import * as sns from \'aws-cdk-lib/aws-sns\'');
         expect(result.stdout).toContain('import * as cloudwatchActions from \'aws-cdk-lib/aws-cloudwatch-actions\'');
         expect(result.stdout).toContain('new sns.Topic(this, \'AlarmNotificationTopic\'');
-        expect(result.stdout).toContain('topicName: \'CloudWatchAlarmNotifications\'');
+        expect(result.stdout).toContain('topicName: "CloudWatchAlarmNotifications"');
         
         // Verify SNS actions are added to all alarms
         const alarmCount = (result.stdout.match(/new cloudwatch\.Alarm/g) ?? []).length;

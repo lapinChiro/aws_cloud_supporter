@@ -1,4 +1,5 @@
 // CLAUDE.md準拠カスタムマッチャー（型安全、TDD支援）
+import { mkdirSync, rmSync } from 'fs';
 
 // 型安全なカスタムマッチャー定義
 declare global {
@@ -10,6 +11,9 @@ declare global {
       toHaveNoAnyTypes(): R; // CLAUDE.md: No any types検証
     }
   }
+  
+  // テスト環境用のグローバル変数の型定義
+  var TEST_TMP_DIR: string | undefined;
 }
 
 // メトリクス検証マッチャー
@@ -87,22 +91,21 @@ beforeAll(() => {
   // Jest Test Environment Setup - CLAUDE.md準拠
   
   // 一時ディレクトリの作成
-  const tmpDir = (global as any).TEST_TMP_DIR;
+  const tmpDir = global.TEST_TMP_DIR;
   if (tmpDir) {
-    const { mkdirSync } = require('fs');
     mkdirSync(tmpDir, { recursive: true });
   }
 });
 
 // テスト後クリーンアップ
-afterAll(() => {
+afterAll(async () => {
   // 一時ディレクトリのクリーンアップ
-  const tmpDir = (global as any).TEST_TMP_DIR;
+  const tmpDir = global.TEST_TMP_DIR;
   if (tmpDir) {
-    const { rmSync } = require('fs');
     try {
       rmSync(tmpDir, { recursive: true, force: true });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn('Failed to clean up temp directory:', error);
     }
   }
@@ -111,6 +114,9 @@ afterAll(() => {
   if (global.gc) {
     global.gc();
   }
+  
+  // 非同期操作の完了を待つ
+  await new Promise(resolve => setImmediate(resolve));
 });
 
 // TypeScript型安全性の確保

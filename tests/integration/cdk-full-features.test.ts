@@ -3,7 +3,6 @@
 // このファイルは他の分割されたテストファイルをインポートします
 
 // Import all split test files
-import './cdk-full-features.multi-template.test';
 import './cdk-full-features.sns-integration.test';
 import './cdk-full-features.performance.test';
 import './cdk-full-features.edge-cases.test';

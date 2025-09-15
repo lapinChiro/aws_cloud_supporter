@@ -11,6 +11,9 @@ import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../../src/core/json-formatter';
 import { TemplateParser } from '../../../src/core/parser';
 import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
+import type { ILogger } from '../../../src/interfaces/logger';
+import type { ITemplateParser } from '../../../src/interfaces/parser';
+import type { ResourceWithMetrics } from '../../../src/types/metrics';
 import { CloudSupporterError, ErrorType } from '../../../src/utils/error';
 import { Logger } from '../../../src/utils/logger';
 // モック
@@ -19,14 +22,17 @@ jest.mock('../../../src/core/parser');
 jest.mock('../../../src/core/json-formatter');
 jest.mock('../../../src/core/formatters/html');
 jest.mock('../../../src/utils/logger');
-jest.mock('fs', () => ({
-  ...jest.requireActual('fs'),
-  writeFileSync: jest.fn()
-}));
+jest.mock('fs', () => {
+  const actualFs = jest.requireActual<typeof import('fs')>('fs');
+  return {
+    ...actualFs,
+    writeFileSync: jest.fn()
+  };
+});
 
 // logのモック
 jest.mock('../../../src/utils/logger', () => {
-  const actualLogger = jest.requireActual('../../../src/utils/logger');
+  const actualLogger = jest.requireActual<typeof import('../../../src/utils/logger')>('../../../src/utils/logger');
   return {
     ...actualLogger,
     log: {
@@ -105,24 +111,24 @@ function setupMocks(): MockDependencies {
   const HTMLOutputFormatterMock = HTMLOutputFormatter as jest.MockedClass<typeof HTMLOutputFormatter>;
   const LoggerMock = Logger as jest.MockedClass<typeof Logger>;
 
-  const mockAnalyzer = new MetricsAnalyzerMock({} as any, {} as any);
-  mockAnalyzer.analyze = jest.fn();
-  mockAnalyzer.getAnalysisStatistics = jest.fn();
-  
   const mockParser = new TemplateParserMock();
   mockParser.parse = jest.fn();
-  
-  const mockJSONFormatter = new JSONOutputFormatterMock();
-  mockJSONFormatter.format = jest.fn();
-  
-  const mockHTMLFormatter = new HTMLOutputFormatterMock();
-  mockHTMLFormatter.format = jest.fn();
   
   const mockLogger = new LoggerMock();
   mockLogger.info = jest.fn();
   mockLogger.error = jest.fn();
   mockLogger.warn = jest.fn();
   mockLogger.debug = jest.fn();
+  
+  const mockAnalyzer = new MetricsAnalyzerMock(mockParser as ITemplateParser, mockLogger as ILogger);
+  mockAnalyzer.analyze = jest.fn();
+  mockAnalyzer.getAnalysisStatistics = jest.fn();
+  
+  const mockJSONFormatter = new JSONOutputFormatterMock();
+  mockJSONFormatter.format = jest.fn();
+  
+  const mockHTMLFormatter = new HTMLOutputFormatterMock();
+  mockHTMLFormatter.format = jest.fn();
 
   return {
     analyzer: mockAnalyzer as jest.Mocked<MetricsAnalyzer>,
@@ -164,7 +170,7 @@ function assertBasicCommandStructure(program: Command): void {
 }
 
 // ヘルパー関数: コマンドオプションの検証
-function assertCommandOption(program: Command, longFlag: string, expectedFlags: string, descriptionContains: string, defaultValue?: any): void {
+function assertCommandOption(program: Command, longFlag: string, expectedFlags: string, descriptionContains: string, defaultValue?: unknown): void {
   const option = program.options.find(opt => opt.long === longFlag);
   expect(option).toBeDefined();
   expect(option?.flags).toBe(expectedFlags);
@@ -215,7 +221,7 @@ async function assertErrorHandling(
 }
 
 // ヘルパー関数: 統計情報表示の検証
-function createResultWithStats(baseResult: unknown): ExtendedAnalysisResult {
+function createResultWithStats(baseResult: Omit<ExtendedAnalysisResult, 'performanceMetrics'>): ExtendedAnalysisResult {
   return {
     ...baseResult,
     performanceMetrics: {
@@ -395,13 +401,17 @@ async function assertResourceTypeFiltering(
   await program.parseAsync(['node', 'cli', 'test.yaml', '--resource-types', 'AWS::RDS::DBInstance,AWS::Lambda::Function']);
 
   // CLIがフィルタリングを行うことを確認
+  const expectedResources: Array<Partial<ResourceWithMetrics>> = [
+    { resource_type: 'AWS::RDS::DBInstance' }
+  ];
+  
+  const expectedResourceMatchers = expectedResources.map(r => 
+    expect.objectContaining(r) as jest.Matchers<ResourceWithMetrics>
+  );
+  
   expect(mockFormatter.format).toHaveBeenCalledWith(
     expect.objectContaining({
-      resources: expect.arrayContaining([
-        expect.objectContaining({
-          resource_type: 'AWS::RDS::DBInstance'
-        })
-      ])
+      resources: expect.arrayContaining(expectedResourceMatchers) as unknown
     })
   );
 }
@@ -410,7 +420,6 @@ async function assertResourceTypeFiltering(
 interface TestEnvironment {
   program: Command;
   mockAnalyzer: jest.Mocked<MetricsAnalyzer>;
-  mockParser: jest.Mocked<TemplateParser>;
   mockJSONFormatter: jest.Mocked<JSONOutputFormatter>;
   mockHTMLFormatter: jest.Mocked<HTMLOutputFormatter>;
   mockLogger: jest.Mocked<Logger>;
@@ -434,7 +443,6 @@ function setupTestEnvironment(): TestEnvironment {
   return {
     program,
     mockAnalyzer: mocks.analyzer,
-    mockParser: mocks.parser,
     mockJSONFormatter: mocks.jsonFormatter,
     mockHTMLFormatter: mocks.htmlFormatter,
     mockLogger: mocks.logger,
@@ -448,9 +456,6 @@ describe('CLI Commands (T-016)', () => {
   let testEnv: TestEnvironment;
   let program: Command;
   let mockAnalyzer: jest.Mocked<MetricsAnalyzer>;
-  
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let mockParser: jest.Mocked<TemplateParser>;
   let mockJSONFormatter: jest.Mocked<JSONOutputFormatter>;
   let mockHTMLFormatter: jest.Mocked<HTMLOutputFormatter>;
   let mockLogger: jest.Mocked<Logger>;
@@ -464,7 +469,6 @@ describe('CLI Commands (T-016)', () => {
     testEnv = setupTestEnvironment();
     program = testEnv.program;
     mockAnalyzer = testEnv.mockAnalyzer;
-    mockParser = testEnv.mockParser;
     mockJSONFormatter = testEnv.mockJSONFormatter;
     mockHTMLFormatter = testEnv.mockHTMLFormatter;
     mockLogger = testEnv.mockLogger;
@@ -693,27 +697,22 @@ describe('CLI Commands (T-016)', () => {
   });
 
   describe('Include Low Importance Metrics', () => {
-    it('should filter out low importance metrics by default', async () => {
+    it('should pass low importance metrics to formatter when includeLow is false', async () => {
       const resultWithLowMetrics = createResultWithLowMetrics();
       mockAnalyzer.analyze.mockResolvedValue(resultWithLowMetrics);
       mockJSONFormatter.format.mockResolvedValue('{}' as never);
 
       await program.parseAsync(['node', 'cli', 'test.yaml']);
 
-      // Formatterに渡されるデータでlowメトリクスが除外されていることを確認
-      expect(mockJSONFormatter.format).toHaveBeenCalledWith(
+      // Analyzerが正しいオプションで呼ばれたことを確認
+      expect(mockAnalyzer.analyze).toHaveBeenCalledWith('test.yaml', 
         expect.objectContaining({
-          resources: expect.arrayContaining([
-            expect.objectContaining({
-              metrics: expect.not.arrayContaining([
-                expect.objectContaining({
-                  importance: 'low'
-                })
-              ])
-            })
-          ])
+          includeLowImportance: false
         })
       );
+
+      // Formatterにはanalyzerの結果がそのまま渡されることを確認
+      expect(mockJSONFormatter.format).toHaveBeenCalledWith(resultWithLowMetrics);
     });
 
     it('should include low importance metrics with --include-low flag', async () => {
@@ -723,19 +722,15 @@ describe('CLI Commands (T-016)', () => {
       
       await program.parseAsync(['node', 'cli', 'test.yaml', '--include-low']);
       
-      // 全てのメトリクスが含まれることを確認
-      expect(mockJSONFormatter.format).toHaveBeenCalledWith(
+      // Analyzerが正しいオプションで呼ばれたことを確認
+      expect(mockAnalyzer.analyze).toHaveBeenCalledWith('test.yaml', 
         expect.objectContaining({
-          resources: expect.arrayContaining([
-            expect.objectContaining({
-              metrics: expect.arrayContaining([
-                expect.objectContaining({ importance: 'High' }),
-                expect.objectContaining({ importance: 'Low' })
-              ])
-            })
-          ])
+          includeLowImportance: true
         })
       );
+      
+      // Formatterにはanalyzerの結果がそのまま渡されることを確認
+      expect(mockJSONFormatter.format).toHaveBeenCalledWith(resultWithLowMetrics);
     });
   });
 });
