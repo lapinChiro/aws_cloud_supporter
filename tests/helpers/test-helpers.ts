@@ -24,7 +24,18 @@ export function createMockLogger(): jest.Mocked<ILogger> {
     error: jest.fn(),
     debug: jest.fn(),
     success: jest.fn(),
-    setLevel: jest.fn()
+    setLevel: jest.fn(),
+    setColorEnabled: jest.fn(),
+    getConfig: jest.fn().mockReturnValue({ level: 'info', useColors: true }),
+    plain: jest.fn(),
+    stats: jest.fn(),
+    list: jest.fn(),
+    errorList: jest.fn(),
+    warnList: jest.fn(),
+    infoList: jest.fn(),
+    fileSaved: jest.fn(),
+    plainError: jest.fn(),
+    plainWarn: jest.fn()
   };
 }
 

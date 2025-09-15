@@ -4,6 +4,7 @@ import type { ILogger } from '../../../src/interfaces/logger';
 import { getMaxAlarmsPerResource, DEFAULT_MAX_ALARMS_PER_RESOURCE } from '../../../src/types';
 import type { CloudFormationResource } from '../../../src/types/cloudformation';
 import type { MetricConfig } from '../../../src/types/metrics';
+import { createMockLogger } from '../../helpers/test-helpers';
 
 // テスト用のジェネレータ実装
 class TestLimitedGenerator extends BaseMetricsGenerator {
@@ -85,15 +86,7 @@ describe('Alarm Generation Limit Feature (TASK-005)', () => {
   let generator: TestLimitedGenerator;
   
   beforeEach(() => {
-    mockLogger = {
-      debug: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      success: jest.fn(),
-      setLevel: jest.fn()
-    } satisfies jest.Mocked<ILogger>;
-    
+    mockLogger = createMockLogger();
     generator = new TestLimitedGenerator(mockLogger);
     
     // 環境変数をクリア

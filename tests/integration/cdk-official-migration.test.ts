@@ -2,25 +2,15 @@
 // M-008: 統合テストと移行検証
 import { CDKOfficialGenerator } from '../../src/generators/cdk-official.generator';
 import type { ExtendedAnalysisResult } from '../../src/interfaces/analyzer';
-import type { ILogger } from '../../src/interfaces/logger';
 import type { CDKOptions } from '../../src/types/cdk-business';
 import type { ResourceWithMetrics, MetricDefinition } from '../../src/types/metrics';
-
-// テスト用モックロガー
-const createTestLogger = (): ILogger => ({
-  debug: jest.fn(),
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-  success: jest.fn(),
-  setLevel: jest.fn()
-});
+import { createMockLogger } from '../helpers/test-helpers';
 
 describe('CDK Official Types System Verification', () => {
   let officialGenerator: CDKOfficialGenerator;
 
   beforeEach(() => {
-    officialGenerator = new CDKOfficialGenerator(createTestLogger());
+    officialGenerator = new CDKOfficialGenerator(createMockLogger());
   });
 
 // Core helper functions - must be defined first

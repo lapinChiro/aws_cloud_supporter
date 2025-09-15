@@ -339,7 +339,18 @@ export function createCDKValidator(logger?: ILogger): CDKValidator {
       warn: () => {},
       error: () => {},
       success: () => {},
-      setLevel: () => {}
+      setLevel: () => {},
+      setColorEnabled: () => {},
+      getConfig: () => ({ level: 'info', useColors: true }),
+      plain: () => {},
+      stats: () => {},
+      list: () => {},
+      errorList: () => {},
+      warnList: () => {},
+      infoList: () => {},
+      fileSaved: () => {},
+      plainError: () => {},
+      plainWarn: () => {}
     };
     return new CDKValidator(defaultLogger);
   }
