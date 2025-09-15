@@ -38,9 +38,7 @@ beforeAll(() => {
 // グローバルタイムアウトの調整
 jest.setTimeout(30000); // デフォルト30秒
 
-// 環境変数の設定
-process.env.NODE_ENV = 'test';
-process.env.LOG_LEVEL = 'error'; // テスト中はエラーログのみ
+// 環境変数はsetup.tsで統一設定されているため、ここでの設定は不要
 
 // テスト後のクリーンアップ
 afterAll(async () => {

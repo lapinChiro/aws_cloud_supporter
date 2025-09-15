@@ -1,6 +1,10 @@
 // CLAUDE.md準拠カスタムマッチャー（型安全、TDD支援）
 import { mkdirSync, rmSync } from 'fs';
 
+// テスト環境の統一設定（ローカルとCIの環境を揃える）
+process.env.NODE_ENV = 'test';
+process.env.LOG_LEVEL = 'error'; // テスト中はエラーログのみ
+
 // 型安全なカスタムマッチャー定義
 declare global {
   namespace jest {
