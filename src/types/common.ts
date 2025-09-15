@@ -1,15 +1,5 @@
-// CLAUDE.md準拠共通型定義（DRY原則、any型完全排除）
 
-// 基本的な値型（型安全性確保）
-export type Primitive = string | number | boolean | null | undefined;
 
-// CloudFormation基本型
-export type AWSRegion = 
-  | 'us-east-1' | 'us-east-2' | 'us-west-1' | 'us-west-2'
-  | 'eu-west-1' | 'eu-west-2' | 'eu-west-3' | 'eu-central-1'
-  | 'ap-southeast-1' | 'ap-southeast-2' | 'ap-northeast-1' | 'ap-northeast-2';
-
-export type AWSAccountId = string; // 12桁数字だが文字列として扱う
 
 // メトリクス関連共通型（DRY原則）
 export type MetricStatistic = 'Average' | 'Sum' | 'Maximum' | 'Minimum';
@@ -42,17 +32,4 @@ export interface StructuredError {
   timestamp: TimestampISO;
 }
 
-// パフォーマンス監視型
-export interface PerformanceMetrics {
-  processingTimeMs: number;
-  memoryUsageMB: number;
-  resourceCount: number;
-  metricsGenerated: number;
-}
 
-// オプション型（CLI用）
-export interface AnalysisOptions {
-  resourceTypes?: string[];
-  includeLowImportance?: boolean;
-  verbose?: boolean;
-}

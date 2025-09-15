@@ -1,7 +1,44 @@
 // JsonSchemaValidator テストヘルパー
 // CLAUDE.md準拠: No any types、TDD実践
 
-import type { AnalysisResultSchema } from '../../../src/utils/schema-validator';
+/**
+ * テスト専用: AnalysisResult JSON Schema定義
+ * requirement.md準拠JSON Schemaインターフェース
+ */
+export interface AnalysisResultSchema {
+  metadata: {
+    version: string;
+    generated_at: string;
+    template_path: string;
+    total_resources: number;
+    supported_resources: number;
+    processing_time_ms?: number;
+  };
+  resources: Array<{
+    logical_id: string;
+    resource_type: string;
+    resource_properties: Record<string, unknown>;
+    metrics: Array<{
+      metric_name: string;
+      namespace: string;
+      unit: string;
+      description: string;
+      statistic: string;
+      recommended_threshold: {
+        warning: number;
+        critical: number;
+      };
+      evaluation_period: number;
+      category: 'Performance' | 'Error' | 'Saturation' | 'Latency';
+      importance: 'High' | 'Medium' | 'Low';
+      dimensions?: Array<{
+        name: string;
+        value: string;
+      }>;
+    }>;
+  }>;
+  unsupported_resources: string[];
+}
 
 // テスト用の柔軟な型定義 - 無効なデータを作成するため
 type TestData = Record<string, unknown>;

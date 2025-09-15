@@ -92,17 +92,6 @@ export interface ResourceWithMetrics {
   metrics: MetricDefinition[];
 }
 
-// =============================================================================
-// テンプレート解析結果型
-// =============================================================================
-
-export interface TemplateAnalysisResult {
-  template: import('./cloudformation').CloudFormationTemplate;
-  supportedResources: Array<import('./cloudformation').SupportedResource>;
-  unsupportedResources: string[];
-  totalResources: number;
-  extractionTimeMs: number;
-}
 
 export interface ExtractResult {
   supported: Array<import('./cloudformation').SupportedResource>;
@@ -111,54 +100,9 @@ export interface ExtractResult {
   extractionTimeMs: number;
 }
 
-// =============================================================================
-// 出力フォーマッタ型
-// =============================================================================
 
-export type OutputFormat = 'json' | 'html' | 'yaml' | 'cdk';
 
-export interface JSONOutputData {
-  metadata: AnalysisMetadata;
-  resources: Array<{
-    logical_id: string;
-    resource_type: string;
-    resource_properties: Record<string, unknown>;
-    metrics: Array<{
-      metric_name: string;
-      namespace: string;
-      unit: string;
-      description: string;
-      statistic: MetricStatistic;
-      recommended_threshold: {
-        warning: number;
-        critical: number;
-      };
-      evaluation_period: number;
-      category: MetricCategory;
-      importance: ImportanceLevel;
-    }>;
-  }>;
-  unsupported_resources: string[];
-}
 
-// =============================================================================
-// CLI関連型（型安全性）
-// =============================================================================
-
-export interface CLIOptions {
-  output: OutputFormat;
-  file?: string;
-  resourceTypes?: string;
-  includeLow?: boolean;
-  verbose?: boolean;
-  noColor?: boolean;
-}
-
-export interface ProcessOptions {
-  includeLowImportance: boolean;
-  resourceTypes?: string[];
-  verbose: boolean;
-}
 
 // =============================================================================
 // インターフェース分離（CLAUDE.md: Interface Segregation Principle）
@@ -168,36 +112,13 @@ export interface ITemplateParser {
   parse(filePath: string): Promise<import('./cloudformation').CloudFormationTemplate>;
 }
 
-export interface ITemplateAnalyzer {
-  analyze(filePath: string): Promise<TemplateAnalysisResult>;
-}
 
 export interface IMetricsGenerator {
   getSupportedTypes(): string[];
   generate(resource: CloudFormationResource): Promise<MetricDefinition[]>;
 }
 
-export interface IMetricsProcessor {
-  process(resources: Array<import('./cloudformation').SupportedResource>, options: ProcessOptions): Promise<ResourceWithMetrics[]>;
-}
 
-export interface IJSONFormatter {
-  formatJSON(result: AnalysisResult): Promise<string>;
-}
 
-export interface IHTMLFormatter {
-  formatHTML(result: AnalysisResult): Promise<string>;
-}
 
-// 複合インターフェース（必要最小限）
-export interface IOutputFormatter extends IJSONFormatter, IHTMLFormatter {
-  // 両フォーマッタの統合インターフェース
-}
 
-export interface ILogger {
-  debug(message: string, ...args: unknown[]): void;
-  info(message: string, ...args: unknown[]): void;
-  warn(message: string, ...args: unknown[]): void;
-  error(message: string, error?: Error, ...args: unknown[]): void;
-  success(message: string, ...args: unknown[]): void;
-}

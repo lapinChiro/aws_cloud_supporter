@@ -325,28 +325,12 @@ export function isLambdaFunction(resource: CloudFormationResource): resource is 
   return resource.Type === ResourceType.LAMBDA_FUNCTION as string;
 }
 
-export function isServerlessFunction(resource: CloudFormationResource): resource is ServerlessFunction {
-  return resource.Type === ResourceType.SERVERLESS_FUNCTION as string;
-}
-
 export function isECSService(resource: CloudFormationResource): resource is ECSService {
   return resource.Type === ResourceType.ECS_SERVICE as string;
 }
 
 export function isALB(resource: CloudFormationResource): resource is ApplicationLoadBalancer {
   return resource.Type === ResourceType.ALB as string;
-}
-
-export function isDynamoDBTable(resource: CloudFormationResource): resource is DynamoDBTable {
-  return resource.Type === ResourceType.DYNAMODB_TABLE as string;
-}
-
-export function isAPIGateway(resource: CloudFormationResource): resource is APIGatewayRestAPI {
-  return resource.Type === ResourceType.API_GATEWAY as string;
-}
-
-export function isServerlessAPI(resource: CloudFormationResource): resource is ServerlessAPI {
-  return resource.Type === ResourceType.SERVERLESS_API as string;
 }
 
 // 型安全なリソース判定（CLAUDE.md: Type-Driven Development）

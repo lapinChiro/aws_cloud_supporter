@@ -112,7 +112,7 @@ export interface GeneratedTestCase {
 }
 
 // Export aggregated types
-export type * from '../aws/cloudformation';
+export type * from '../cloudformation';
 export type * from '../internal/parser';
 
 // Type guards

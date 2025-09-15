@@ -26,5 +26,3 @@ export type {
 // 利用しやすさのための型エイリアス
 export type CDKAlarmPropsOfficial = cloudwatch.AlarmProps;
 export type CDKTopicPropsOfficial = sns.TopicProps;
-export type CDKMetricPropsOfficial = cloudwatch.MetricProps;
-export type CDKDimensionsMapOfficial = cloudwatch.DimensionsMap;

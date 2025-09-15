@@ -8,7 +8,6 @@ import { CDKOfficialGenerator } from '../../generators/cdk-official.generator';
 import type { ExtendedAnalysisResult, IMetricsAnalyzer } from '../../interfaces/analyzer';
 import type { ILogger } from '../../interfaces/logger';
 import type { CDKOptions } from '../../types/cdk-business';
-import type { AnalysisResult } from '../../types/metrics';
 import { CloudSupporterError, ErrorType } from '../../utils/error';
 import { log } from '../../utils/logger';
 import type { CDKValidationResult } from '../../validation/cdk-validator';
@@ -16,8 +15,6 @@ import { CDKValidator } from '../../validation/cdk-validator';
 import type { CLIDependencies, CLIOptions } from '../interfaces/command.interface';
 import type { 
   ICDKHandler, 
-  ICDKTypeDeterminer, 
-  ICDKCodeGenerator, 
   ICDKOutputHandler 
 } from '../interfaces/handler.interface';
 
@@ -280,52 +277,5 @@ export class CDKHandler implements ICDKHandler {
     }
     
     process.exit(1);
-  }
-}
-
-/**
- * CDKタイプ判定実装
- * Single Responsibility: CDKタイプの判定のみ
- * 複雑度: 8以下
- */
-export class CDKTypeDeterminer implements ICDKTypeDeterminer {
-  determineCDKType(
-    _result: AnalysisResult | ExtendedAnalysisResult,
-    _options: CLIOptions,
-    _logger: ILogger
-  ): 'official' | 'classic' {
-    // M-009: Default to Official Types
-    return 'official';
-  }
-}
-
-/**
- * CDKコード生成実装
- * Single Responsibility: CDKコード生成のみ
- * 複雑度: 5以下
- */
-export class CDKCodeGenerator implements ICDKCodeGenerator {
-  async generateCDKCode(
-    _templatePath: string,
-    _cdkType: 'official' | 'classic',
-    result: AnalysisResult | ExtendedAnalysisResult,
-    cdkOptions: CDKOptions,
-    dependencies: CLIDependencies
-  ): Promise<{
-    projectDir: string;
-    files: Record<string, string>;
-    message: string;
-  }> {
-    const { logger } = dependencies;
-    
-    // Official CDKのみサポート
-    const cdkGenerator = new CDKOfficialGenerator(logger);
-    const cdkCode = await cdkGenerator.generate(result as ExtendedAnalysisResult, cdkOptions);
-    
-    return {
-      projectDir: cdkOptions.outputDir ?? '.',
-      files: { [cdkOptions.stackName + '.ts']: cdkCode },
-      message: 'CDK Stack generated successfully'
-    };
   }
 }

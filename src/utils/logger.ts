@@ -221,11 +221,6 @@ export function createLogger(level: LogLevel = 'info', useColors: boolean = true
   return new Logger(level, useColors);
 }
 
-// 型安全なログレベル判定
-export function isValidLogLevel(level: string): level is LogLevel {
-  return ['debug', 'info', 'warn', 'error'].includes(level);
-}
-
 // デフォルトLoggerインスタンス（プロジェクト全体で共用）
 export const logger = new Logger('info', true);
 
