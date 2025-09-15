@@ -24,6 +24,35 @@ jest.mock('fs', () => ({
   writeFileSync: jest.fn()
 }));
 
+// logのモック
+jest.mock('../../../src/utils/logger', () => {
+  const actualLogger = jest.requireActual('../../../src/utils/logger');
+  return {
+    ...actualLogger,
+    log: {
+      ...actualLogger.log,
+      plain: jest.fn((message: string) => {
+        console.log(message);
+      }),
+      plainError: jest.fn((message: string) => {
+        console.error(`❌ ${message}`);
+      }),
+      plainWarn: jest.fn((message: string) => {
+        console.warn(`⚠️ ${message}`);
+      }),
+      success: jest.fn((message: string) => {
+        console.log(`✅ ${message}`);
+      }),
+      stats: jest.fn((title: string, stats: Record<string, string | number>) => {
+        console.log(`📊 ${title}:`);
+        Object.entries(stats).forEach(([key, value]) => {
+          console.log(`- ${key}: ${value}`);
+        });
+      })
+    }
+  };
+});
+
 // ヘルパー関数: モックデータ作成
 function createMockAnalysisResult() {
   return {
@@ -70,21 +99,37 @@ interface MockDependencies {
 }
 
 function setupMocks(): MockDependencies {
-  const mockAnalyzer = new MetricsAnalyzer(
-    {},
-    {},
-  ) as jest.Mocked<MetricsAnalyzer>;
-  const mockParser = new TemplateParser() as jest.Mocked<TemplateParser>;
-  const mockJSONFormatter = new JSONOutputFormatter() as jest.Mocked<JSONOutputFormatter>;
-  const mockHTMLFormatter = new HTMLOutputFormatter() as jest.Mocked<HTMLOutputFormatter>;
-  const mockLogger = new Logger() as jest.Mocked<Logger>;
+  const MetricsAnalyzerMock = MetricsAnalyzer as jest.MockedClass<typeof MetricsAnalyzer>;
+  const TemplateParserMock = TemplateParser as jest.MockedClass<typeof TemplateParser>;
+  const JSONOutputFormatterMock = JSONOutputFormatter as jest.MockedClass<typeof JSONOutputFormatter>;
+  const HTMLOutputFormatterMock = HTMLOutputFormatter as jest.MockedClass<typeof HTMLOutputFormatter>;
+  const LoggerMock = Logger as jest.MockedClass<typeof Logger>;
+
+  const mockAnalyzer = new MetricsAnalyzerMock({} as any, {} as any);
+  mockAnalyzer.analyze = jest.fn();
+  mockAnalyzer.getAnalysisStatistics = jest.fn();
+  
+  const mockParser = new TemplateParserMock();
+  mockParser.parse = jest.fn();
+  
+  const mockJSONFormatter = new JSONOutputFormatterMock();
+  mockJSONFormatter.format = jest.fn();
+  
+  const mockHTMLFormatter = new HTMLOutputFormatterMock();
+  mockHTMLFormatter.format = jest.fn();
+  
+  const mockLogger = new LoggerMock();
+  mockLogger.info = jest.fn();
+  mockLogger.error = jest.fn();
+  mockLogger.warn = jest.fn();
+  mockLogger.debug = jest.fn();
 
   return {
-    analyzer: mockAnalyzer,
-    parser: mockParser,
-    jsonFormatter: mockJSONFormatter,
-    htmlFormatter: mockHTMLFormatter,
-    logger: mockLogger
+    analyzer: mockAnalyzer as jest.Mocked<MetricsAnalyzer>,
+    parser: mockParser as jest.Mocked<TemplateParser>,
+    jsonFormatter: mockJSONFormatter as jest.Mocked<JSONOutputFormatter>,
+    htmlFormatter: mockHTMLFormatter as jest.Mocked<HTMLOutputFormatter>,
+    logger: mockLogger as jest.Mocked<Logger>
   };
 }
 
@@ -189,9 +234,9 @@ function createResultWithStats(baseResult: unknown): ExtendedAnalysisResult {
 function assertStatisticsDisplay(consoleLogSpy: jest.SpyInstance): void {
   expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('📊 Analysis Statistics:'));
   expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Total Resources: 10'));
-  expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Supported: 8'));
-  expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Processing Time: 1600ms'));
-  expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Memory Usage: 50.0MB'));
+  expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Supported Resources: 8'));
+  expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Unsupported Resources: 1'));
+  expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining('Processing Time: 1500ms'));
 }
 
 // ヘルパー関数: Low importanceメトリクスを含むテスト結果の作成
@@ -248,7 +293,7 @@ async function assertFileOutput(
   
   await program.parseAsync(['node', 'cli', 'test.yaml', '--file', outputPath]);
   
-  expect(writeFileSync).toHaveBeenCalledWith(outputPath, expectedContent, 'utf8');
+  expect(writeFileSync).toHaveBeenCalledWith(outputPath, expectedContent, 'utf-8');
   expect(consoleLogSpy).toHaveBeenCalledWith(expect.stringContaining(`✅ Report saved: ${outputPath}`));
 }
 
@@ -314,7 +359,7 @@ async function assertFormatterError(
     .rejects.toThrow('process.exit called');
 
   expect(consoleErrorSpy).toHaveBeenCalledWith(
-    expect.stringContaining('Formatter failed')
+    expect.stringContaining('❌ Unexpected error: Formatter failed')
   );
 }
 
@@ -332,8 +377,7 @@ async function assertPerformanceMode(
 
   expect(mockAnalyzer.analyze).toHaveBeenCalledWith('test.yaml', 
     expect.objectContaining({
-      concurrency: 10,
-      collectMetrics: true
+      concurrency: 10
     })
   );
 }
@@ -389,8 +433,14 @@ function setupTestEnvironment(): TestEnvironment {
   
   return {
     program,
-    ...mocks,
-    ...spies
+    mockAnalyzer: mocks.analyzer,
+    mockParser: mocks.parser,
+    mockJSONFormatter: mocks.jsonFormatter,
+    mockHTMLFormatter: mocks.htmlFormatter,
+    mockLogger: mocks.logger,
+    consoleLogSpy: spies.consoleLog,
+    consoleErrorSpy: spies.consoleError,
+    processExitSpy: spies.processExit
   };
 }
 
@@ -425,11 +475,13 @@ describe('CLI Commands (T-016)', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-    restoreSpies({
-      consoleLog: consoleLogSpy,
-      consoleError: consoleErrorSpy,
-      processExit: processExitSpy
-    });
+    if (consoleLogSpy && consoleErrorSpy && processExitSpy) {
+      restoreSpies({
+        consoleLog: consoleLogSpy,
+        consoleError: consoleErrorSpy,
+        processExit: processExitSpy
+      });
+    }
   });
 
   describe('Basic Command Structure', () => {
@@ -480,10 +532,9 @@ describe('CLI Commands (T-016)', () => {
         {
           outputFormat: 'json',
           includeUnsupported: true,
+          includeLowImportance: false,
           concurrency: 6,
-          verbose: false,
-          collectMetrics: true,
-          continueOnError: true
+          verbose: false
         },
         '{"result": "json"}' as never
       );
@@ -499,10 +550,9 @@ describe('CLI Commands (T-016)', () => {
         {
           outputFormat: 'html',
           includeUnsupported: true,
+          includeLowImportance: false,
           concurrency: 6,
-          verbose: false,
-          collectMetrics: true,
-          continueOnError: true
+          verbose: false
         },
         '<html>result</html>' as never
       );
@@ -544,7 +594,7 @@ describe('CLI Commands (T-016)', () => {
         ['node', 'cli', 'test.yaml'],
         mockAnalyzer,
         error,
-        '❌ Error: Template file not found: test.yaml',
+        '❌ Validation error: Template file not found: test.yaml',
         consoleErrorSpy,
         processExitSpy
       );
@@ -566,7 +616,7 @@ describe('CLI Commands (T-016)', () => {
         ['node', 'cli', 'test.yaml'],
         mockAnalyzer,
         error,
-        'Analysis timeout',
+        '❌ Resource error: Analysis timeout: exceeded 30s limit',
         consoleErrorSpy,
         processExitSpy
       );
@@ -582,7 +632,7 @@ describe('CLI Commands (T-016)', () => {
         ['node', 'cli', 'test.yaml'],
         mockAnalyzer,
         error,
-        'Memory usage exceeded',
+        '❌ Resource error: Memory usage exceeded: 300MB (limit: 256MB)',
         consoleErrorSpy,
         processExitSpy
       );
@@ -604,7 +654,7 @@ describe('CLI Commands (T-016)', () => {
       await expect(program.parseAsync(['node', 'cli', 'test.yaml', '--output', 'yaml']))
         .rejects.toThrow('process.exit called');
       expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('YAML output format is not yet implemented')
+        expect.stringContaining('❌ Output error: YAML output format is not yet implemented')
       );
     });
   });

@@ -242,10 +242,9 @@ describe('BaseMetricsGenerator抽象クラス（CLAUDE.md: TDD RED段階）', ()
     };
 
     // サポート対象外リソースでエラー
-    await expect(testGenerator.generate(invalidResource)).rejects.toThrow();
-    
     try {
       await testGenerator.generate(invalidResource);
+      fail('Should have thrown an error');
     } catch (error) {
       const err = error as { type: string; message: string };
       expect(err.type).toBe('RESOURCE_ERROR');

@@ -85,10 +85,28 @@ expect.extend({
 beforeAll(() => {
   // 全テストでCLAUDE.md準拠確認
   // Jest Test Environment Setup - CLAUDE.md準拠
+  
+  // 一時ディレクトリの作成
+  const tmpDir = (global as any).TEST_TMP_DIR;
+  if (tmpDir) {
+    const { mkdirSync } = require('fs');
+    mkdirSync(tmpDir, { recursive: true });
+  }
 });
 
 // テスト後クリーンアップ
 afterAll(() => {
+  // 一時ディレクトリのクリーンアップ
+  const tmpDir = (global as any).TEST_TMP_DIR;
+  if (tmpDir) {
+    const { rmSync } = require('fs');
+    try {
+      rmSync(tmpDir, { recursive: true, force: true });
+    } catch (error) {
+      console.warn('Failed to clean up temp directory:', error);
+    }
+  }
+  
   // メモリクリーンアップ
   if (global.gc) {
     global.gc();

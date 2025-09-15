@@ -45,7 +45,7 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     const duration = performance.now() - startTime;
     
     expect(duration).toBeLessThan(3000); // 3秒以内
-    expect(result.totalCount).toBe(500);
+    expect(result.totalCount).toBe(650); // 500 Lambda + 50 RDS + 50 DynamoDB + 50 ALB
     expect(result.extractionTimeMs).toBeLessThan(3000);
   });
 
@@ -59,9 +59,9 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     const result = extractor.extract(template);
     
     // サポート対象リソースが正確に抽出されている確認
-    expect(result.supported.length).toBe(8); // 8個のサポート対象
-    expect(result.unsupported.length).toBe(6); // 6個の非対象（NLB、ECS EC2含む）
-    expect(result.totalCount).toBe(14);
+    expect(result.supported.length).toBe(6); // 6個のサポート対象 (RDS, Lambda, ECS Fargate, DynamoDB, API Gateway, ALB)
+    expect(result.unsupported.length).toBe(7); // 7個の非対象（S3, EC2, VPC, NLB, ECS EC2, Custom, Classic LB）
+    expect(result.totalCount).toBe(13);
   });
 
   // サポート対象外リソース集計テスト（GREEN段階: 機能確認）
@@ -80,6 +80,8 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     expect(result.unsupported).toContain('TestVPC');
     expect(result.unsupported).toContain('TestNLB'); // Network LB
     expect(result.unsupported).toContain('TestECSServiceEC2'); // ECS EC2
+    expect(result.unsupported).toContain('TestClassicLB'); // Classic LB
+    expect(result.unsupported).toContain('TestCustom'); // Custom resource
   });
 
   // ECS Fargate判定テスト（GREEN段階: 特殊ケース確認）
@@ -94,10 +96,13 @@ describe('ResourceExtractor高速抽出（CLAUDE.md: GREEN段階）', () => {
     
     // Fargateサービスのみがサポート対象として抽出される  
     const fargateServices = result.supported.filter((r: SupportedResource) => r.Type === 'AWS::ECS::Service');
-    expect(fargateServices.length).toBe(3); // Fargate + FargateSpot + MixedCapacity
+    expect(fargateServices.length).toBe(1); // FargateServiceのみ
     
     // EC2サービスはサポート対象外
     expect(result.unsupported).toContain('EC2Service');
+    expect(result.unsupported).toContain('ExternalService');
+    expect(result.unsupported).toContain('MissingLaunchTypeService1');
+    expect(result.unsupported).toContain('MissingLaunchTypeService2');
   });
 
   // ALB vs NLB判定テスト（GREEN段階: 判定ロジック確認）

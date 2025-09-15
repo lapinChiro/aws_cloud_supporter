@@ -163,8 +163,8 @@ describe('CDKOfficialGenerator RDS MVP (Adapted)', () => {
       expect(result).toContain('constructor(scope: Construct, id: string, props?: cdk.StackProps)');
       
       // Official types usage verification
-      expect(result).toContain('cloudwatch.TreatMissingData.notBreaching');
-      expect(result).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
+      expect(result).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
+      expect(result).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
       expect(result).toContain('aws-cdk-lib official types');
       
       // RDS alarm verification (2 resources × 2 metrics × 2 severities = 8 alarms)

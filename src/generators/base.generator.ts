@@ -1,6 +1,7 @@
 // CLAUDE.md準拠BaseMetricsGenerator（SOLID抽象化原則 + Type-Driven Development）
 
 import type { ILogger } from '../interfaces/logger';
+import { getMaxAlarmsPerResource } from '../types';
 import type { CloudFormationResource } from '../types/cloudformation';
 import type { MetricDefinition, MetricConfig, IMetricsGenerator } from '../types/metrics';
 import { createResourceError } from '../utils/error';
@@ -52,16 +53,25 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
         this.buildMetricDefinition(resource, config)
       );
 
+      // アラーム数制限の適用
+      const maxAlarms = getMaxAlarmsPerResource();
+      const limitedMetrics = this.limitMetrics(metrics, maxAlarms);
+
       const duration = performance.now() - startTime;
       
       // パフォーマンス監視（CLAUDE.md: 性能要件）
       if (duration > 1000) {
         this.logger.warn(`Metrics generation slow: ${duration.toFixed(0)}ms for ${this.getResourceId(resource)}`);
       } else {
-        this.logger.debug(`Generated ${metrics.length} metrics for ${this.getResourceId(resource)} in ${duration.toFixed(1)}ms`);
+        // 後方互換性のため、制限が適用されなかった場合は元のメッセージ形式を使用
+        if (metrics.length === limitedMetrics.length) {
+          this.logger.debug(`Generated ${limitedMetrics.length} metrics for ${this.getResourceId(resource)} in ${duration.toFixed(1)}ms`);
+        } else {
+          this.logger.debug(`Generated ${limitedMetrics.length} metrics (from ${metrics.length} total) for ${this.getResourceId(resource)} in ${duration.toFixed(1)}ms`);
+        }
       }
 
-      return Promise.resolve(metrics);
+      return Promise.resolve(limitedMetrics);
     } catch (error) {
       const resourceId = this.getResourceId(resource);
       this.logger.error(`Failed to generate metrics for ${resourceId}`, error as Error);
@@ -70,6 +80,45 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
         { resourceType: resource.Type, originalError: (error as Error).message }
       );
     }
+  }
+
+  // メトリクス数制限（優先順位：High > Medium > Low、同じ重要度では critical 値で比較）
+  private limitMetrics(metrics: MetricDefinition[], maxAlarms: number): MetricDefinition[] {
+    if (metrics.length <= maxAlarms) {
+      return metrics;
+    }
+
+    // 重要度の優先順位マップ
+    const importancePriority: Record<string, number> = {
+      'High': 3,
+      'Medium': 2,
+      'Low': 1
+    };
+
+    // ソート：重要度（高→低）、同じ重要度内では critical 閾値（高→低）
+    const sortedMetrics = [...metrics].sort((a, b) => {
+      // 重要度で比較
+      const importanceA = importancePriority[a.importance] ?? 0;
+      const importanceB = importancePriority[b.importance] ?? 0;
+      
+      if (importanceA !== importanceB) {
+        return importanceB - importanceA; // 降順
+      }
+      
+      // 同じ重要度の場合、critical 閾値で比較（高い方を優先）
+      return b.recommended_threshold.critical - a.recommended_threshold.critical;
+    });
+
+    // 上限数まで取得
+    const limitedMetrics = sortedMetrics.slice(0, maxAlarms);
+    
+    // ログ出力
+    if (metrics.length > maxAlarms) {
+      const dropped = metrics.length - maxAlarms;
+      this.logger.info(`Limited metrics from ${metrics.length} to ${maxAlarms} (dropped ${dropped} lower priority metrics)`);
+    }
+
+    return limitedMetrics;
   }
 
   // 適用可能メトリクス判定（Type-Driven Development）

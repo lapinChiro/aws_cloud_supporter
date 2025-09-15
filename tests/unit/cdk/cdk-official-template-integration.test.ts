@@ -124,8 +124,8 @@ describe('CDKOfficialGenerator Template Integration', () => {
       
       // Should generate valid CDK code using official types
       expect(result).toContain('cloudwatch.Alarm');
-      expect(result).toContain('cloudwatch.TreatMissingData.notBreaching');
-      expect(result).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
+      expect(result).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
+      expect(result).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
       expect(result).toContain('cdk.Duration.seconds');
       expect(result).toContain('export class CloudWatchAlarmsStack');
       

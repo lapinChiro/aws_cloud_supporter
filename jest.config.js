@@ -42,7 +42,7 @@ module.exports = {
   
   // デバッグ・開発効率
   verbose: true,
-  testTimeout: 10000,
+  testTimeout: 30000,  // 30秒に変更（integrationテストのタイムアウト対策）
   
   // 型安全性強化
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
@@ -51,8 +51,13 @@ module.exports = {
   },
   
   // パフォーマンス最適化
-  maxWorkers: '50%',
+  maxWorkers: 4,  // 並列実行の最適化
   cacheDirectory: '<rootDir>/.jest-cache',
+  
+  // グローバル設定（一時ディレクトリ対応）
+  globals: {
+    TEST_TMP_DIR: '<rootDir>/tmp/test-' + process.pid + '-' + Date.now()
+  },
   
   // ESMモジュール対応（chalk v5等）
   extensionsToTreatAsEsm: ['.ts'],

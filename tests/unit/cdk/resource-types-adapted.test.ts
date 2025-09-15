@@ -148,8 +148,8 @@ describe('All Resource Types CDK Generation (Official Types)', () => {
       expect(result).toContain('import * as cloudwatch from \'aws-cdk-lib/aws-cloudwatch\'');
       
       // Official types usage verification
-      expect(result).toContain('cloudwatch.TreatMissingData.notBreaching');
-      expect(result).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
+      expect(result).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
+      expect(result).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
       
       // Resource-specific alarm verification
       const logicalId = getTestLogicalId(resourceType);
@@ -193,8 +193,8 @@ describe('All Resource Types CDK Generation (Official Types)', () => {
       expect(result).toContain('TableName:'); // DynamoDB
       
       // Should use official types
-      expect(result).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
-      expect(result).toContain('cloudwatch.TreatMissingData.notBreaching');
+      expect(result).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
+      expect(result).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
     });
 
     it('should generate correct alarm counts for mixed resources', async () => {

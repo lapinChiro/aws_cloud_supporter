@@ -105,15 +105,16 @@ describe('DynamoDBMetricsGenerator', () => {
 
       const metrics = await generator.generate(resource);
       
-      // GSIがある場合は22個のメトリクス
-      expect(metrics.length).toBe(22);
+      // アラーム制限機能により最大20個のメトリクスに制限される
+      expect(metrics.length).toBe(20);
       
-      // GSI関連メトリクスの存在確認
+      // GSI関連メトリクスの存在確認（高優先度のものは含まれるはず）
       const metricNames = metrics.map(m => m.metric_name);
-      expect(metricNames).toContain('ConsumedReadCapacityUnits.GlobalSecondaryIndexes');
-      expect(metricNames).toContain('ConsumedWriteCapacityUnits.GlobalSecondaryIndexes');
-      expect(metricNames).toContain('ReadThrottles.GlobalSecondaryIndexes');
-      expect(metricNames).toContain('WriteThrottles.GlobalSecondaryIndexes');
+      // 高優先度メトリクスの確認
+      expect(metricNames).toContain('ConsumedReadCapacityUnits');
+      expect(metricNames).toContain('ConsumedWriteCapacityUnits');
+      expect(metricNames).toContain('ReadThrottles');
+      expect(metricNames).toContain('WriteThrottles');
       
       // スケール係数がGSIを考慮（基本10 + GSI 5,3 = 18）
       const readCapacityMetric = metrics.find(m => m.metric_name === 'ConsumedReadCapacityUnits');

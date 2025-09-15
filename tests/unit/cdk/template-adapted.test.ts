@@ -141,8 +141,8 @@ describe('CDK Official Template MVP', () => {
       
       expect(result).toContain('export class TestStack extends cdk.Stack');
       expect(result).toContain('TestResourceCPUUtilizationWarningAlarm');
-      expect(result).toContain('cloudwatch.TreatMissingData.notBreaching');
-      expect(result).toContain('cloudwatch.ComparisonOperator.GreaterThanThreshold');
+      expect(result).toContain('cloudwatch.TreatMissingData.NOT_BREACHING');
+      expect(result).toContain('cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD');
     });
 
     it('should render SNS integration correctly', () => {
