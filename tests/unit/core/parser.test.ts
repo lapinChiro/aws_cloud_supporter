@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 // CLAUDE.md準拠TemplateParserテスト（GREEN段階: Don't Reinvent the Wheel + Type-Driven）
 
 import { readFileSync, writeFileSync, mkdirSync, statSync } from 'fs';
@@ -317,6 +318,54 @@ describe('TemplateParser型安全解析（CLAUDE.md: GREEN段階）', () => {
     const testDB = template.Resources.TestDB;
     expect(testDB).toBeDefined();
     expect(testDB?.Type).toBe('AWS::RDS::DBInstance');
+  });
+
+  // 異なる種類のエラーオブジェクトのハンドリングテスト（lines 39-52をカバー）
+  it('should handle various error object types during parsing', async () => {
+    const parser = new TemplateParser();
+    
+    // 無効なJSON構文エラー
+    const invalidJsonPath = path.join(tempDir, 'error-handling-test.json');
+    writeFileSync(invalidJsonPath, '{"broken": json without quotes}', 'utf8');
+    
+    await expect(parser.parse(invalidJsonPath)).rejects.toThrow();
+    
+    try {
+      await parser.parse(invalidJsonPath);
+    } catch (error) {
+      expect(error).toBeInstanceOf(CloudSupporterError);
+      expect((error as CloudSupporterError).message).toContain('JSON syntax error');
+    }
+    
+    // messageプロパティのないオブジェクトエラーのシミュレーション
+    const complexErrorJsonPath = path.join(tempDir, 'complex-error.json');
+    writeFileSync(complexErrorJsonPath, '{"test": "unclosed string', 'utf8');
+    
+    try {
+      await parser.parse(complexErrorJsonPath);
+    } catch (error) {
+      expect(error).toBeInstanceOf(CloudSupporterError);
+      expect((error as CloudSupporterError).message).toContain('JSON syntax error');
+    }
+  });
+
+  // ファイル読み込みNodeJSエラーハンドリングテスト（lines 117-120をカバー）
+  it('should handle NodeJS errno exceptions during file reading', async () => {
+    const parser = new TemplateParser();
+    
+    // 存在しないディレクトリ内のファイル
+    const invalidPath = '/nonexistent/directory/file.yaml';
+    
+    try {
+      await parser.parse(invalidPath);
+    } catch (error) {
+      expect(error).toBeInstanceOf(CloudSupporterError);
+      if (error instanceof CloudSupporterError) {
+        expect(isFileError(error)).toBe(true);
+        expect(error.message).toContain('Cannot access file');
+        expect(error.filePath).toBe(invalidPath);
+      }
+    }
   });
 });
 

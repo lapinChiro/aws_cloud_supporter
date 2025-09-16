@@ -132,9 +132,18 @@ export class FileOutputHandler implements IFileOutputHandler {
    * ファイルパス検証（複雑度: 2）
    */
   private validateFilePath(filePath: string): void {
+    // 空文字列チェック
+    if (!filePath || filePath.trim() === '') {
+      throw new CloudSupporterError(
+        ErrorType.VALIDATION_ERROR,
+        'Invalid file path provided',
+        { filePath }
+      );
+    }
+
     const dir = path.dirname(filePath);
     const isAbsolute = path.isAbsolute(filePath);
-    
+
     // 絶対パスまたは相対パスの検証
     if (!dir || (!isAbsolute && dir.startsWith('..'))) {
       throw new CloudSupporterError(
