@@ -208,7 +208,7 @@ export class TestStack extends cdk.Stack {
       `;
 
       const result = await validator.validateGeneratedCode(codeWithMetrics, { compileCheck: false });
-      
+
       expect(result.metrics.alarmCount).toBe(3);
       expect(result.metrics.importCount).toBe(3);
       expect(result.metrics.codeLength).toBeGreaterThan(0);
