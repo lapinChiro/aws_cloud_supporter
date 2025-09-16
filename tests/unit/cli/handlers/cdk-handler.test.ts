@@ -6,9 +6,11 @@ import path from 'path';
 
 import { CDKHandler } from '../../../../src/cli/handlers/cdk-handler';
 import type { CLIOptions } from '../../../../src/cli/interfaces/command.interface';
-import { CloudSupporterError, ErrorType } from '../../../../src/utils/error';
 import { createLogger } from '../../../../src/utils/logger';
+import { cliOptions } from '../../../helpers/cli-options-builder';
 import { createRDSTemplate } from '../../../helpers/cloudformation-test-helpers';
+import { CloudSupporterErrorBuilder } from '../../../helpers/error-builder';
+import { validationResult } from '../../../helpers/validation-result-builder';
 
 // テスト全体で使用する一時ディレクトリ
 let tempDir: string;
@@ -58,15 +60,11 @@ describe('CDKHandler基本機能テスト（CLAUDE.md: Type-Driven）', () => {
     const testFile = path.join(tempDir, 'permission-test.ts');
     writeFileSync(testFile, 'export const test = "test";', 'utf8');
     
-    const options: CLIOptions = {
-      file: path.join(tempDir, 'test-template.yaml'),
-      output: 'cdk',
-      verbose: true,
-      includeLow: false,
-      noColor: false,
-      includeUnsupported: false,
-      performanceMode: false
-    };
+    const options: CLIOptions = cliOptions()
+      .withFile(path.join(tempDir, 'test-template.yaml'))
+      .withOutput('cdk')
+      .enableVerbose()
+      .build();
     
     // プライベートメソッドのテストのため、型キャストでアクセス
     const setSecurePermissions = (handler as unknown as Record<string, unknown>)['setSecureFilePermissions'] as (filePath: string, options: CLIOptions, logger: unknown) => Promise<void>;
@@ -83,15 +81,10 @@ describe('CDKHandler基本機能テスト（CLAUDE.md: Type-Driven）', () => {
     const handler = new CDKHandler();
     const logger = createLogger('debug', false);
     
-    const options: CLIOptions = {
-      file: path.join(tempDir, 'test-template.yaml'),
-      output: 'cdk',
-      verbose: false,
-      includeLow: false,
-      noColor: false,
-      includeUnsupported: false,
-      performanceMode: false
-    };
+    const options: CLIOptions = cliOptions()
+      .withFile(path.join(tempDir, 'test-template.yaml'))
+      .withOutput('cdk')
+      .build();
     
     // 存在しないファイルで権限設定を試行
     const nonExistentFile = '/nonexistent/path/file.ts';
@@ -110,34 +103,25 @@ describe('CDKHandler基本機能テスト（CLAUDE.md: Type-Driven）', () => {
   it('should display suggestions when verbose mode is enabled', () => {
     const handler = new CDKHandler();
     
-    const options: CLIOptions = {
-      file: path.join(tempDir, 'test-template.yaml'),
-      output: 'cdk',
-      verbose: true,
-      includeLow: false,
-      noColor: false,
-      includeUnsupported: false,
-      performanceMode: false
-    };
+    const options: CLIOptions = cliOptions()
+      .withFile(path.join(tempDir, 'test-template.yaml'))
+      .withOutput('cdk')
+      .enableVerbose()
+      .build();
     
-    const validationResult = {
-      isValid: true,
-      errors: [],
-      warnings: ['Test warning'],
-      suggestions: ['Test suggestion'],
-      metrics: {
-        codeLength: 1000,
-        alarmCount: 5,
-        importCount: 3
-      }
-    };
+    const validationResultObj = validationResult()
+      .withValidity(true)
+      .addWarning('Test warning')
+      .addSuggestion('Test suggestion')
+      .withMetrics({ codeLength: 1000, alarmCount: 5, importCount: 3 })
+      .build();
     
     // プライベートメソッドのテスト
     const displayResults = (handler as unknown as Record<string, unknown>)['displayValidationResults'] as (validationResult: unknown, options: CLIOptions) => void;
     
     if (displayResults) {
       expect(() => {
-        displayResults.call(handler, validationResult, options);
+        displayResults.call(handler, validationResultObj, options);
       }).not.toThrow();
     }
   });
@@ -146,21 +130,15 @@ describe('CDKHandler基本機能テスト（CLAUDE.md: Type-Driven）', () => {
   it('should handle CloudSupporterError with verbose details', () => {
     const handler = new CDKHandler();
     
-    const options: CLIOptions = {
-      file: path.join(tempDir, 'test-template.yaml'),
-      output: 'cdk',
-      verbose: true,
-      includeLow: false,
-      noColor: false,
-      includeUnsupported: false,
-      performanceMode: false
-    };
+    const options: CLIOptions = cliOptions()
+      .withFile(path.join(tempDir, 'test-template.yaml'))
+      .withOutput('cdk')
+      .enableVerbose()
+      .build();
     
-    const error = new CloudSupporterError(
-      ErrorType.VALIDATION_ERROR,
-      'Test CDK error',
-      { testDetail: 'Test error details' }
-    );
+    const error = CloudSupporterErrorBuilder
+      .validationError('Test CDK error', { testDetail: 'Test error details' })
+      .build();
     
     const handleError = (handler as unknown as Record<string, unknown>)['handleError'] as (error: unknown, options: CLIOptions) => void;
     
@@ -191,27 +169,17 @@ describe('CDKHandler基本機能テスト（CLAUDE.md: Type-Driven）', () => {
   it('should throw error when CDK validation fails', () => {
     const handler = new CDKHandler();
     
-    const options: CLIOptions = {
-      file: path.join(tempDir, 'test-template.yaml'),
-      output: 'cdk',
-      verbose: false,
-      includeLow: false,
-      noColor: false,
-      includeUnsupported: false,
-      performanceMode: false
-    };
+    const options: CLIOptions = cliOptions()
+      .withFile(path.join(tempDir, 'test-template.yaml'))
+      .withOutput('cdk')
+      .build();
     
-    const failedValidationResult = {
-      isValid: false,
-      errors: ['Validation error 1', 'Validation error 2'],
-      warnings: [],
-      suggestions: [],
-      metrics: {
-        codeLength: 500,
-        alarmCount: 0,
-        importCount: 1
-      }
-    };
+    const failedValidationResult = validationResult()
+      .withValidity(false)
+      .addError('Validation error 1')
+      .addError('Validation error 2')
+      .withMetrics({ codeLength: 500, alarmCount: 0, importCount: 1 })
+      .build();
     
     const displayResults = (handler as unknown as Record<string, unknown>)['displayValidationResults'] as (validationResult: unknown, options: CLIOptions) => void;
     
@@ -257,15 +225,10 @@ describe('CDKHandlerエラーハンドリングテスト（CLAUDE.md: SOLID + Er
   it('should handle generic errors properly', () => {
     const handler = new CDKHandler();
     
-    const options: CLIOptions = {
-      file: path.join(tempDir, 'test-template.yaml'),
-      output: 'cdk',
-      verbose: false,
-      includeLow: false,
-      noColor: false,
-      includeUnsupported: false,
-      performanceMode: false
-    };
+    const options: CLIOptions = cliOptions()
+      .withFile(path.join(tempDir, 'test-template.yaml'))
+      .withOutput('cdk')
+      .build();
     
     // process.exitをモックして実際の終了を防ぐ
     const originalExit = process.exit;
@@ -299,15 +262,11 @@ describe('CDKHandlerエラーハンドリングテスト（CLAUDE.md: SOLID + Er
   it('should handle complex validation results', () => {
     const handler = new CDKHandler();
     
-    const options: CLIOptions = {
-      file: path.join(tempDir, 'test-template.yaml'),
-      output: 'cdk',
-      verbose: true,
-      includeLow: false,
-      noColor: false,
-      includeUnsupported: false,
-      performanceMode: false
-    };
+    const options: CLIOptions = cliOptions()
+      .withFile(path.join(tempDir, 'test-template.yaml'))
+      .withOutput('cdk')
+      .enableVerbose()
+      .build();
     
     const complexValidationResult = {
       isValid: true,

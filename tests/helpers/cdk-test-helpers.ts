@@ -4,6 +4,8 @@
 import type { ExtendedAnalysisResult } from '../../src/interfaces/analyzer';
 import type { MetricDefinition, ResourceWithMetrics } from '../../src/types/metrics';
 
+import { AnalysisResultBuilder } from './analysis-result-builder';
+
 /**
  * テスト用のMetricDefinitionを作成
  * @param metricName メトリクス名
@@ -99,60 +101,51 @@ export function createTestResourceWithMetrics(
 }
 
 /**
- * テスト用のExtendedAnalysisResultを作成
+ * テスト用のExtendedAnalysisResultを作成（AnalysisResultBuilderを使用）
  * @param resources リソース配列（オプション）
  * @returns ExtendedAnalysisResult
  */
 export function createTestAnalysisResult(
   resources?: ResourceWithMetrics[]
 ): ExtendedAnalysisResult {
-  const defaultResources = resources ?? [
-    createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDBInstance'),
-    createTestResourceWithMetrics('AWS::Lambda::Function', 'TestLambdaFunction')
-  ];
+  const builder = new AnalysisResultBuilder()
+    .withMetadata({
+      template_path: 'test-template.yaml'
+    });
 
-  return {
-    resources: defaultResources,
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'test-template.yaml',
-      total_resources: defaultResources.length,
-      supported_resources: defaultResources.length
-    },
-    unsupported_resources: []
-  };
+  if (resources) {
+    resources.forEach(resource => builder.addResource(resource));
+  } else {
+    // デフォルトリソース
+    builder.addResource(createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDBInstance'))
+           .addResource(createTestResourceWithMetrics('AWS::Lambda::Function', 'TestLambdaFunction'));
+  }
+
+  return builder.buildExtended();
 }
 
 /**
- * センシティブデータを含むテスト用のExtendedAnalysisResultを作成
+ * センシティブデータを含むテスト用のExtendedAnalysisResultを作成（AnalysisResultBuilderを使用）
  * @returns ExtendedAnalysisResult
  */
 export function createTestAnalysisResultWithSensitiveData(): ExtendedAnalysisResult {
-  const resources = [
-    {
-      logical_id: 'TestDBInstanceWithPassword',
-      resource_type: 'AWS::RDS::DBInstance',
-      resource_properties: {
-        MasterUserPassword: 'SuperSecretPassword123!',
-        DBName: 'TestDatabase'
-      },
-      metrics: [
-        createTestMetricDefinition('CPUUtilization', 'AWS/RDS'),
-        createTestMetricDefinition('DatabaseConnections', 'AWS/RDS')
-      ]
-    }
-  ];
-
-  return {
-    resources: resources,
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'test-template-sensitive.yaml',
-      total_resources: resources.length,
-      supported_resources: resources.length
+  const sensitiveResource: ResourceWithMetrics = {
+    logical_id: 'TestDBInstanceWithPassword',
+    resource_type: 'AWS::RDS::DBInstance',
+    resource_properties: {
+      MasterUserPassword: 'SuperSecretPassword123!',
+      DBName: 'TestDatabase'
     },
-    unsupported_resources: []
+    metrics: [
+      createTestMetricDefinition('CPUUtilization', 'AWS/RDS'),
+      createTestMetricDefinition('DatabaseConnections', 'AWS/RDS')
+    ]
   };
+
+  return new AnalysisResultBuilder()
+    .withMetadata({
+      template_path: 'test-template-sensitive.yaml'
+    })
+    .addResource(sensitiveResource)
+    .buildExtended();
 }

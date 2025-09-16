@@ -1,7 +1,10 @@
 // tests/helpers/cloudformation-test-helpers.ts
 // CloudFormationテンプレート作成用の共通ヘルパー関数
+// CLAUDE.md準拠: DRY原則・Builder Patternを使用
 
 import type { CloudFormationTemplate, CloudFormationResource } from '../../src/types/cloudformation';
+
+import { cfnTemplate } from './cloudformation-template-builder';
 
 /**
  * 基本的なCloudFormationテンプレートを作成
@@ -195,19 +198,19 @@ export function createServerlessApiResource(
   };
 }
 
-// プリセットテンプレート
+// プリセットテンプレート - Builder Patternを使用
 
 /**
  * RDSテンプレートを作成
  * @returns CloudFormationTemplate
  */
 export function createRDSTemplate(): CloudFormationTemplate {
-  return createTestCloudFormationTemplate({
-    Database: createRDSResource('Database', {
-      MasterUserPassword: 'secret123', // サニタイズテスト用
-      MasterUsername: 'admin'
+  return cfnTemplate()
+    .addRDS('Database', {
+      masterUsername: 'admin',
+      masterPassword: 'secret123'  // サニタイズテスト用
     })
-  });
+    .build();
 }
 
 /**
@@ -215,12 +218,12 @@ export function createRDSTemplate(): CloudFormationTemplate {
  * @returns CloudFormationTemplate
  */
 export function createLambdaTemplate(): CloudFormationTemplate {
-  return createTestCloudFormationTemplate({
-    Function: createLambdaResource('Function', {
-      MemorySize: 512,
-      Timeout: 300
+  return cfnTemplate()
+    .addLambda('Function', {
+      memorySize: 512,
+      timeout: 300
     })
-  });
+    .build();
 }
 
 /**
@@ -228,9 +231,9 @@ export function createLambdaTemplate(): CloudFormationTemplate {
  * @returns CloudFormationTemplate
  */
 export function createDynamoDBTemplate(): CloudFormationTemplate {
-  return createTestCloudFormationTemplate({
-    Table: createDynamoDBResource('Table')
-  });
+  return cfnTemplate()
+    .addDynamoDB('Table')
+    .build();
 }
 
 /**
@@ -238,14 +241,14 @@ export function createDynamoDBTemplate(): CloudFormationTemplate {
  * @returns CloudFormationTemplate
  */
 export function createMultiResourceTemplate(): CloudFormationTemplate {
-  return createTestCloudFormationTemplate({
-    Database: createRDSResource(),
-    Function: createLambdaResource(),
-    Table: createDynamoDBResource(),
-    Service: createECSResource(),
-    LoadBalancer: createELBResource(),
-    Api: createApiGatewayResource()
-  });
+  return cfnTemplate()
+    .addRDS('Database')
+    .addLambda('Function')
+    .addDynamoDB('Table')
+    .addECS('Service')
+    .addALB('LoadBalancer')
+    .addAPIGateway('Api')
+    .build();
 }
 
 /**
@@ -254,25 +257,42 @@ export function createMultiResourceTemplate(): CloudFormationTemplate {
  * @returns CloudFormationTemplate
  */
 export function createLargeTemplate(resourceCount: number = 20): CloudFormationTemplate {
-  const resources: Record<string, CloudFormationResource> = {};
-  const resourceTypes = [
-    createRDSResource,
-    createLambdaResource,
-    createDynamoDBResource,
-    createECSResource,
-    createELBResource,
-    createApiGatewayResource
-  ];
+  const builder = cfnTemplate();
+  const resourceTypes = ['RDS', 'Lambda', 'DynamoDB', 'ECS', 'ALB', 'APIGateway'] as const;
 
   for (let i = 0; i < resourceCount; i++) {
-    const factory = resourceTypes[i % resourceTypes.length];
+    const resourceType = resourceTypes[i % resourceTypes.length];
     const logicalId = `Resource${i + 1}`;
-    if (factory) {
-      resources[logicalId] = factory(logicalId);
+
+    if (!resourceType) continue; // Never happens but satisfies TypeScript
+
+    switch (resourceType) {
+      case 'RDS':
+        builder.addRDS(logicalId);
+        break;
+      case 'Lambda':
+        builder.addLambda(logicalId);
+        break;
+      case 'DynamoDB':
+        builder.addDynamoDB(logicalId);
+        break;
+      case 'ECS':
+        builder.addECS(logicalId);
+        break;
+      case 'ALB':
+        builder.addALB(logicalId);
+        break;
+      case 'APIGateway':
+        builder.addAPIGateway(logicalId);
+        break;
+      default:
+        // このケースは発生しないが、TypeScript exhaustiveness checkのために必要
+        builder.addCustomResource(logicalId, 'AWS::CustomResource::Type', {});
+        break;
     }
   }
 
-  return createTestCloudFormationTemplate(resources);
+  return builder.build();
 }
 
 /**
@@ -280,19 +300,17 @@ export function createLargeTemplate(resourceCount: number = 20): CloudFormationT
  * @returns CloudFormationTemplate
  */
 export function createSensitiveTemplate(): CloudFormationTemplate {
-  return createTestCloudFormationTemplate({
-    Database: createRDSResource('Database', {
-      MasterUserPassword: 'SuperSecretPassword123!',
-      MasterUsername: 'admin',
-      DBSnapshotIdentifier: 'sensitive-snapshot'
-    }),
-    Function: createLambdaResource('Function', {
-      Environment: {
-        Variables: {
-          API_KEY: 'sk-1234567890abcdef',
-          DATABASE_PASSWORD: 'dbpass123'
-        }
+  return cfnTemplate()
+    .addRDS('Database', {
+      masterUsername: 'admin',
+      masterPassword: 'SuperSecretPassword123!',
+      properties: { DBSnapshotIdentifier: 'sensitive-snapshot' }
+    })
+    .addLambda('Function', {
+      environment: {
+        API_KEY: 'sk-1234567890abcdef',
+        DATABASE_PASSWORD: 'dbpass123'
       }
     })
-  });
+    .build();
 }
