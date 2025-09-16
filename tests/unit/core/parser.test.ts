@@ -8,51 +8,75 @@ import path from 'path';
 import { TemplateParser } from '../../../src/core/parser';
 import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 import { CloudSupporterError, isFileError, isParseError, ErrorType } from '../../../src/utils/error';
+import {
+  createTestCloudFormationTemplate,
+  createRDSResource,
+  createLambdaResource
+} from '../../helpers/cloudformation-test-helpers';
 
 // テスト全体で使用する一時ディレクトリ
 let tempDir: string;
 
 function createTestFixtures() {
   // 有効なYAMLテンプレート
+  const template = createTestCloudFormationTemplate({
+    TestDB: createRDSResource('TestDB', {
+      Engine: 'mysql',
+      DBInstanceClass: 'db.t3.micro',
+      AllocatedStorage: '20'
+    }),
+    TestFunction: createLambdaResource('TestFunction', {
+      Runtime: 'nodejs20.x',
+      Handler: 'index.handler',
+      Code: {
+        ZipFile: 'exports.handler = async () => ({ statusCode: 200 });'
+      }
+    })
+  });
+
+  const testDB = template.Resources.TestDB;
+  const testFn = template.Resources.TestFunction;
+  if (!testDB || !testFn) throw new Error('Resources not found');
+
+  const dbProps = testDB.Properties as Record<string, unknown>;
+  const fnProps = testFn.Properties as Record<string, unknown>;
+  const fnCode = fnProps.Code as Record<string, unknown>;
+
   const validYamlTemplate = `
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: '${template.AWSTemplateFormatVersion ?? '2010-09-09'}'
 Description: 'Test CloudFormation template'
 Resources:
   TestDB:
-    Type: AWS::RDS::DBInstance
+    Type: ${testDB.Type}
     Properties:
-      Engine: mysql
-      DBInstanceClass: db.t3.micro
-      AllocatedStorage: 20
+      Engine: ${String(dbProps.Engine ?? 'mysql')}
+      DBInstanceClass: ${String(dbProps.DBInstanceClass ?? 'db.t3.micro')}
+      AllocatedStorage: ${String(dbProps.AllocatedStorage ?? '20')}
   TestFunction:
-    Type: AWS::Lambda::Function
+    Type: ${testFn.Type}
     Properties:
-      Runtime: nodejs20.x
-      Handler: index.handler
+      Runtime: ${String(fnProps.Runtime ?? 'nodejs20.x')}
+      Handler: ${String(fnProps.Handler ?? 'index.handler')}
       Code:
-        ZipFile: 'exports.handler = async () => ({ statusCode: 200 });'
+        ZipFile: '${String(fnCode?.ZipFile ?? 'exports.handler = async () => ({ statusCode: 200 });')}'
 `;
   writeFileSync(path.join(tempDir, 'valid-template.yaml'), validYamlTemplate, 'utf8');
 
   // 有効なJSONテンプレート
-  const validJsonTemplate: CloudFormationTemplate = {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Test CloudFormation JSON template",
-    "Resources": {
-      "TestBucket": {
-        "Type": "AWS::S3::Bucket",
-        "Properties": {
-          "BucketName": "test-bucket"
-        }
-      },
-      "TestAPI": {
-        "Type": "AWS::ApiGateway::RestApi", 
-        "Properties": {
-          "Name": "test-api"
-        }
+  const validJsonTemplate = createTestCloudFormationTemplate({
+    "TestBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "test-bucket"
+      }
+    },
+    "TestAPI": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "test-api"
       }
     }
-  };
+  });
   writeFileSync(path.join(tempDir, 'valid-template.json'), JSON.stringify(validJsonTemplate, null, 2), 'utf8');
 
   // 無効なYAMLテンプレート（実際の構文エラー）

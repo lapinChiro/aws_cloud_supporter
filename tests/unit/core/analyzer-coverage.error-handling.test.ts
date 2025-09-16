@@ -3,6 +3,11 @@
 
 import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 import { CloudSupporterError } from '../../../src/utils/error';
+import {
+  createTestCloudFormationTemplate,
+  createLambdaResource,
+  createRDSResource
+} from '../../helpers/cloudformation-test-helpers';
 
 import { setupMocks } from './analyzer-coverage.test-helpers';
 
@@ -26,12 +31,9 @@ describe('Error Handling Coverage', () => {
 
   test('should handle memory limit exceeded during monitoring', async () => {
     const { analyzer, mockParser } = setupMocks();
-    const template: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        Lambda: { Type: 'AWS::Lambda::Function', Properties: {} }
-      }
-    };
+    const template = createTestCloudFormationTemplate({
+      Lambda: createLambdaResource('Lambda')
+    });
 
     mockParser.parse.mockResolvedValue(template);
 
@@ -60,13 +62,10 @@ describe('Error Handling Coverage', () => {
 
   test('should handle continueOnError option for generator failures', async () => {
     const { analyzer, mockParser } = setupMocks();
-    const template: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        Lambda1: { Type: 'AWS::Lambda::Function', Properties: {} },
-        Lambda2: { Type: 'AWS::Lambda::Function', Properties: {} }
-      }
-    };
+    const template = createTestCloudFormationTemplate({
+      Lambda1: createLambdaResource('Lambda1'),
+      Lambda2: createLambdaResource('Lambda2')
+    });
 
     mockParser.parse.mockResolvedValue(template);
 
@@ -85,20 +84,14 @@ describe('Error Handling Coverage', () => {
 
   test('should sanitize properties before analysis', async () => {
     const { analyzer, mockParser } = setupMocks();
-    const template: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        DB: {
-          Type: 'AWS::RDS::DBInstance',
-          Properties: {
-            MasterUserPassword: 'secret123',
-            DBPassword: 'another-secret',
-            SecretString: 'confidential',
-            DBInstanceClass: 'db.t3.medium'
-          }
-        }
-      }
-    };
+    const template = createTestCloudFormationTemplate({
+      DB: createRDSResource('DB', {
+        MasterUserPassword: 'secret123',
+        DBPassword: 'another-secret',
+        SecretString: 'confidential',
+        DBInstanceClass: 'db.t3.medium'
+      })
+    });
 
     mockParser.parse.mockResolvedValue(template);
     
@@ -113,10 +106,7 @@ describe('Error Handling Coverage', () => {
 
   test('should handle empty template', async () => {
     const { analyzer, mockParser } = setupMocks();
-    const emptyTemplate: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {}
-    };
+    const emptyTemplate = createTestCloudFormationTemplate({});
 
     mockParser.parse.mockResolvedValue(emptyTemplate);
     
@@ -132,12 +122,9 @@ describe('Error Handling Coverage', () => {
 
   test('should respect verbose logging option', async () => {
     const { analyzer, mockParser, mockLogger } = setupMocks();
-    const template: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        Lambda: { Type: 'AWS::Lambda::Function', Properties: {} }
-      }
-    };
+    const template = createTestCloudFormationTemplate({
+      Lambda: createLambdaResource('Lambda')
+    });
 
     mockParser.parse.mockResolvedValue(template);
     

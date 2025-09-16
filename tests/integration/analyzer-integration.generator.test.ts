@@ -7,7 +7,8 @@ import { performance } from 'perf_hooks';
 
 import { dump } from 'js-yaml';
 
-import type { CloudFormationTemplate } from '../../src/types/cloudformation';
+import type { CloudFormationResource } from '../../src/types/cloudformation';
+import { createTestCloudFormationTemplate } from '../helpers/cloudformation-test-helpers';
 
 import {
   createTestAnalyzer,
@@ -61,25 +62,24 @@ describe('MetricsAnalyzer Integration - Real Generator', () => {
 
   it('should handle large templates efficiently', async () => {
     // 100リソースのテンプレート作成
-    const largeTemplate: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {}
-    };
-    
+    const resources: Record<string, CloudFormationResource> = {};
+
     for (let i = 0; i < 100; i++) {
-      const resourceType = ['AWS::RDS::DBInstance', 'AWS::Lambda::Function', 
+      const resourceType = ['AWS::RDS::DBInstance', 'AWS::Lambda::Function',
                           'AWS::ECS::Service', 'AWS::DynamoDB::Table'][i % 4] ?? 'AWS::RDS::DBInstance';
-      
+
       let properties = {};
       if (resourceType === 'AWS::ECS::Service') {
         properties = { LaunchType: 'FARGATE' }; // Ensure ECS services are Fargate
       }
-      
-      largeTemplate.Resources[`Resource${i}`] = {
+
+      resources[`Resource${i}`] = {
         Type: resourceType,
         Properties: properties
       };
     }
+
+    const largeTemplate = createTestCloudFormationTemplate(resources);
     
     const tempPath = path.join(__dirname, 'large-template.yaml');
     await fs.writeFile(tempPath, dump(largeTemplate));
@@ -138,35 +138,32 @@ describe('MetricsAnalyzer Integration - Real Generator', () => {
   });
 
   it('should handle mixed supported/unsupported resources', async () => {
-    const mixedTemplate: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        SupportedDB: {
-          Type: 'AWS::RDS::DBInstance',
-          Properties: {
-            DBInstanceClass: 'db.t3.medium'
-          }
-        },
-        SupportedFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Runtime: 'nodejs18.x'
-          }
-        },
-        UnsupportedBucket: {
-          Type: 'AWS::S3::Bucket',
-          Properties: {
-            BucketName: 'test-bucket'
-          }
-        },
-        UnsupportedVpc: {
-          Type: 'AWS::EC2::VPC',
-          Properties: {
-            CidrBlock: '10.0.0.0/16'
-          }
+    const mixedTemplate = createTestCloudFormationTemplate({
+      SupportedDB: {
+        Type: 'AWS::RDS::DBInstance',
+        Properties: {
+          DBInstanceClass: 'db.t3.medium'
+        }
+      },
+      SupportedFunction: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Runtime: 'nodejs18.x'
+        }
+      },
+      UnsupportedBucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          BucketName: 'test-bucket'
+        }
+      },
+      UnsupportedVpc: {
+        Type: 'AWS::EC2::VPC',
+        Properties: {
+          CidrBlock: '10.0.0.0/16'
         }
       }
-    };
+    });
     
     const tempPath = path.join(__dirname, 'mixed-template.yaml');
     await fs.writeFile(tempPath, dump(mixedTemplate));

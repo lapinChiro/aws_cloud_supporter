@@ -4,6 +4,7 @@ import path from 'path';
 
 import { ResourceExtractor, ExtractionPerformanceMonitor } from '../../../src/core/extractor';
 import { TemplateParser } from '../../../src/core/parser';
+import { createTestCloudFormationTemplate } from '../../helpers/cloudformation-test-helpers';
 
 describe('ResourceExtractor最適化（CLAUDE.md: BLUE段階）', () => {
   let parser: TemplateParser;
@@ -116,10 +117,7 @@ describe('ResourceExtractor最適化（CLAUDE.md: BLUE段階）', () => {
   // エラーハンドリングとの統合確認
   it('should handle edge cases gracefully', () => {
     // 空のテンプレート
-    const emptyTemplate = {
-      AWSTemplateFormatVersion: "2010-09-09" as const,
-      Resources: {}
-    };
+    const emptyTemplate = createTestCloudFormationTemplate({});
     
     const result = extractor.extract(emptyTemplate);
     

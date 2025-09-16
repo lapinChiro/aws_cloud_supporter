@@ -3,7 +3,7 @@ import path from 'path';
 
 import { ResourceExtractor, ExtractionPerformanceMonitor } from '../../../src/core/extractor';
 import { TemplateParser } from '../../../src/core/parser';
-import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import { createTestCloudFormationTemplate } from '../../helpers/cloudformation-test-helpers';
 
 import { createExtractionTestFixtures, setupTempDir } from './extractor.test-helpers';
 
@@ -81,16 +81,13 @@ describe('ResourceExtractorパフォーマンステスト（CLAUDE.md: 性能要
 
   // パフォーマンス監視テスト（GREEN段階: 警告確認）
   it('should warn when extraction exceeds time limits', () => {
-    
+
     // 通常の処理では警告は出ない想定
     const extractor = new ResourceExtractor();
-    const smallTemplate: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: "2010-09-09",
-      Resources: {
-        Test: { Type: "AWS::RDS::DBInstance", Properties: {} }
-      }
-    };
-    
+    const smallTemplate = createTestCloudFormationTemplate({
+      Test: { Type: "AWS::RDS::DBInstance", Properties: {} }
+    });
+
     const result = extractor.extract(smallTemplate);
     expect(result.extractionTimeMs).toBeLessThan(100); // 小さなテンプレートは100ms以下
   });

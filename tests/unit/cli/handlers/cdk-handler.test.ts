@@ -8,24 +8,30 @@ import { CDKHandler } from '../../../../src/cli/handlers/cdk-handler';
 import type { CLIOptions } from '../../../../src/cli/interfaces/command.interface';
 import { CloudSupporterError, ErrorType } from '../../../../src/utils/error';
 import { createLogger } from '../../../../src/utils/logger';
+import { createRDSTemplate } from '../../../helpers/cloudformation-test-helpers';
 
 // テスト全体で使用する一時ディレクトリ
 let tempDir: string;
 
 function createTestFixtures() {
   // 有効なCloudFormationテンプレート
-  const validTemplate = `
-AWSTemplateFormatVersion: '2010-09-09'
+  const validTemplate = createRDSTemplate();
+  // YAMLに変換
+  const db = validTemplate.Resources.Database;
+  if (!db) throw new Error('Database resource not found');
+
+  const dbProps = db.Properties as Record<string, unknown>;
+  const yamlContent = `AWSTemplateFormatVersion: '${validTemplate.AWSTemplateFormatVersion ?? '2010-09-09'}'
 Description: 'Test CDK Handler template'
 Resources:
   TestDB:
-    Type: AWS::RDS::DBInstance
+    Type: ${db.Type}
     Properties:
-      Engine: mysql
-      DBInstanceClass: db.t3.micro
-      AllocatedStorage: 20
+      Engine: ${String(dbProps.Engine ?? 'mysql')}
+      DBInstanceClass: ${String(dbProps.DBInstanceClass ?? 'db.t3.micro')}
+      AllocatedStorage: ${String(dbProps.AllocatedStorage ?? '20')}
 `;
-  writeFileSync(path.join(tempDir, 'test-template.yaml'), validTemplate, 'utf8');
+  writeFileSync(path.join(tempDir, 'test-template.yaml'), yamlContent, 'utf8');
 }
 
 beforeAll(() => {

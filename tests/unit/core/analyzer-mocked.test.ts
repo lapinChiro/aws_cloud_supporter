@@ -63,6 +63,11 @@ import type { ILogger } from '../../../src/interfaces/logger';
 import type { ITemplateParser } from '../../../src/interfaces/parser';
 import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
 import { createMockLogger } from '../../helpers';
+import {
+  createTestCloudFormationTemplate,
+  createRDSResource,
+  createLambdaResource
+} from '../../helpers/cloudformation-test-helpers';
 
 describe('MetricsAnalyzer (Mocked Unit Tests)', () => {
   let analyzer: MetricsAnalyzer;
@@ -85,29 +90,20 @@ describe('MetricsAnalyzer (Mocked Unit Tests)', () => {
   });
 
   describe('analyze', () => {
-    const mockTemplate: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        TestDB: {
-          Type: 'AWS::RDS::DBInstance',
-          Properties: {
-            DBInstanceClass: 'db.t3.micro',
-            Engine: 'mysql'
-          }
-        },
-        TestFunction: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Runtime: 'nodejs18.x',
-            MemorySize: 256
-          }
-        },
-        UnsupportedResource: {
-          Type: 'AWS::CustomResource::Unknown',
-          Properties: {}
-        }
+    const mockTemplate: CloudFormationTemplate = createTestCloudFormationTemplate({
+      TestDB: createRDSResource('TestDB', {
+        DBInstanceClass: 'db.t3.micro',
+        Engine: 'mysql'
+      }),
+      TestFunction: createLambdaResource('TestFunction', {
+        Runtime: 'nodejs18.x',
+        MemorySize: 256
+      }),
+      UnsupportedResource: {
+        Type: 'AWS::CustomResource::Unknown',
+        Properties: {}
       }
-    };
+    });
 
     it('should analyze template and return results', async () => {
       mockParser.parse.mockResolvedValue(mockTemplate);

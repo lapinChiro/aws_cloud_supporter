@@ -1,19 +1,19 @@
 // MetricsAnalyzer追加カバレッジテスト - ログ出力
 // CLAUDE.md準拠: No any types、TDD実践
 
-import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import {
+  createTestCloudFormationTemplate,
+  createLambdaResource
+} from '../../helpers/cloudformation-test-helpers';
 
 import { setupMocks } from './analyzer-coverage.test-helpers';
 
 describe('Logging Coverage', () => {
   test('should log warning for slow processing', async () => {
     const { analyzer, mockParser, mockLogger } = setupMocks();
-    const template: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        Lambda: { Type: 'AWS::Lambda::Function', Properties: {} }
-      }
-    };
+    const template = createTestCloudFormationTemplate({
+      Lambda: createLambdaResource('Lambda')
+    });
 
     mockParser.parse.mockResolvedValue(template);
     
@@ -39,12 +39,9 @@ describe('Logging Coverage', () => {
 
   test('should log completion with memory info', async () => {
     const { analyzer, mockParser, mockLogger } = setupMocks();
-    const template: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        Lambda: { Type: 'AWS::Lambda::Function', Properties: {} }
-      }
-    };
+    const template = createTestCloudFormationTemplate({
+      Lambda: createLambdaResource('Lambda')
+    });
 
     mockParser.parse.mockResolvedValue(template);
     

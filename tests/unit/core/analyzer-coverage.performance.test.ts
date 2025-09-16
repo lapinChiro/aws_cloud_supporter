@@ -1,19 +1,19 @@
 // MetricsAnalyzer追加カバレッジテスト - パフォーマンス測定
 // CLAUDE.md準拠: No any types、TDD実践
 
-import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import {
+  createTestCloudFormationTemplate,
+  createLambdaResource
+} from '../../helpers/cloudformation-test-helpers';
 
 import { setupMocks } from './analyzer-coverage.test-helpers';
 
 describe('Performance Timing Coverage', () => {
   test('should track all timing metrics', async () => {
     const { analyzer, mockParser } = setupMocks();
-    const template: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        Lambda: { Type: 'AWS::Lambda::Function', Properties: {} }
-      }
-    };
+    const template = createTestCloudFormationTemplate({
+      Lambda: createLambdaResource('Lambda')
+    });
 
     mockParser.parse.mockResolvedValue(template);
     

@@ -82,23 +82,22 @@ describe('CloudFormation型定義（CLAUDE.md: No any types）', () => {
   // Union型の型安全性テスト
   it('should define proper union types for resource types', () => {
     const cfnTypesModule = cfnTypes as unknown as CloudFormationTypesModule;
-    
+
     // SupportedResource Union型の型ガード関数テスト
-    const testResource = {
-      Type: 'AWS::RDS::DBInstance',
-      Properties: { Engine: 'mysql' }
-    };
-    
+    // CloudFormationテストヘルパーを使用
+    const { createRDSResource } = require('../../helpers/cloudformation-test-helpers') as typeof import('../../helpers/cloudformation-test-helpers');
+    const testResource = createRDSResource('TestDB', { Engine: 'mysql' });
+
     if (cfnTypesModule.isSupportedResource && cfnTypesModule.isRDSInstance) {
       expect(cfnTypesModule.isSupportedResource(testResource)).toBe(true);
       expect(cfnTypesModule.isRDSInstance(testResource)).toBe(true);
-      
+
       // 非サポートリソース
       const unsupportedResource = {
         Type: 'AWS::EC2::Instance',
         Properties: {}
       };
-      
+
       expect(cfnTypesModule.isSupportedResource(unsupportedResource)).toBe(false);
     } else {
       // 型ガード関数が存在しない場合はスキップ

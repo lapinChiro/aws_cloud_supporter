@@ -1,54 +1,51 @@
 // HTMLOutputFormatter テスト - データフォーマット
 // CLAUDE.md準拠: No any types、TDD実践
 
-import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
+import {
+  createHTMLFormatterTestSuite,
+  expectHTMLToContain,
+  expectHTMLNotToContain
+} from '../../helpers/html-formatter-test-template';
 
 import { createMockAnalysisResult } from './html-formatter.test-helpers';
 
-describe('HTMLOutputFormatter - Formatting', () => {
-  let formatter: HTMLOutputFormatter;
-
-  beforeEach(() => {
-    formatter = new HTMLOutputFormatter();
-  });
-
-  test('should apply importance styles', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
-
-    expect(html).toContain('importance-high');
-    expect(html).toContain('importance-medium');
-  });
-
-  test('should apply category badges', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
-
-    expect(html).toContain('category-performance');
-    expect(html).toContain('Performance');
-  });
-
-  test('should format numbers correctly', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
-
-    // Processing time should be formatted  
-    expect(html).toContain('Processing: 1234ms'); // 1234ms formatted
-    expect(html).toContain('Memory: 100MB'); // Memory formatted
-  });
-
-  test('should escape HTML in resource names', () => {
-    const mockResult = createMockAnalysisResult();
-    // Add resource with HTML characters
-    const firstResource = mockResult.resources[0];
-    if (firstResource) {
-      firstResource.logical_id = '<script>alert("test")</script>';
+createHTMLFormatterTestSuite('Formatting', [
+  {
+    name: 'should apply importance styles',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
+      expectHTMLToContain(html, ['importance-high', 'importance-medium']);
     }
-    
-    const html = formatter.formatHTML(mockResult);
+  },
+  {
+    name: 'should apply category badges',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
+      expectHTMLToContain(html, ['category-performance', 'Performance']);
+    }
+  },
+  {
+    name: 'should format numbers correctly',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
+      // Processing time should be formatted
+      expectHTMLToContain(html, ['Processing: 1234ms', 'Memory: 100MB']);
+    }
+  },
+  {
+    name: 'should escape HTML in resource names',
+    test: (formatter, mockResult) => {
+      // Add resource with HTML characters
+      const firstResource = mockResult.resources[0];
+      if (firstResource) {
+        firstResource.logical_id = '<script>alert("test")</script>';
+      }
 
-    // Should be escaped
-    expect(html).not.toContain('<script>alert("test")</script>');
-    expect(html).toContain('&lt;script&gt;');
-  });
-});
+      const html = formatter.formatHTML(mockResult);
+
+      // Should be escaped
+      expectHTMLNotToContain(html, ['<script>alert("test")</script>']);
+      expectHTMLToContain(html, ['&lt;script&gt;']);
+    }
+  }
+], createMockAnalysisResult);

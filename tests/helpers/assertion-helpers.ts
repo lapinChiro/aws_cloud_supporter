@@ -101,3 +101,88 @@ export function expectMultipleThresholds(
     expectThresholds(metrics, test.metricName, test.warning, test.critical);
   });
 }
+
+/**
+ * バリデーション結果の検証（21回重複 → 1関数に統一）
+ * @param result バリデーション結果
+ * @param expectedValid 期待される有効性
+ * @param expectedErrorCount 期待されるエラー数（オプション）
+ */
+export function expectValidationResult(
+  result: { isValid: boolean; errors: Array<{ path: string; message: string; value?: unknown }> },
+  expectedValid: boolean,
+  expectedErrorCount?: number
+): void {
+  expect(result.isValid).toBe(expectedValid);
+  if (expectedErrorCount !== undefined) {
+    expect(result.errors).toHaveLength(expectedErrorCount);
+  }
+}
+
+/**
+ * CDKコード内のパターン検証
+ * @param cdkCode CDKコード文字列
+ * @param expectedPatterns 期待されるパターン配列
+ */
+export function expectCDKCodeToContain(
+  cdkCode: string,
+  expectedPatterns: string[]
+): void {
+  expectedPatterns.forEach(pattern => {
+    expect(cdkCode).toContain(pattern);
+  });
+}
+
+/**
+ * CDKコード内のアラーム数検証
+ * @param cdkCode CDKコード文字列
+ * @param expectedCount 期待されるアラーム数
+ * @param comparison 比較方式
+ */
+export function expectAlarmCount(
+  cdkCode: string,
+  expectedCount: number,
+  comparison: 'exact' | 'minimum' = 'exact'
+): void {
+  const alarmCount = (cdkCode.match(/new cloudwatch\.Alarm/g) ?? []).length;
+  if (comparison === 'exact') {
+    expect(alarmCount).toBe(expectedCount);
+  } else {
+    expect(alarmCount).toBeGreaterThanOrEqual(expectedCount);
+  }
+}
+
+/**
+ * リソース配列の検証
+ * @param resources リソース配列
+ * @param expectedResourceTypes 期待されるリソースタイプ
+ */
+export function expectResourceTypes(
+  resources: Array<{ resource_type: string }>,
+  expectedResourceTypes: string[]
+): void {
+  const resourceTypes = resources.map(r => r.resource_type);
+  expectedResourceTypes.forEach(type => {
+    expect(resourceTypes).toContain(type);
+  });
+}
+
+/**
+ * エラー配列の検証
+ * @param errors エラー配列
+ * @param shouldBeEmpty エラーが空であるべきか
+ * @param expectedErrors 期待される特定のエラー（オプション）
+ */
+export function expectErrors(
+  errors: string[],
+  shouldBeEmpty: boolean,
+  expectedErrors?: string[]
+): void {
+  if (shouldBeEmpty) {
+    expect(errors).toHaveLength(0);
+  } else if (expectedErrors) {
+    expectedErrors.forEach(error => {
+      expect(errors).toContainEqual(expect.stringContaining(error));
+    });
+  }
+}

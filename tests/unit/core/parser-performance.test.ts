@@ -5,7 +5,9 @@ import { tmpdir } from 'os';
 import path from 'path';
 
 import { TemplateParser, isJSONFile, isYAMLFile, isSupportedTemplateFile } from '../../../src/core/parser';
+import type { CloudFormationResource } from '../../../src/types/cloudformation';
 import { CloudSupporterError } from '../../../src/utils/error';
+import { createTestCloudFormationTemplate } from '../../helpers/cloudformation-test-helpers';
 
 describe('TemplateParser最適化（CLAUDE.md: BLUE段階）', () => {
   let tempDir: string;
@@ -114,29 +116,26 @@ Description: 'Template without Resources section'
   // 大規模テンプレートの効率的処理
   it('should handle moderately large templates efficiently', async () => {
     const parser = new TemplateParser();
-    
+
     // 中規模テンプレート（1000リソース程度）
-    const mediumTemplate: {
-      AWSTemplateFormatVersion: string;
-      Description: string;
-      Resources: Record<string, unknown>;
-    } = {
-      AWSTemplateFormatVersion: "2010-09-09",
-      Description: "Medium size template",
-      Resources: {}
-    };
-    
+    const resources: Record<string, CloudFormationResource> = {};
     for (let i = 0; i < 1000; i++) {
-      mediumTemplate.Resources[`TestBucket${i}`] = {
+      resources[`TestBucket${i}`] = {
         Type: "AWS::S3::Bucket",
         Properties: {
           BucketName: `test-bucket-${i}`
         }
       };
     }
+
+    const mediumTemplate = createTestCloudFormationTemplate(resources);
+    const templateWithDescription = {
+      ...mediumTemplate,
+      Description: "Medium size template"
+    };
     
     const mediumPath = path.join(tempDir, 'medium-template.json');
-    writeFileSync(mediumPath, JSON.stringify(mediumTemplate, null, 2), 'utf8');
+    writeFileSync(mediumPath, JSON.stringify(templateWithDescription, null, 2), 'utf8');
     
     const startTime = performance.now();
     const template = await parser.parse(mediumPath);

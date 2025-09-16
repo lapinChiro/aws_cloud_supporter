@@ -1,93 +1,93 @@
 // HTMLOutputFormatter テスト - 基本構造
 // CLAUDE.md準拠: No any types、TDD実践
 
-import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
-import { createLogger } from '../../../src/utils/logger';
+import {
+  createHTMLFormatterTestSuite,
+  expectBasicHTMLStructure,
+  expectCSSStyles,
+  expectHTMLToContain
+} from '../../helpers/html-formatter-test-template';
 
 import { createMockAnalysisResult } from './html-formatter.test-helpers';
 
-describe('HTMLOutputFormatter - Structure', () => {
-  let formatter: HTMLOutputFormatter;
+createHTMLFormatterTestSuite('Structure', [
+  {
+    name: 'should generate valid HTML structure',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
 
-  beforeEach(() => {
-    formatter = new HTMLOutputFormatter();
-  });
+      // Basic HTML structure
+      expectBasicHTMLStructure(html);
 
-  test('should generate valid HTML structure', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
+      // Title
+      expectHTMLToContain(html, ['<title>CloudWatch Metrics Report</title>']);
+    }
+  },
+  {
+    name: 'should include all CSS styles',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
 
-    // Basic HTML structure
-    expect(html).toContain('<!DOCTYPE html>');
-    expect(html).toContain('<html');
-    expect(html).toContain('<head>');
-    expect(html).toContain('<body>');
-    expect(html).toContain('</html>');
+      // CSS styles should be present
+      expectCSSStyles(html, ['container', 'resource-card', 'badge', 'header']);
+      expect(html).toContain('body {');
+    }
+  },
+  {
+    name: 'should include JavaScript functionality',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
 
-    // Meta tags
-    expect(html).toContain('<meta charset="UTF-8">');
-    expect(html).toContain('<meta name="viewport"');
+      // JavaScript should be present
+      expectHTMLToContain(html, [
+        '<script>',
+        'function initializeEventListeners',
+        'function applyFilters',
+        'currentFilters',
+        '</script>'
+      ]);
+    }
+  },
+  {
+    name: 'should accept logger in constructor',
+    test: () => {
+      // Dynamic import to avoid circular dependency
+      const { HTMLOutputFormatter } = require('../../../src/core/formatters/html') as typeof import('../../../src/core/formatters/html');
+      const { createLogger } = require('../../../src/utils/logger') as typeof import('../../../src/utils/logger');
 
-    // Title
-    expect(html).toContain('<title>CloudWatch Metrics Report</title>');
-  });
+      // LoggerのモックをcreateLoggerで作成
+      const mockLogger = createLogger('info', false);
 
-  test('should include all CSS styles', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
+      // infoメソッドをspyで監視
+      const infoSpy = jest.spyOn(mockLogger, 'info');
 
-    // CSS styles should be present
-    expect(html).toContain('<style>');
-    expect(html).toContain('body {');
-    expect(html).toContain('.container {');
-    expect(html).toContain('.resource-card {');
-    expect(html).toContain('.badge {');
-    expect(html).toContain('.header {');
-    expect(html).toContain('</style>');
-  });
+      const formatterWithLogger = new HTMLOutputFormatter(mockLogger as unknown as import('../../../src/utils/logger').Logger);
+      const mockResult = createMockAnalysisResult();
 
-  test('should include JavaScript functionality', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
+      formatterWithLogger.formatHTML(mockResult);
 
-    // JavaScript should be present
-    expect(html).toContain('<script>');
-    expect(html).toContain('function initializeEventListeners');
-    expect(html).toContain('function applyFilters');
-    expect(html).toContain('currentFilters');
-    expect(html).toContain('</script>');
-  });
+      // Logger should be called during formatting
+      expect(infoSpy).toHaveBeenCalledWith('📄 Formatting output as HTML');
+    }
+  },
+  {
+    name: 'should provide static CSS and JS methods',
+    test: () => {
+      // Dynamic import to avoid circular dependency
+      const { HTMLOutputFormatter } = require('../../../src/core/formatters/html') as typeof import('../../../src/core/formatters/html');
 
-  // Constructor with logger test (covers line 24)
-  test('should accept logger in constructor', () => {
-    // LoggerのモックをcreateLoggerで作成
-    const mockLogger = createLogger('info', false);
+      // Test getEmbeddedCSS static method
+      const css = HTMLOutputFormatter.getEmbeddedCSS();
+      expect(typeof css).toBe('string');
+      expect(css.length).toBeGreaterThan(0);
+      expect(css).toContain('body {');
+      expect(css).toContain('.container {');
 
-    // infoメソッドをspyで監視
-    const infoSpy = jest.spyOn(mockLogger, 'info');
-
-    const formatterWithLogger = new HTMLOutputFormatter(mockLogger as unknown as import('../../../src/utils/logger').Logger);
-    const mockResult = createMockAnalysisResult();
-
-    formatterWithLogger.formatHTML(mockResult);
-
-    // Logger should be called during formatting
-    expect(infoSpy).toHaveBeenCalledWith('📄 Formatting output as HTML');
-  });
-
-  // Static methods test (covers lines 56-66)
-  test('should provide static CSS and JS methods', () => {
-    // Test getEmbeddedCSS static method
-    const css = HTMLOutputFormatter.getEmbeddedCSS();
-    expect(typeof css).toBe('string');
-    expect(css.length).toBeGreaterThan(0);
-    expect(css).toContain('body {');
-    expect(css).toContain('.container {');
-    
-    // Test getEmbeddedJS static method
-    const js = HTMLOutputFormatter.getEmbeddedJS();
-    expect(typeof js).toBe('string');
-    expect(js.length).toBeGreaterThan(0);
-    expect(js).toContain('function');
-  });
-});
+      // Test getEmbeddedJS static method
+      const js = HTMLOutputFormatter.getEmbeddedJS();
+      expect(typeof js).toBe('string');
+      expect(js.length).toBeGreaterThan(0);
+      expect(js).toContain('function');
+    }
+  }
+], createMockAnalysisResult);

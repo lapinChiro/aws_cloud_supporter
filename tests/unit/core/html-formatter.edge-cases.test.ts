@@ -1,35 +1,42 @@
 // HTMLOutputFormatter テスト - エッジケース
 // CLAUDE.md準拠: No any types、TDD実践
 
-import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
+import {
+  createHTMLFormatterTestSuiteWithoutMock,
+  expectHTMLToContain,
+  expectBasicHTMLStructure
+} from '../../helpers/html-formatter-test-template';
 
-import { 
-  createEmptyAnalysisResult, 
-  createResultWithUnsupportedResources 
+import {
+  createEmptyAnalysisResult,
+  createResultWithUnsupportedResources
 } from './html-formatter.test-helpers';
 
-describe('HTMLOutputFormatter - Edge Cases', () => {
-  let formatter: HTMLOutputFormatter;
+createHTMLFormatterTestSuiteWithoutMock('Edge Cases', [
+  {
+    name: 'should handle unsupported resources',
+    test: (formatter) => {
+      const mockResult = createResultWithUnsupportedResources();
+      const html = formatter.formatHTML(mockResult);
 
-  beforeEach(() => {
-    formatter = new HTMLOutputFormatter();
-  });
+      expectHTMLToContain(html, [
+        'Unsupported Resources',
+        'UnsupportedVPC',
+        'UnsupportedBucket'
+      ]);
+    }
+  },
+  {
+    name: 'should handle empty results',
+    test: (formatter) => {
+      const emptyResult = createEmptyAnalysisResult();
+      const html = formatter.formatHTML(emptyResult);
 
-  test('should handle unsupported resources', () => {
-    const mockResult = createResultWithUnsupportedResources();
-    const html = formatter.formatHTML(mockResult);
-
-    expect(html).toContain('Unsupported Resources');
-    expect(html).toContain('UnsupportedVPC');
-    expect(html).toContain('UnsupportedBucket');
-  });
-
-  test('should handle empty results', () => {
-    const emptyResult = createEmptyAnalysisResult();
-    const html = formatter.formatHTML(emptyResult);
-
-    expect(html).toContain('Resources: 0/0');
-    expect(html).toContain('No supported resources found');
-    expect(html).toContain('<!DOCTYPE html>'); // Still valid HTML
-  });
-});
+      expectHTMLToContain(html, [
+        'Resources: 0/0',
+        'No supported resources found'
+      ]);
+      expectBasicHTMLStructure(html);
+    }
+  }
+]);

@@ -4,8 +4,8 @@ import { MetricsAnalyzer } from '../../src/core/analyzer';
 import { HTMLOutputFormatter } from '../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../src/core/json-formatter';
 import { TemplateParser } from '../../src/core/parser';
-import type { CloudFormationTemplate } from '../../src/types/cloudformation';
 import { Logger } from '../../src/utils/logger';
+import { createTestCloudFormationTemplate } from '../helpers/cloudformation-test-helpers';
 
 import type {
   ParsedOutput
@@ -82,20 +82,17 @@ describe('MetricsAnalyzer Integration Tests - Formats & Integration', () => {
     });
 
     test('8-2: Error recovery with continueOnError option', async () => {
-      const template: CloudFormationTemplate = {
-        AWSTemplateFormatVersion: '2010-09-09' as const,
-        Resources: {
-          ValidLambda: {
-            Type: 'AWS::Lambda::Function',
-            Properties: { Runtime: 'nodejs20.x' }
-          },
-          // This could cause generator errors if properties are malformed
-          InvalidRDS: {
-            Type: 'AWS::RDS::DBInstance',
-            Properties: null
-          }
+      const template = createTestCloudFormationTemplate({
+        ValidLambda: {
+          Type: 'AWS::Lambda::Function',
+          Properties: { Runtime: 'nodejs20.x' }
+        },
+        // This could cause generator errors if properties are malformed
+        InvalidRDS: {
+          Type: 'AWS::RDS::DBInstance',
+          Properties: null
         }
-      };
+      });
 
       const { withTempTemplate } = await import('./metrics-analyzer.integration.test-helpers');
       await withTempTemplate(template, 'error-recovery.yaml', async (tempPath) => {
