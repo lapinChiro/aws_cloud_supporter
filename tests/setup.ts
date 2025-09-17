@@ -113,14 +113,20 @@ afterAll(async () => {
       console.warn('Failed to clean up temp directory:', error);
     }
   }
-  
+
   // メモリクリーンアップ
   if (global.gc) {
     global.gc();
   }
-  
-  // 非同期操作の完了を待つ
+
+  // すべての非同期操作の完了を確実に待つ
   await new Promise(resolve => setImmediate(resolve));
+
+  // タイマーのクリア（念のため）
+  jest.clearAllTimers();
+
+  // 追加の待機（非同期操作の確実な完了のため）
+  await new Promise(resolve => setTimeout(resolve, 100));
 });
 
 // TypeScript型安全性の確保

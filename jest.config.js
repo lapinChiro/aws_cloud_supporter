@@ -95,4 +95,10 @@ module.exports = {
   // 全体設定
   verbose: true,
   roots: ['<rootDir>/src', '<rootDir>/tests'],
+
+  // 非同期リソースのクリーンアップ対策
+  // テスト完了後に強制終了（Open Handlesの警告を防ぐため）
+  forceExit: true,
+  // Open Handles検出は無効化（forceExitと併用時は不要）
+  detectOpenHandles: false
 };
