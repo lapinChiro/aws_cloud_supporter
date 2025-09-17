@@ -4,7 +4,7 @@
 
 import * as path from 'path';
 
-import { CloudSupporterError, ErrorType } from '../utils/error';
+import { CloudSupporterError, Errors } from '../errors';
 
 /**
  * CDK Input Validator
@@ -23,8 +23,7 @@ export class CDKInputValidator {
    */
   static validateFilePath(filePath: string): void {
     if (!filePath || typeof filePath !== 'string') {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'File path must be a non-empty string',
         { providedPath: filePath, pathType: typeof filePath }
       );
@@ -50,8 +49,7 @@ export class CDKInputValidator {
 
     for (const pattern of maliciousPatterns) {
       if (filePath.includes(pattern)) {
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Invalid file path: Contains potentially malicious pattern '${pattern}'`,
           { 
             providedPath: filePath, 
@@ -74,8 +72,7 @@ export class CDKInputValidator {
       
       if (!isTempPath && !isTestTempPath) {
         // Absolute paths outside project directory and temp directories are suspicious
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Absolute file path outside project directory not allowed: ${filePath}`,
           { 
             providedPath: filePath,
@@ -89,8 +86,7 @@ export class CDKInputValidator {
 
     // Check for null byte injection
     if (filePath.includes('\0') || filePath.includes('\x00')) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'File path contains null byte characters',
         { providedPath: filePath }
       );
@@ -102,8 +98,7 @@ export class CDKInputValidator {
     
     for (const char of invalidChars) {
       if (fileName.includes(char)) {
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Invalid character '${char}' in file name: ${fileName}`,
           { providedPath: filePath, invalidCharacter: char }
         );
@@ -119,8 +114,7 @@ export class CDKInputValidator {
    */
   static validateSNSTopicArn(arn: string): void {
     if (!arn || typeof arn !== 'string') {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'SNS Topic ARN must be a non-empty string',
         { providedArn: arn, arnType: typeof arn }
       );
@@ -136,8 +130,7 @@ export class CDKInputValidator {
       const arnParts = arn.split(':');
       
       if (arnParts.length !== 6) {
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Invalid SNS ARN structure: Expected 6 parts separated by ':', got ${arnParts.length}`,
           { 
             providedArn: arn,
@@ -148,32 +141,28 @@ export class CDKInputValidator {
       }
 
       if (arnParts[0] !== 'arn') {
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Invalid ARN prefix: Expected 'arn', got '${arnParts[0] ?? 'undefined'}'`,
           { providedArn: arn, expectedPrefix: 'arn', actualPrefix: arnParts[0] }
         );
       }
 
       if (!['aws', 'aws-cn', 'aws-us-gov'].includes(arnParts[1] ?? '')) {
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Invalid ARN partition: Expected 'aws', 'aws-cn', or 'aws-us-gov', got '${arnParts[1] ?? 'undefined'}'`,
           { providedArn: arn, expectedPartitions: ['aws', 'aws-cn', 'aws-us-gov'], actualPartition: arnParts[1] }
         );
       }
 
       if (arnParts[2] !== 'sns') {
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Invalid service: Expected 'sns', got '${arnParts[2] ?? 'undefined'}'. This validator only supports SNS Topic ARNs.`,
           { providedArn: arn, expectedService: 'sns', actualService: arnParts[2] }
         );
       }
 
       // Generic fallback for other format issues
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `Invalid SNS Topic ARN format: ${arn}`,
         { 
           providedArn: arn,
@@ -192,8 +181,7 @@ export class CDKInputValidator {
    */
   static validateStackName(stackName: string): void {
     if (!stackName || typeof stackName !== 'string') {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'Stack name must be a non-empty string'
       );
     }
@@ -202,8 +190,7 @@ export class CDKInputValidator {
     const validStackNamePattern = /^[a-zA-Z][a-zA-Z0-9-]*$/;
     
     if (!validStackNamePattern.test(stackName)) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `Invalid stack name: ${stackName}. Must start with a letter and contain only letters, numbers, and hyphens.`,
         { 
           providedName: stackName,
@@ -214,16 +201,14 @@ export class CDKInputValidator {
     }
 
     if (stackName.length > 128) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `Stack name too long: ${stackName.length} characters. Maximum allowed: 128`,
         { providedName: stackName, actualLength: stackName.length, maxLength: 128 }
       );
     }
 
     if (stackName.endsWith('-') || stackName.includes('--')) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `Invalid stack name format: Cannot end with hyphen or contain consecutive hyphens: ${stackName}`,
         { providedName: stackName }
       );
@@ -239,8 +224,7 @@ export class CDKInputValidator {
    */
   static validateTemplateSize(templateContent: string, maxSizeBytes: number = 10 * 1024 * 1024): void {
     if (!templateContent) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'Template content cannot be empty'
       );
     }
@@ -251,8 +235,7 @@ export class CDKInputValidator {
       const sizeMB = (contentSize / 1024 / 1024).toFixed(1);
       const maxSizeMB = (maxSizeBytes / 1024 / 1024).toFixed(1);
       
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `Template file too large: ${sizeMB}MB exceeds limit of ${maxSizeMB}MB`,
         { 
           actualSize: contentSize,
@@ -285,8 +268,7 @@ export class CDKInputValidator {
         const sizeMB = (stats.size / 1024 / 1024).toFixed(1);
         const maxSizeMB = (maxSizeBytes / 1024 / 1024).toFixed(1);
         
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Template file size exceeds ${maxSizeMB}MB limit`,
           { 
             filePath: templatePath,
@@ -303,8 +285,7 @@ export class CDKInputValidator {
         throw error;
       }
       
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `Failed to check template file size: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { filePath: templatePath, originalError: error instanceof Error ? error.message : String(error) }
       );
@@ -343,8 +324,7 @@ export class CDKInputValidator {
    */
   static validateGeneratedCode(generatedCode: string): void {
     if (!generatedCode || typeof generatedCode !== 'string') {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'Generated code must be a non-empty string'
       );
     }
@@ -359,8 +339,7 @@ export class CDKInputValidator {
 
     for (const { pattern, issue } of securityIssues) {
       if (pattern.test(generatedCode)) {
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           `Security issue in generated code: ${issue}`,
           { detectedPattern: pattern.source }
         );
@@ -376,8 +355,7 @@ export class CDKInputValidator {
     ];
     
     if (criticalSensitivePatterns.some(pattern => pattern.test(generatedCode))) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'Generated code contains patterns that might be sensitive information',
         { suggestion: 'Review sanitization process' }
       );

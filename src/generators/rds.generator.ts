@@ -1,10 +1,10 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
 import { METRICS_CONFIG_MAP } from '../config/metrics';
+import { Errors } from '../errors';
 import type { CloudFormationResource, RDSDBInstance} from '../types/cloudformation';
 // import { RDSProperties } from '../types/cloudformation';
 import type { MetricConfig } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 
 import { BaseMetricsGenerator } from './base.generator';
 
@@ -28,11 +28,7 @@ export class RDSMetricsGenerator extends BaseMetricsGenerator {
     
     // CLAUDE.md準拠: No any types（型安全性）
     if (!configs) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
-        'RDS metrics configuration not found',
-        { resourceType: 'AWS::RDS::DBInstance' }
-      );
+      throw Errors.RDS.metricsNotFound();
     }
     
     return configs;

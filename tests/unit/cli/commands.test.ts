@@ -10,11 +10,11 @@ import { MetricsAnalyzer } from '../../../src/core/analyzer';
 import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
 import { JSONOutputFormatter } from '../../../src/core/json-formatter';
 import { TemplateParser } from '../../../src/core/parser';
+import { CloudSupporterError, ErrorType, ERROR_CODES } from '../../../src/errors';
 import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
 import type { ILogger } from '../../../src/interfaces/logger';
 import type { ITemplateParser } from '../../../src/interfaces/parser';
 import type { ResourceWithMetrics } from '../../../src/types/metrics';
-import { CloudSupporterError, ErrorType } from '../../../src/utils/error';
 import { Logger } from '../../../src/utils/logger';
 // モック
 jest.mock('../../../src/core/analyzer');
@@ -590,6 +590,7 @@ describe('CLI Commands (T-016)', () => {
   describe('Error Handling', () => {
     it('should handle template file not found error', async () => {
       const error = new CloudSupporterError(
+        ERROR_CODES.VALIDATION_FAILED,
         ErrorType.VALIDATION_ERROR,
         'Template file not found: test.yaml'
       );
@@ -612,6 +613,7 @@ describe('CLI Commands (T-016)', () => {
 
     it('should handle analysis timeout error', async () => {
       const error = new CloudSupporterError(
+        ERROR_CODES.RESOURCE_INVALID,
         ErrorType.RESOURCE_ERROR,
         'Analysis timeout: exceeded 30s limit'
       );
@@ -628,6 +630,7 @@ describe('CLI Commands (T-016)', () => {
 
     it('should handle memory limit error', async () => {
       const error = new CloudSupporterError(
+        ERROR_CODES.RESOURCE_INVALID,
         ErrorType.RESOURCE_ERROR,
         'Memory usage exceeded: 300MB (limit: 256MB)'
       );

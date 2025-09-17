@@ -3,13 +3,32 @@
 
 import { spawn } from 'child_process';
 import type { ChildProcess } from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
+
+import { createLogger } from '../../src/utils/logger';
+
+// Create logger for test debugging
+const testLogger = createLogger('error', false); // No colors in CI
 
 // Helper function to run CLI commands
 export async function runCLICommand(args: string[]): Promise<{ exitCode: number; stdout: string; stderr: string }> {
   return new Promise((resolve, reject) => {
     // Use built CLI directly to avoid npm output
     const cliPath = path.join(__dirname, '../../dist/cli/index.js');
+    
+    // Check if CLI file exists (for debugging CI issues)
+    if (!fs.existsSync(cliPath)) {
+      testLogger.error(`CLI file not found at: ${cliPath}`);
+      testLogger.error(`__dirname: ${__dirname}`);
+      testLogger.error(`process.cwd(): ${process.cwd()}`);
+      // Try alternative path resolution
+      const altPath = path.resolve(process.cwd(), 'dist/cli/index.js');
+      if (fs.existsSync(altPath)) {
+        testLogger.error(`But found at alternative path: ${altPath}`);
+      }
+    }
+    
     const child: ChildProcess = spawn('node', [cliPath, ...args], {
       cwd: process.cwd(),
       // Ensure pipes are properly closed
@@ -42,6 +61,15 @@ export async function runCLICommand(args: string[]): Promise<{ exitCode: number;
       // Ensure streams are closed
       child.stdout?.destroy();
       child.stderr?.destroy();
+      
+      // Debug logging for CI failures
+      if (code !== 0 && stderr) {
+        testLogger.error(`CLI failed with exit code ${code ?? 'null'}`);
+        testLogger.error(`stderr: ${stderr}`);
+        testLogger.error(`CLI path: ${cliPath}`);
+        testLogger.error(`Working directory: ${process.cwd()}`);
+      }
+      
       resolve({
         exitCode: code ?? 0,
         stdout: stdout.trim(),

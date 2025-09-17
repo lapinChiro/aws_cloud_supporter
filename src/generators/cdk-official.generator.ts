@@ -8,6 +8,7 @@ import type * as sns from 'aws-cdk-lib/aws-sns';
 import * as Handlebars from 'handlebars';
 
 
+import { Errors } from '../errors';
 import type { ExtendedAnalysisResult } from '../interfaces/analyzer';
 import type { ILogger } from '../interfaces/logger';
 // Security imports
@@ -17,7 +18,6 @@ import { CDKSecuritySanitizer } from '../security/sanitizer';
 import { CDKOfficialHandlebarsHelpers } from '../templates/handlebars-official-helpers';
 import type { CDKStackDataOfficial, CDKAlarmComplete, CDKSNSConfiguration, CDKOptions } from '../types/cdk-business';
 import type { ResourceWithMetrics, MetricDefinition } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 
 /**
  * テンプレート用アラーム型（CDKAlarmComplete + テンプレート用プロパティ）
@@ -105,8 +105,7 @@ export class CDKOfficialGenerator {
       const duration = performance.now() - startTime;
       this.logger.error(`CDK Official Types generation failed after ${duration.toFixed(1)}ms`, error as Error);
       
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `CDK Official Types generation failed: ${(error as Error).message}`,
         { 
           analysisResultMetadata: analysisResult?.metadata || null,
@@ -170,29 +169,25 @@ export class CDKOfficialGenerator {
    */
   private validateInput(analysisResult: ExtendedAnalysisResult, options: CDKOptions): void {
     if (!analysisResult) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'Analysis result is required for CDK generation'
       );
     }
 
     if (!analysisResult.resources || !Array.isArray(analysisResult.resources)) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'Analysis result must contain a resources array'
       );
     }
 
     if (!analysisResult.metadata) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'Analysis result must contain metadata'
       );
     }
     
     if (!options?.enabled) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         'CDK mode must be enabled in options'
       );
     }
@@ -450,8 +445,7 @@ export class CDKOfficialGenerator {
       this.logger.debug(`CDK Official template loaded from ${this.templatePath} with helpers registered`);
       
     } catch (error) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `CDK Official template loading failed: ${(error as Error).message}`,
         { templatePath: this.templatePath, originalError: (error as Error).message }
       );

@@ -1,9 +1,9 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
 import { METRICS_CONFIG_MAP } from '../config/metrics';
+import { Errors } from '../errors';
 import type { CloudFormationResource } from '../types/cloudformation';
 import type { MetricConfig, MetricDefinition } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 
 import { BaseMetricsGenerator } from './base.generator';
 
@@ -26,16 +26,7 @@ export class ALBMetricsGenerator extends BaseMetricsGenerator {
   override async generate(resource: CloudFormationResource): Promise<MetricDefinition[]> {
     // Application Load Balancerのみサポート
     if (!this.isApplicationLoadBalancer(resource)) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
-        'Only Application Load Balancers are supported',
-        { 
-          resourceType: resource.Type,
-          loadBalancerType: this.getLoadBalancerType(resource)
-        },
-        undefined,
-        undefined
-      );
+      throw Errors.ALB.onlyApplicationLoadBalancerSupported(this.getLoadBalancerType(resource) ?? 'Unknown');
     }
     
     // 基底クラスのgenerate呼び出し
@@ -49,11 +40,7 @@ export class ALBMetricsGenerator extends BaseMetricsGenerator {
     const baseConfigs = METRICS_CONFIG_MAP['AWS::ElasticLoadBalancingV2::LoadBalancer'];
     
     if (!baseConfigs) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
-        'ALB metrics configuration not found',
-        { resourceType: 'AWS::ElasticLoadBalancingV2::LoadBalancer' }
-      );
+      throw Errors.ALB.metricsNotFound();
     }
     
     return baseConfigs;

@@ -3,6 +3,7 @@
 
 import { performance } from 'perf_hooks';
 
+import { CloudSupporterError, Errors } from '../errors';
 import { ALBMetricsGenerator } from '../generators/alb.generator';
 import { APIGatewayMetricsGenerator } from '../generators/apigateway.generator';
 import { DynamoDBMetricsGenerator } from '../generators/dynamodb.generator';
@@ -15,7 +16,6 @@ import type { ILogger } from '../interfaces/logger';
 import type { ITemplateParser } from '../interfaces/parser';
 import type { CloudFormationTemplate, CloudFormationResource } from '../types/cloudformation';
 import type { ResourceWithMetrics } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 
 // Generators
 
@@ -74,8 +74,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
       if (options.memoryLimit) {
         const currentMemory = process.memoryUsage().heapUsed;
         if (currentMemory > options.memoryLimit) {
-          throw new CloudSupporterError(
-            ErrorType.RESOURCE_ERROR,
+          throw Errors.Common.validationFailed(
             `Memory usage already exceeds limit: ${(currentMemory / 1024 / 1024).toFixed(1)}MB (limit: ${(options.memoryLimit / 1024 / 1024).toFixed(0)}MB)`
           );
         }
@@ -101,8 +100,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
         throw error;
       }
       
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `Analysis failed: ${(error as Error).message}`,
         { originalError: (error as Error).message || String(error) }
       );
@@ -244,7 +242,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
           
           // Promiseを拒否
           const message = `Memory usage exceeded: ${(usage / 1024 / 1024).toFixed(1)}MB (limit: ${(limit / 1024 / 1024).toFixed(0)}MB)`;
-          reject(new CloudSupporterError(ErrorType.RESOURCE_ERROR, message));
+          reject(Errors.Common.validationFailed(message));
         }
       }, 50); // 50ms間隔でチェック
     });
@@ -306,8 +304,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
       try {
         const generator = this.generators.get(resource.Type);
         if (!generator) {
-          throw new CloudSupporterError(
-            ErrorType.RESOURCE_ERROR,
+          throw Errors.Common.validationFailed(
             `No generator found for resource type: ${resource.Type}`,
             { resourceType: resource.Type }
           );
@@ -316,8 +313,7 @@ export class MetricsAnalyzer implements IMetricsAnalyzer {
         const metrics = await generator.generate(resource);
         
         if (typeof metrics === 'function' || !Array.isArray(metrics)) {
-          throw new CloudSupporterError(
-            ErrorType.RESOURCE_ERROR,
+          throw Errors.Common.validationFailed(
             `Invalid metrics type: expected array, got ${typeof metrics}`,
             { resourceId: logicalId, resourceType: resource.Type, metricsType: typeof metrics }
           );

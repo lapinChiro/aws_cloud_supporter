@@ -1,75 +1,73 @@
 // JsonSchemaValidator テスト - メトリクスバリデーション
 // CLAUDE.md準拠: No any types、TDD実践
 
-import { JsonSchemaValidator } from '../../../src/utils/schema-validator';
+import {
+  createSchemaValidatorTestSuite,
+  assertInvalid
+} from '../../helpers/schema-validator-test-template';
 
-import { 
+import {
   createResultWithInvalidCategory,
   createResultWithInvalidImportance,
   createResultWithInvalidThreshold,
   createResultWithInvalidDimensions
 } from './schema-validator.test-helpers';
 
-describe('JsonSchemaValidator - Metrics Validation', () => {
-  let validator: JsonSchemaValidator;
+createSchemaValidatorTestSuite('Metrics Validation', [
+  {
+    name: 'should validate metric category values',
+    test: (validator) => {
+      const invalidResult = createResultWithInvalidCategory();
+      const result = validator.validateAnalysisResult(invalidResult);
 
-  beforeEach(() => {
-    validator = new JsonSchemaValidator();
-  });
+      assertInvalid(validator, invalidResult);
 
-  it('should validate metric category values', () => {
-    const invalidResult = createResultWithInvalidCategory();
+      const categoryError = result.errors.find(err =>
+        err.path?.includes('category')
+      );
+      expect(categoryError).toBeDefined();
+    }
+  },
+  {
+    name: 'should validate importance values',
+    test: (validator) => {
+      const invalidResult = createResultWithInvalidImportance();
+      const result = validator.validateAnalysisResult(invalidResult);
 
-    const result = validator.validateAnalysisResult(invalidResult);
+      assertInvalid(validator, invalidResult);
 
-    expect(result.isValid).toBe(false);
-    expect(result.errors.length).toBeGreaterThan(0);
+      const importanceError = result.errors.find(err =>
+        err.path?.includes('importance')
+      );
+      expect(importanceError).toBeDefined();
+    }
+  },
+  {
+    name: 'should validate threshold structure',
+    test: (validator) => {
+      const invalidResult = createResultWithInvalidThreshold();
+      const result = validator.validateAnalysisResult(invalidResult);
 
-    const categoryError = result.errors.find(err => 
-      err.path?.includes('category')
-    );
-    expect(categoryError).toBeDefined();
-  });
+      assertInvalid(validator, invalidResult);
 
-  it('should validate importance values', () => {
-    const invalidResult = createResultWithInvalidImportance();
+      const thresholdError = result.errors.find(err =>
+        err.path?.includes('recommended_threshold')
+      );
+      expect(thresholdError).toBeDefined();
+    }
+  },
+  {
+    name: 'should validate dimensions array',
+    test: (validator) => {
+      const invalidResult = createResultWithInvalidDimensions();
+      const result = validator.validateAnalysisResult(invalidResult);
 
-    const result = validator.validateAnalysisResult(invalidResult);
+      assertInvalid(validator, invalidResult);
 
-    expect(result.isValid).toBe(false);
-    expect(result.errors.length).toBeGreaterThan(0);
-
-    const importanceError = result.errors.find(err => 
-      err.path?.includes('importance')
-    );
-    expect(importanceError).toBeDefined();
-  });
-
-  it('should validate threshold structure', () => {
-    const invalidResult = createResultWithInvalidThreshold();
-
-    const result = validator.validateAnalysisResult(invalidResult);
-
-    expect(result.isValid).toBe(false);
-    expect(result.errors.length).toBeGreaterThan(0);
-
-    const thresholdError = result.errors.find(err => 
-      err.path?.includes('recommended_threshold')
-    );
-    expect(thresholdError).toBeDefined();
-  });
-
-  it('should validate dimensions array', () => {
-    const invalidResult = createResultWithInvalidDimensions();
-
-    const result = validator.validateAnalysisResult(invalidResult);
-
-    expect(result.isValid).toBe(false);
-    expect(result.errors.length).toBeGreaterThan(0);
-
-    const dimensionError = result.errors.find(err => 
-      err.path?.includes('dimensions')
-    );
-    expect(dimensionError).toBeDefined();
-  });
-});
+      const dimensionError = result.errors.find(err =>
+        err.path?.includes('dimensions')
+      );
+      expect(dimensionError).toBeDefined();
+    }
+  }
+]);

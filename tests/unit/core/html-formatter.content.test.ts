@@ -1,69 +1,74 @@
 // HTMLOutputFormatter テスト - コンテンツレンダリング
 // CLAUDE.md準拠: No any types、TDD実践
 
-import { HTMLOutputFormatter } from '../../../src/core/formatters/html';
+import {
+  createHTMLFormatterTestSuite,
+  expectHTMLToContain,
+  expectResourceCard
+} from '../../helpers/html-formatter-test-template';
 
 import { createMockAnalysisResult } from './html-formatter.test-helpers';
 
-describe('HTMLOutputFormatter - Content', () => {
-  let formatter: HTMLOutputFormatter;
+createHTMLFormatterTestSuite('Content', [
+  {
+    name: 'should display metadata correctly',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
 
-  beforeEach(() => {
-    formatter = new HTMLOutputFormatter();
-  });
-
-  test('should display metadata correctly', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
-
-    expect(html).toContain('Resources: 2/2');
-    expect(html).toContain('Generated: 2024年1月1日');
-    expect(html).toContain('Processing: 1234ms');
-  });
-
-  test('should render resource cards with metrics', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
-
-    // Resource cards
-    expect(html).toContain('MyDatabase');
-    expect(html).toContain('AWS::RDS::DBInstance');
-    expect(html).toContain('MyFunction');
-    expect(html).toContain('AWS::Lambda::Function');
-
-    // Metrics
-    expect(html).toContain('CPUUtilization');
-    expect(html).toContain('DatabaseConnections');
-    expect(html).toContain('Duration');
-
-    // Thresholds
-    expect(html).toContain('Warning: 70%');
-    expect(html).toContain('Critical: 90%');
-  });
-
-  test('should include search and filter controls', () => {
-    const mockResult = createMockAnalysisResult();
-    const html = formatter.formatHTML(mockResult);
-
-    expect(html).toContain('id="searchInput"');
-    expect(html).toContain('id="importanceFilter"');
-    expect(html).toContain('id="categoryFilter"');
-    expect(html).toContain('placeholder="🔍 Search metrics..."');
-  });
-
-  test('should handle metrics without dimensions', () => {
-    const mockResult = createMockAnalysisResult();
-    // Modify a metric to have no dimensions
-    const firstResource = mockResult.resources[0];
-    const firstMetric = firstResource?.metrics[0];
-    if (firstMetric) {
-      firstMetric.dimensions = [];
+      expectHTMLToContain(html, [
+        'Resources: 2/2',
+        'Generated: 2024年1月1日',
+        'Processing: 1234ms'
+      ]);
     }
-    
-    const html = formatter.formatHTML(mockResult);
+  },
+  {
+    name: 'should render resource cards with metrics',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
 
-    // Should still render the metric correctly
-    expect(html).toContain('CPUUtilization');
-    expect(html).not.toContain('undefined');
-  });
-});
+      // Resource cards
+      expectResourceCard(html, 'MyDatabase', 'AWS::RDS::DBInstance');
+      expectResourceCard(html, 'MyFunction', 'AWS::Lambda::Function');
+
+      // Metrics
+      expectHTMLToContain(html, [
+        'CPUUtilization',
+        'DatabaseConnections',
+        'Duration',
+        'Warning: 70%'
+      ]);
+      expect(html).toContain('Critical: 90%');
+    }
+  },
+  {
+    name: 'should include search and filter controls',
+    test: (formatter, mockResult) => {
+      const html = formatter.formatHTML(mockResult);
+
+      expectHTMLToContain(html, [
+        'id="searchInput"',
+        'id="importanceFilter"',
+        'id="categoryFilter"',
+        'placeholder="🔍 Search metrics..."'
+      ]);
+    }
+  },
+  {
+    name: 'should handle metrics without dimensions',
+    test: (formatter, mockResult) => {
+      // Modify a metric to have no dimensions
+      const firstResource = mockResult.resources[0];
+      const firstMetric = firstResource?.metrics[0];
+      if (firstMetric) {
+        firstMetric.dimensions = [];
+      }
+
+      const html = formatter.formatHTML(mockResult);
+
+      // Should still render the metric correctly
+      expect(html).toContain('CPUUtilization');
+      expect(html).not.toContain('undefined');
+    }
+  }
+], createMockAnalysisResult);

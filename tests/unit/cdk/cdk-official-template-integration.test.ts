@@ -5,63 +5,14 @@ import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.gener
 import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
 import type { ILogger } from '../../../src/interfaces/logger';
 import type { CDKOptions } from '../../../src/types/cdk-business';
-import type { ResourceWithMetrics, MetricDefinition } from '../../../src/types/metrics';
-
-// テスト用モックロガー
-const createMockLogger = (): ILogger => ({
-  debug: jest.fn(),
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-  success: jest.fn(),
-  setLevel: jest.fn()
-});
-
-function createTestMetricDefinition(metricName: string, namespace: string): MetricDefinition {
-  return {
-    metric_name: metricName,
-    namespace: namespace,
-    statistic: 'Average',
-    unit: 'Percent',
-    evaluation_period: 300,
-    recommended_threshold: {
-      warning: 70,
-      critical: 90
-    },
-    description: `${metricName} monitoring for ${namespace}`,
-    category: 'Performance',
-    importance: 'High'
-  };
-}
-
-function createTestResourceWithMetrics(resourceType: string, logicalId: string): ResourceWithMetrics {
-  return {
-    logical_id: logicalId,
-    resource_type: resourceType,
-    resource_properties: {},
-    metrics: [
-      createTestMetricDefinition('CPUUtilization', 'AWS/RDS')
-    ]
-  };
-}
+import {
+  createTestMetricDefinition,
+  createTestResourceWithMetrics,
+  createTestAnalysisResult
+} from '../../helpers/cdk-test-helpers';
+import { createMockLogger } from '../../helpers/test-helpers';
 
 // Test data creation helpers
-function createTestAnalysisResult(): ExtendedAnalysisResult {
-  return {
-    resources: [
-      createTestResourceWithMetrics('AWS::RDS::DBInstance', 'TestDBInstance')
-    ],
-    metadata: {
-      version: '1.0.0',
-      generated_at: new Date().toISOString(),
-      template_path: 'test-template.yaml',
-      total_resources: 1,
-      supported_resources: 1
-    },
-    unsupported_resources: []
-  };
-}
-
 function createTestAnalysisResultWithMultipleResources(): ExtendedAnalysisResult {
   return {
     resources: [

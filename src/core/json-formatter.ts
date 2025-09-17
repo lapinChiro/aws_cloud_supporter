@@ -1,9 +1,9 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 // T-016: JSONフォーマッター実装
 
+import { CloudSupporterError, Errors } from '../errors';
 import type { IOutputFormatter } from '../interfaces/formatter';
 import type { AnalysisResult } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 import { validateMetricsOutput } from '../utils/schema-validator';
 
 /**
@@ -34,8 +34,7 @@ export class JSONOutputFormatter implements IOutputFormatter {
     try {
       // 入力検証（CLAUDE.md: 型安全性）
       if (!result || typeof result !== 'object') {
-        throw new CloudSupporterError(
-          ErrorType.OUTPUT_ERROR,
+        throw Errors.Common.outputError(
           'Invalid analysis result provided',
           { received: typeof result }
         );
@@ -80,8 +79,7 @@ export class JSONOutputFormatter implements IOutputFormatter {
       // requirement.md JSON Schema検証（100%準拠確保）
       const validation = validateMetricsOutput(output);
       if (!validation.valid) {
-        throw new CloudSupporterError(
-          ErrorType.OUTPUT_ERROR,
+        throw Errors.Common.outputError(
           `JSON output validation failed: ${validation.errors.join('; ')}`,
           { validationErrors: validation.errors }
         );
@@ -107,8 +105,7 @@ export class JSONOutputFormatter implements IOutputFormatter {
       if (error instanceof CloudSupporterError) {
         throw error;
       }
-      throw new CloudSupporterError(
-        ErrorType.OUTPUT_ERROR,
+      throw Errors.Common.outputError(
         `Failed to format JSON output: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { originalError: error instanceof Error ? error.message : 'Unknown error' }
       );

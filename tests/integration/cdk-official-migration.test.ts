@@ -2,78 +2,16 @@
 // M-008: 統合テストと移行検証
 import { CDKOfficialGenerator } from '../../src/generators/cdk-official.generator';
 import type { ExtendedAnalysisResult } from '../../src/interfaces/analyzer';
-import type { ILogger } from '../../src/interfaces/logger';
 import type { CDKOptions } from '../../src/types/cdk-business';
-import type { ResourceWithMetrics, MetricDefinition } from '../../src/types/metrics';
-
-// テスト用モックロガー
-const createTestLogger = (): ILogger => ({
-  debug: jest.fn(),
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-  success: jest.fn(),
-  setLevel: jest.fn()
-});
+import { createTestResourceWithMetrics } from '../helpers/cdk-test-helpers';
+import { createMockLogger } from '../helpers/test-helpers';
 
 describe('CDK Official Types System Verification', () => {
   let officialGenerator: CDKOfficialGenerator;
 
   beforeEach(() => {
-    officialGenerator = new CDKOfficialGenerator(createTestLogger());
+    officialGenerator = new CDKOfficialGenerator(createMockLogger());
   });
-
-// Core helper functions - must be defined first
-function createTestMetricDefinition(metricName: string, namespace: string): MetricDefinition {
-  return {
-    metric_name: metricName,
-    namespace: namespace,
-    statistic: 'Average',
-    unit: 'Count',
-    evaluation_period: 300,
-    recommended_threshold: {
-      warning: 70,
-      critical: 90
-    },
-    description: `${metricName} monitoring for ${namespace}`,
-    category: 'Performance',
-    importance: 'High'
-  };
-}
-
-function createTestResourceWithMetrics(resourceType: string, logicalId: string): ResourceWithMetrics {
-  const metrics = [];
-  
-  // 各リソースタイプに適したメトリクスを生成
-  if (resourceType.includes('RDS')) {
-    metrics.push(
-      createTestMetricDefinition('CPUUtilization', 'AWS/RDS'),
-      createTestMetricDefinition('DatabaseConnections', 'AWS/RDS'),
-      createTestMetricDefinition('ReadLatency', 'AWS/RDS')
-    );
-  } else if (resourceType.includes('Lambda')) {
-    metrics.push(
-      createTestMetricDefinition('Duration', 'AWS/Lambda'),
-      createTestMetricDefinition('Invocations', 'AWS/Lambda'),
-      createTestMetricDefinition('Errors', 'AWS/Lambda')
-    );
-  } else if (resourceType.includes('DynamoDB')) {
-    metrics.push(
-      createTestMetricDefinition('ConsumedReadCapacityUnits', 'AWS/DynamoDB'),
-      createTestMetricDefinition('ConsumedWriteCapacityUnits', 'AWS/DynamoDB')
-    );
-  } else {
-    // デフォルトメトリクス
-    metrics.push(createTestMetricDefinition('CPUUtilization', 'AWS/EC2'));
-  }
-
-  return {
-    logical_id: logicalId,
-    resource_type: resourceType,
-    resource_properties: {},
-    metrics
-  };
-}
 
 // 検証ユーティリティ関数
 function extractAlarmCount(cdkCode: string): number {

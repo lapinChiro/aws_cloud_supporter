@@ -1,21 +1,23 @@
 // MetricsAnalyzer追加カバレッジテスト - リソースフィルタリング
 // CLAUDE.md準拠: No any types、TDD実践
 
-import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
+import {
+  createTestCloudFormationTemplate,
+  createRDSResource,
+  createLambdaResource,
+  createDynamoDBResource
+} from '../../helpers/cloudformation-test-helpers';
 
 import { setupMocks } from './analyzer-coverage.test-helpers';
 
 describe('Resource Filtering Coverage', () => {
   test('should filter by resource types when specified', async () => {
     const { analyzer, mockParser } = setupMocks();
-    const template: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: '2010-09-09',
-      Resources: {
-        DB: { Type: 'AWS::RDS::DBInstance', Properties: {} },
-        Lambda: { Type: 'AWS::Lambda::Function', Properties: {} },
-        Table: { Type: 'AWS::DynamoDB::Table', Properties: {} }
-      }
-    };
+    const template = createTestCloudFormationTemplate({
+      DB: createRDSResource('DB'),
+      Lambda: createLambdaResource('Lambda'),
+      Table: createDynamoDBResource('Table')
+    });
 
     mockParser.parse.mockResolvedValue(template);
     

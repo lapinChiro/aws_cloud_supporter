@@ -2,9 +2,9 @@
 // CLAUDE.md準拠: No any types、TDD実践、Zero type errors
 import { MetricsAnalyzer } from '../../src/core/analyzer';
 import { TemplateParser } from '../../src/core/parser';
-import type { CloudFormationTemplate } from '../../src/types/cloudformation';
 import type { AnalysisResult } from '../../src/types/metrics';
 import { Logger } from '../../src/utils/logger';
+import { createTestCloudFormationTemplate } from '../helpers/cloudformation-test-helpers';
 
 import { 
   withTempTemplate,
@@ -82,25 +82,22 @@ describe('MetricsAnalyzer Integration Tests - Resource-Specific Behavior', () =>
     });
 
     test('4-3: ECS Fargate vs EC2', async () => {
-      const template: CloudFormationTemplate = {
-        AWSTemplateFormatVersion: '2010-09-09' as const,
-        Resources: {
-          FargateService: {
-            Type: 'AWS::ECS::Service',
-            Properties: {
-              LaunchType: 'FARGATE',
-              DesiredCount: 3
-            }
-          },
-          EC2Service: {
-            Type: 'AWS::ECS::Service',
-            Properties: {
-              LaunchType: 'EC2',
-              DesiredCount: 3
-            }
+      const template = createTestCloudFormationTemplate({
+        FargateService: {
+          Type: 'AWS::ECS::Service',
+          Properties: {
+            LaunchType: 'FARGATE',
+            DesiredCount: 3
+          }
+        },
+        EC2Service: {
+          Type: 'AWS::ECS::Service',
+          Properties: {
+            LaunchType: 'EC2',
+            DesiredCount: 3
           }
         }
-      };
+      });
 
       await withTempTemplate(template, 'ecs-types.yaml', async (tempPath) => {
         const result = await analyzer.analyze(tempPath, { 

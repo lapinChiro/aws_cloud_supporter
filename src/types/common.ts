@@ -23,13 +23,3 @@ export interface ErrorDetails {
   [key: string]: unknown; // any型ではなくunknown型使用
 }
 
-export interface StructuredError {
-  error: string;
-  message: string;
-  details?: ErrorDetails | undefined;
-  filePath?: string | undefined;
-  lineNumber?: number | undefined;
-  timestamp: TimestampISO;
-}
-
-

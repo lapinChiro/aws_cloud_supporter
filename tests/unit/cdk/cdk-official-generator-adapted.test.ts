@@ -1,22 +1,12 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + 型安全性
 // tasks.md M-006: CDK Generator基本クラステスト（公式型適応版）
 
+import { CloudSupporterError } from '../../../src/errors';
 import { CDKOfficialGenerator } from '../../../src/generators/cdk-official.generator';
 import type { ExtendedAnalysisResult } from '../../../src/interfaces/analyzer';
-import type { ILogger } from '../../../src/interfaces/logger';
 import type { CDKOptions } from '../../../src/types/cdk-business';
 import type { ResourceWithMetrics, MetricDefinition } from '../../../src/types/metrics';
-import { CloudSupporterError } from '../../../src/utils/error';
-
-// テスト用モックロガー
-const createMockLogger = (): ILogger => ({
-  debug: jest.fn(),
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-  success: jest.fn(),
-  setLevel: jest.fn()
-});
+import { createMockLogger } from '../../helpers/test-helpers';
 
 function createMockMetric(
   metricName: string, 

@@ -1,9 +1,9 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
 import { METRICS_CONFIG_MAP } from '../config/metrics';
+import { Errors } from '../errors';
 import type { CloudFormationResource } from '../types/cloudformation';
 import type { MetricConfig } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 
 import { BaseMetricsGenerator } from './base.generator';
 
@@ -27,11 +27,7 @@ export class APIGatewayMetricsGenerator extends BaseMetricsGenerator {
     const baseConfigs = METRICS_CONFIG_MAP['AWS::ApiGateway::RestApi'];
     
     if (!baseConfigs) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
-        'API Gateway metrics configuration not found',
-        { resourceType: 'AWS::ApiGateway::RestApi' }
-      );
+      throw Errors.APIGateway.metricsNotFound();
     }
     
     return baseConfigs;

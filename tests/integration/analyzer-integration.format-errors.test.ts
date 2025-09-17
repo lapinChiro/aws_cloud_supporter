@@ -45,7 +45,11 @@ describe('MetricsAnalyzer Integration - Output Format', () => {
       expect(parsed.metadata.template_path).toBe(tempPath);
       
     } finally {
-      await fs.unlink(tempPath);
+      try {
+        await fs.unlink(tempPath);
+      } catch {
+        // ファイルが存在しない場合は無視
+      }
     }
   });
 
@@ -69,7 +73,11 @@ describe('MetricsAnalyzer Integration - Output Format', () => {
       expect(htmlOutput).toContain('importanceFilter');
       
     } finally {
-      await fs.unlink(tempPath);
+      try {
+        await fs.unlink(tempPath);
+      } catch {
+        // ファイルが存在しない場合は無視
+      }
     }
   });
 });
@@ -87,7 +95,11 @@ describe('MetricsAnalyzer Integration - Error Handling', () => {
       })).rejects.toThrow();
       
     } finally {
-      await fs.unlink(invalidPath);
+      try {
+        await fs.unlink(invalidPath);
+      } catch {
+        // ファイルが存在しない場合は無視
+      }
     }
   });
 

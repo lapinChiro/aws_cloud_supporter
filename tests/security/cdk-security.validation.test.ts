@@ -4,8 +4,8 @@ import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 
+import { CloudSupporterError } from '../../src/errors';
 import { CDKInputValidator } from '../../src/security/input-validator';
-import { CloudSupporterError } from '../../src/utils/error';
 
 describe('CDK Security - Input Validation', () => {
   describe('Path Traversal Prevention', () => {

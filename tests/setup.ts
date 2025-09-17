@@ -1,6 +1,10 @@
 // CLAUDE.md準拠カスタムマッチャー（型安全、TDD支援）
 import { mkdirSync, rmSync } from 'fs';
 
+// テスト環境の統一設定（ローカルとCIの環境を揃える）
+process.env.NODE_ENV = 'test';
+process.env.LOG_LEVEL = 'error'; // テスト中はエラーログのみ
+
 // 型安全なカスタムマッチャー定義
 declare global {
   namespace jest {
@@ -109,14 +113,20 @@ afterAll(async () => {
       console.warn('Failed to clean up temp directory:', error);
     }
   }
-  
+
   // メモリクリーンアップ
   if (global.gc) {
     global.gc();
   }
-  
-  // 非同期操作の完了を待つ
+
+  // すべての非同期操作の完了を確実に待つ
   await new Promise(resolve => setImmediate(resolve));
+
+  // タイマーのクリア（念のため）
+  jest.clearAllTimers();
+
+  // 追加の待機（非同期操作の確実な完了のため）
+  await new Promise(resolve => setTimeout(resolve, 100));
 });
 
 // TypeScript型安全性の確保

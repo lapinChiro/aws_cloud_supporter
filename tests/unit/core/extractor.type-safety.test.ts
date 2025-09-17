@@ -3,8 +3,9 @@ import path from 'path';
 
 import { ResourceExtractor } from '../../../src/core/extractor';
 import { TemplateParser } from '../../../src/core/parser';
-import type { CloudFormationTemplate, SupportedResource } from '../../../src/types/cloudformation';
+import type { SupportedResource } from '../../../src/types/cloudformation';
 import { isSupportedResource, isFargateService, isApplicationLoadBalancer } from '../../../src/types/cloudformation';
+import { createTestCloudFormationTemplate } from '../../helpers/cloudformation-test-helpers';
 
 import { createExtractionTestFixtures, setupTempDir } from './extractor.test-helpers';
 
@@ -36,16 +37,13 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
 
   // Union型使用テスト（GREEN段階: SupportedResource確認）
   it('should utilize SupportedResource union type', () => {
-    
+
     const extractor = new ResourceExtractor();
-    const testTemplate: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: "2010-09-09",
-      Resources: {
-        TestRDS: { Type: "AWS::RDS::DBInstance", Properties: {} },
-        TestLambda: { Type: "AWS::Lambda::Function", Properties: {} }
-      }
-    };
-    
+    const testTemplate = createTestCloudFormationTemplate({
+      TestRDS: { Type: "AWS::RDS::DBInstance", Properties: {} },
+      TestLambda: { Type: "AWS::Lambda::Function", Properties: {} }
+    });
+
     const result = extractor.extract(testTemplate);
     
     // SupportedResource Union型が正しく使用されている
@@ -75,15 +73,12 @@ describe('ResourceExtractor型安全性（CLAUDE.md: Type-Driven Development）'
 
   // ExtractResult型安全性テスト（GREEN段階: 戻り値型確認）
   it('should return properly typed ExtractResult', () => {
-    
+
     const extractor = new ResourceExtractor();
-    const testTemplate: CloudFormationTemplate = {
-      AWSTemplateFormatVersion: "2010-09-09",
-      Resources: {
-        Test: { Type: "AWS::RDS::DBInstance", Properties: {} }
-      }
-    };
-    
+    const testTemplate = createTestCloudFormationTemplate({
+      Test: { Type: "AWS::RDS::DBInstance", Properties: {} }
+    });
+
     const result = extractor.extract(testTemplate);
     
     // ExtractResult型の完全性確認

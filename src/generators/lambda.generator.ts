@@ -1,10 +1,10 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
 import { METRICS_CONFIG_MAP } from '../config/metrics';
+import { Errors } from '../errors';
 import type { CloudFormationResource, LambdaFunction} from '../types/cloudformation';
 // import { LambdaProperties } from '../types/cloudformation';
 import type { MetricConfig } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 
 import { BaseMetricsGenerator } from './base.generator';
 
@@ -86,11 +86,7 @@ export class LambdaMetricsGenerator extends BaseMetricsGenerator {
     
     // CLAUDE.md準拠: No any types（型安全性）
     if (!baseConfigs) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
-        'Lambda metrics configuration not found',
-        { resourceType: 'AWS::Lambda::Function' }
-      );
+      throw Errors.Lambda.metricsNotFound();
     }
     
     // CLAUDE.md準拠: 型安全性（スプレッド演算子による不変性）

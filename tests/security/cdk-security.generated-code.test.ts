@@ -1,7 +1,7 @@
 // CLAUDE.md準拠: Test-Driven Development (TDD) + セキュリティ重視
 // CDKセキュリティ生成コード検証テスト
+import { CloudSupporterError } from '../../src/errors';
 import { CDKInputValidator } from '../../src/security/input-validator';
-import { CloudSupporterError } from '../../src/utils/error';
 
 describe('CDK Security - Generated Code Validation', () => {
   it('should accept safe CDK code', () => {

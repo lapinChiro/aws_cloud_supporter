@@ -1,10 +1,10 @@
 // CLAUDE.md準拠BaseMetricsGenerator（SOLID抽象化原則 + Type-Driven Development）
 
+import { Errors, CloudSupporterError } from '../errors';
 import type { ILogger } from '../interfaces/logger';
 import { getMaxAlarmsPerResource } from '../types';
 import type { CloudFormationResource } from '../types/cloudformation';
 import type { MetricDefinition, MetricConfig, IMetricsGenerator } from '../types/metrics';
-import { createResourceError } from '../utils/error';
 
 // Validation result interface
 interface ValidationResult {
@@ -75,7 +75,14 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
     } catch (error) {
       const resourceId = this.getResourceId(resource);
       this.logger.error(`Failed to generate metrics for ${resourceId}`, error as Error);
-      throw createResourceError(
+
+      // If it's already a CloudSupporterError, re-throw it as-is
+      if (error instanceof CloudSupporterError) {
+        throw error;
+      }
+
+      // Only wrap unexpected errors in validation failed
+      throw Errors.Common.validationFailed(
         `Metrics generation failed for ${resourceId}: ${(error as Error).message}`,
         { resourceType: resource.Type, originalError: (error as Error).message }
       );
@@ -261,19 +268,16 @@ export abstract class BaseMetricsGenerator implements IMetricsGenerator {
   // リソース基本検証（型安全性）
   private validateResource(resource: CloudFormationResource): void {
     if (!resource.Type || typeof resource.Type !== 'string') {
-      throw createResourceError(
+      throw Errors.Common.validationFailed(
         'Resource must have a valid Type property',
         { resourceData: JSON.stringify(resource) }
       );
     }
 
     if (!this.getSupportedTypes().includes(resource.Type)) {
-      throw createResourceError(
-        `Unsupported resource type: ${resource.Type}`,
-        { 
-          resourceType: resource.Type,
-          supportedTypes: this.getSupportedTypes()
-        }
+      throw Errors.Common.resourceUnsupportedType(
+        resource.Type,
+        this.getSupportedTypes()
       );
     }
   }
