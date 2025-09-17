@@ -50,6 +50,30 @@ describe('ALBErrors Factory', () => {
     });
   });
 
+  describe('onlyApplicationLoadBalancerSupported', () => {
+    it('should create unsupported load balancer type error', () => {
+      const error = ALBErrors.onlyApplicationLoadBalancerSupported('network');
+
+      expect(error).toBeInstanceOf(CloudSupporterError);
+      expect(error.code).toBe(ERROR_CODES.RESOURCE_UNSUPPORTED_TYPE);
+      expect(error.type).toBe(ErrorType.RESOURCE_ERROR);
+      expect(error.message).toBe('Only Application Load Balancers are supported');
+      expect(error.details?.loadBalancerType).toBe('network');
+      expect(error.details?.supportedType).toBe('application');
+      expect(error.details?.resourceType).toBe('AWS::ElasticLoadBalancingV2::LoadBalancer');
+    });
+
+    it('should handle different load balancer types', () => {
+      const testCases = ['network', 'gateway', 'classic'];
+
+      testCases.forEach(type => {
+        const error = ALBErrors.onlyApplicationLoadBalancerSupported(type);
+        expect(error.details?.loadBalancerType).toBe(type);
+        expect(error.details?.supportedType).toBe('application');
+      });
+    });
+  });
+
   describe('Integration with existing system', () => {
     it('should be throwable and catchable', () => {
       expect(() => {
@@ -70,6 +94,23 @@ describe('ALBErrors Factory', () => {
       expect(json).toHaveProperty('message');
       expect(json).toHaveProperty('details');
       expect(json).toHaveProperty('timestamp');
+    });
+  });
+
+  describe('Error properties for all ALB errors', () => {
+    it('should all errors have CloudSupporterError properties including onlyApplicationLoadBalancerSupported', () => {
+      const errors = [
+        ALBErrors.metricsNotFound(),
+        ALBErrors.invalidTargetType('invalid'),
+        ALBErrors.onlyApplicationLoadBalancerSupported('network')
+      ];
+
+      errors.forEach(error => {
+        expect(error.name).toBe('CloudSupporterError');
+        expect(error.timestamp).toBeDefined();
+        expect(error.stack).toBeDefined();
+        expect(error.details?.resourceType).toBe('AWS::ElasticLoadBalancingV2::LoadBalancer');
+      });
     });
   });
 });
