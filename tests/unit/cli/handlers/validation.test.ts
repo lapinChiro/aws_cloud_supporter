@@ -4,8 +4,8 @@
 
 import { CDKOptionsValidator } from '../../../../src/cli/handlers/validation';
 import type { CLIDependencies, CLIOptions } from '../../../../src/cli/interfaces/command.interface';
+import { CloudSupporterError } from '../../../../src/errors';
 import type { ILogger } from '../../../../src/interfaces/logger';
-import { CloudSupporterError } from '../../../../src/utils/error';
 
 describe('CDKOptionsValidator', () => {
   let validator: CDKOptionsValidator;

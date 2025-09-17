@@ -1,8 +1,8 @@
 // BaseHTMLFormatter test file for coverage improvement
 
 import { BaseHTMLFormatter } from '../../../../../src/core/formatters/html/base-formatter';
+import { CloudSupporterError, ErrorType, ERROR_CODES } from '../../../../../src/errors';
 import type { AnalysisResult } from '../../../../../src/types/metrics';
-import { CloudSupporterError, ErrorType } from '../../../../../src/utils/error';
 import { AnalysisResultBuilder } from '../../../../helpers/analysis-result-builder';
 
 describe('BaseHTMLFormatter', () => {
@@ -116,6 +116,7 @@ describe('BaseHTMLFormatter', () => {
     it('should rethrow CloudSupporterError without wrapping', () => {
       // Create a mock that throws CloudSupporterError
       const originalError = new CloudSupporterError(
+        ERROR_CODES.RESOURCE_INVALID,
         ErrorType.RESOURCE_ERROR,
         'Original error message',
         { test: 'data' }

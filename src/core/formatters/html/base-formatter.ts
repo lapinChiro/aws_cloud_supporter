@@ -1,8 +1,8 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 // T-016: HTMLフォーマッター実装 - ベースフォーマッター
 
+import { CloudSupporterError, Errors } from '../../../errors';
 import type { AnalysisResult } from '../../../types/metrics';
-import { CloudSupporterError, ErrorType } from '../../../utils/error';
 
 import { HTMLAssetProvider } from './assets/styles';
 import { ResourceHTMLGenerator , UnsupportedHTMLGenerator } from './html-generators';
@@ -33,8 +33,7 @@ export class BaseHTMLFormatter implements IHTMLGenerator {
     try {
       // 入力検証（CLAUDE.md: 型安全性）
       if (!result || typeof result !== 'object') {
-        throw new CloudSupporterError(
-          ErrorType.OUTPUT_ERROR,
+        throw Errors.Common.outputError(
           'Invalid analysis result provided',
           { received: typeof result }
         );
@@ -109,8 +108,7 @@ export class BaseHTMLFormatter implements IHTMLGenerator {
       if (error instanceof CloudSupporterError) {
         throw error;
       }
-      throw new CloudSupporterError(
-        ErrorType.OUTPUT_ERROR,
+      throw Errors.Common.outputError(
         `Failed to format HTML output: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { originalError: error instanceof Error ? error.message : 'Unknown error' }
       );

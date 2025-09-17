@@ -1,5 +1,5 @@
+import { CloudSupporterError, ErrorType, ERROR_CODES } from '../../../src/errors';
 import { LambdaMetricsGenerator } from '../../../src/generators/lambda.generator';
-import { CloudSupporterError } from '../../../src/utils/error';
 import { createLambdaFunction } from '../../helpers';
 import { createGeneratorTestSuite } from '../../helpers/generator-test-template';
 import { createMockLogger } from '../../helpers/test-helpers';
@@ -170,8 +170,8 @@ describe('LambdaMetricsGenerator Additional Coverage Tests', () => {
         const baseConfigs = emptyConfigMap['AWS::Lambda::Function'];
 
         if (!baseConfigs) {
-          const { ErrorType } = require('../../../src/utils/error') as typeof import('../../../src/utils/error');
           throw new CloudSupporterError(
+            ERROR_CODES.METRICS_NOT_FOUND,
             ErrorType.RESOURCE_ERROR,
             'Lambda metrics configuration not found',
             { resourceType: 'AWS::Lambda::Function' }

@@ -2,13 +2,9 @@
 
 import { parse as parseYAML, YAMLParseError } from 'yaml';
 
+import { CloudSupporterError, Errors } from '../errors';
 import type { CloudFormationTemplate } from '../types/cloudformation';
 import type { ITemplateParser } from '../types/metrics';
-import { 
-  CloudSupporterError, 
-  createFileError, 
-  createParseError 
-} from '../utils/error';
 
 // UNIX Philosophy: 一つのことをうまくやる（CloudFormation解析のみ）
 export class TemplateParser implements ITemplateParser {
@@ -49,10 +45,9 @@ export class TemplateParser implements ITemplateParser {
         errorMessage = String(error);
       }
       
-      throw createFileError(
-        `Failed to parse template: ${errorMessage}`,
+      throw Errors.Common.fileReadError(
         filePath,
-        { originalError: errorMessage }
+        `Failed to parse template: ${errorMessage}`
       );
     }
   }
@@ -66,19 +61,18 @@ export class TemplateParser implements ITemplateParser {
       
       // ファイル種別確認
       if (!stats.isFile()) {
-        throw createFileError(
-          `Path is not a file: ${filePath}`,
-          filePath
+        throw Errors.Common.fileReadError(
+          filePath,
+          `Path is not a file: ${filePath}`
         );
       }
       
       // サイズ制限確認（50MB）
       const maxSize = 50 * 1024 * 1024; // 50MB
       if (stats.size > maxSize) {
-        throw createFileError(
-          `File too large: ${(stats.size / 1024 / 1024).toFixed(1)}MB (max: 50MB)`,
+        throw Errors.Common.fileReadError(
           filePath,
-          { fileSize: stats.size }
+          `File too large: ${(stats.size / 1024 / 1024).toFixed(1)}MB (max: 50MB)`
         );
       }
     } catch (error) {
@@ -86,10 +80,9 @@ export class TemplateParser implements ITemplateParser {
       
       // ファイルアクセスエラー（ENOENT等）
       const nodeError = error as NodeJS.ErrnoException;
-      throw createFileError(
-        `Cannot access file: ${nodeError.code ?? 'Unknown error'}`,
+      throw Errors.Common.fileReadError(
         filePath,
-        nodeError.code ? { error: nodeError.code } : {}
+        `Cannot access file: ${nodeError.code ?? 'Unknown error'}`
       );
     }
   }
@@ -105,10 +98,9 @@ export class TemplateParser implements ITemplateParser {
       
       // 読み込み時間制限（10秒 - 並行処理とI/O競合を考慮）
       if (duration > 10000) {
-        throw createFileError(
-          `File reading timeout: ${duration.toFixed(0)}ms (max: 10000ms)`,
+        throw Errors.Common.fileReadError(
           filePath,
-          { duration: Math.round(duration) }
+          `File reading timeout: ${duration.toFixed(0)}ms (max: 10000ms)`
         );
       }
       
@@ -117,10 +109,9 @@ export class TemplateParser implements ITemplateParser {
       if (error instanceof CloudSupporterError) throw error;
       
       const nodeError = error as NodeJS.ErrnoException;
-      throw createFileError(
-        `Failed to read file: ${nodeError.message}`,
+      throw Errors.Common.fileReadError(
         filePath,
-        { originalError: nodeError.message }
+        `Failed to read file: ${nodeError.message}`
       );
     }
   }
@@ -166,11 +157,14 @@ export class TemplateParser implements ITemplateParser {
         errorMessage = String(error);
       }
       
-      throw createParseError(
+      throw Errors.Common.parseError(
         `${isJSON ? 'JSON' : 'YAML'} syntax error: ${errorMessage}`,
         filePath,
         errorDetails.lineNumber,
-        errorDetails
+        {
+          nearText: errorDetails.nearText,
+          columnNumber: errorDetails.columnNumber
+        }
       );
     }
   }
@@ -220,7 +214,7 @@ export class TemplateParser implements ITemplateParser {
   private validateTemplateStructure(template: unknown, filePath: string): void {
     // 基本オブジェクト検証
     if (!template || typeof template !== 'object') {
-      throw createParseError(
+      throw Errors.Common.parseError(
         'Template must be a valid object',
         filePath
       );
@@ -230,13 +224,9 @@ export class TemplateParser implements ITemplateParser {
 
     // Resources セクション必須検証
     if (!cfnTemplate.Resources || typeof cfnTemplate.Resources !== 'object') {
-      throw createParseError(
+      throw Errors.Common.parseError(
         'Template must contain "Resources" section',
-        filePath,
-        undefined,
-        {
-          nearText: 'CloudFormation template requires "Resources" section with at least one resource'
-        }
+        filePath
       );
     }
 
@@ -249,12 +239,12 @@ export class TemplateParser implements ITemplateParser {
     // Resourcesが空でないことを確認
     const resources = cfnTemplate.Resources as Record<string, unknown>;
     if (Object.keys(resources).length === 0) {
-      throw createParseError(
+      throw Errors.Common.parseError(
         'Template Resources section is empty',
         filePath,
         undefined,
-        { 
-          nearText: 'CloudFormation template must contain at least one resource definition'
+        {
+          nearText: 'Template must have at least one resource in the Resources section'
         }
       );
     }
@@ -262,21 +252,17 @@ export class TemplateParser implements ITemplateParser {
     // 各リソースの基本構造検証
     for (const [logicalId, resource] of Object.entries(resources)) {
       if (!resource || typeof resource !== 'object') {
-        throw createParseError(
+        throw Errors.Common.parseError(
           `Resource "${logicalId}" must be an object`,
-          filePath,
-          undefined,
-          { nearText: `Resource ${logicalId} has invalid structure` }
+          filePath
         );
       }
 
       const resourceObj = resource as Record<string, unknown>;
       if (!resourceObj.Type || typeof resourceObj.Type !== 'string') {
-        throw createParseError(
+        throw Errors.Common.parseError(
           `Resource "${logicalId}" missing required "Type" property`,
-          filePath,
-          undefined,
-          { nearText: `Resource ${logicalId} must have a Type property (e.g., "AWS::S3::Bucket")` }
+          filePath
         );
       }
     }

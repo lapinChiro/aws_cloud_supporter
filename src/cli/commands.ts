@@ -3,11 +3,11 @@
 
 import type { Command } from 'commander';
 
+import { CloudSupporterError, ErrorType } from '../errors';
 import type { IMetricsAnalyzer, ExtendedAnalysisResult } from '../interfaces/analyzer';
 import type { IOutputFormatter } from '../interfaces/formatter';
 import type { ILogger } from '../interfaces/logger';
 import type { AnalysisResult } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 import { log } from '../utils/logger';
 
 import { CommandBuilder } from './builders/command-builder';

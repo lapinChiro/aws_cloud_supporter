@@ -5,8 +5,8 @@ import { tmpdir } from 'os';
 import path from 'path';
 
 import { TemplateParser, isJSONFile, isYAMLFile, isSupportedTemplateFile } from '../../../src/core/parser';
+import { CloudSupporterError } from '../../../src/errors';
 import type { CloudFormationResource } from '../../../src/types/cloudformation';
-import { CloudSupporterError } from '../../../src/utils/error';
 import { createTestCloudFormationTemplate } from '../../helpers/cloudformation-test-helpers';
 
 describe('TemplateParser最適化（CLAUDE.md: BLUE段階）', () => {

@@ -2,7 +2,7 @@
 // requirement.md FR-4.1: 機密情報保護
 // tasks.md T-009: セキュリティ機能実装
 
-import { CloudSupporterError, ErrorType } from '../utils/error';
+import { Errors } from '../errors';
 
 /**
  * CDK Security Sanitizer
@@ -234,8 +234,7 @@ export class CDKSecuritySanitizer {
 
     for (const pattern of criticalPatterns) {
       if (pattern.test(jsonString)) {
-        throw new CloudSupporterError(
-          ErrorType.RESOURCE_ERROR,
+        throw Errors.Common.validationFailed(
           'Sanitization validation failed: Potential sensitive data still present',
           { pattern: pattern.source, context: 'post-sanitization-check' }
         );

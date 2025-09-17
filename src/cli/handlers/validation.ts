@@ -3,8 +3,8 @@
 
 import * as path from 'path';
 
+import { Errors } from '../../errors';
 import type { ILogger } from '../../interfaces/logger';
-import { CloudSupporterError, ErrorType } from '../../utils/error';
 import type { CLIDependencies, CLIOptions } from '../interfaces/command.interface';
 import type { ICDKOptionsValidator } from '../interfaces/handler.interface';
 
@@ -52,8 +52,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
                         process.env.NODE_ENV === 'test'; // テスト環境では柔軟に対応
       
       if (!isSafePath) {
-        const error = new CloudSupporterError(
-          ErrorType.VALIDATION_ERROR,
+        const error = Errors.Common.validationFailed(
           'CDK output directory absolute path must be in a safe location (temp directory or project directory)',
           { provided: options.cdkOutputDir, allowedLocations: [...tempDirs, process.cwd()] }
         );
@@ -70,8 +69,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
   private validateSNSOptions(options: CLIOptions, logger: ILogger): void {
     // SNS ARNとenable-snsの両方が指定された場合のエラー
     if (options.cdkEnableSns && options.cdkSnsTopicArn) {
-      const error = new CloudSupporterError(
-        ErrorType.VALIDATION_ERROR,
+      const error = Errors.Common.validationFailed(
         'Cannot specify both --cdk-enable-sns and --cdk-sns-topic-arn',
         { enableSns: options.cdkEnableSns, topicArn: options.cdkSnsTopicArn }
       );
@@ -81,8 +79,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
     
     // SNS ARNフォーマット検証
     if (options.cdkSnsTopicArn && !this.isValidSNSArn(options.cdkSnsTopicArn)) {
-      const error = new CloudSupporterError(
-        ErrorType.VALIDATION_ERROR,
+      const error = Errors.Common.validationFailed(
         'Invalid SNS topic ARN format',
         { provided: options.cdkSnsTopicArn }
       );
@@ -103,8 +100,7 @@ export class CDKOptionsValidator implements ICDKOptionsValidator {
     // CloudFormationスタック名の制約
     const stackNameRegex = /^[a-zA-Z][a-zA-Z0-9-]*$/;
     if (!stackNameRegex.test(options.cdkStackName)) {
-      const error = new CloudSupporterError(
-        ErrorType.VALIDATION_ERROR,
+      const error = Errors.Common.validationFailed(
         'CDK stack name must start with a letter and contain only letters, numbers, and hyphens',
         { provided: options.cdkStackName }
       );

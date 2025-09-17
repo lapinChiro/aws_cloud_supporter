@@ -4,11 +4,11 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
+import { CloudSupporterError, Errors } from '../../errors';
 import { CDKOfficialGenerator } from '../../generators/cdk-official.generator';
 import type { ExtendedAnalysisResult, IMetricsAnalyzer } from '../../interfaces/analyzer';
 import type { ILogger } from '../../interfaces/logger';
 import type { CDKOptions } from '../../types/cdk-business';
-import { CloudSupporterError, ErrorType } from '../../utils/error';
 import { log } from '../../utils/logger';
 import type { CDKValidationResult } from '../../validation/cdk-validator';
 import { CDKValidator } from '../../validation/cdk-validator';
@@ -227,8 +227,7 @@ export class CDKHandler implements ICDKHandler {
     this.displayValidationResults(validationResult, options);
 
     if (!validationResult.isValid) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
+      throw Errors.Common.validationFailed(
         `CDK validation failed with ${validationResult.errors.length} errors`,
         { validationResult }
       );

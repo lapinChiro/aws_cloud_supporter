@@ -1,9 +1,9 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
 import { METRICS_CONFIG_MAP } from '../config/metrics';
+import { Errors } from '../errors';
 import type { CloudFormationResource } from '../types/cloudformation';
 import type { MetricConfig } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 
 import { BaseMetricsGenerator } from './base.generator';
 
@@ -26,11 +26,7 @@ export class DynamoDBMetricsGenerator extends BaseMetricsGenerator {
     const baseConfigs = METRICS_CONFIG_MAP['AWS::DynamoDB::Table'];
     
     if (!baseConfigs) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
-        'DynamoDB metrics configuration not found',
-        { resourceType: 'AWS::DynamoDB::Table' }
-      );
+      throw Errors.DynamoDB.metricsNotFound();
     }
 
     const properties = resource.Properties as Record<string, unknown> | undefined;

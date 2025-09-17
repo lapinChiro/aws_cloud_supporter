@@ -24,7 +24,8 @@
 		"lint:fix": "eslint src tests --fix",
 		"lint:check": "eslint src tests --max-warnings 0",
 		"knip": "knip",
-		"knip:fix": "knip --fix --allow-remove-files --no-config-hints --no-exit-code"
+		"knip:fix": "knip --fix --allow-remove-files --no-config-hints --no-exit-code",
+		"ci": "npm run test && npm run lint && npm run typecheck"
 	},
 	"dependencies": {
 		"@types/handlebars": "4.0.40",

@@ -4,10 +4,10 @@
 import { writeFileSync } from 'fs';
 import * as path from 'path';
 
+import { CloudSupporterError, Errors } from '../../errors';
 import type { IOutputFormatter } from '../../interfaces/formatter';
 import type { ILogger } from '../../interfaces/logger';
 import type { AnalysisResult } from '../../types/metrics';
-import { CloudSupporterError, ErrorType } from '../../utils/error';
 import { log } from '../../utils/logger';
 import type { IStandardOutputHandler, IFileOutputHandler } from '../interfaces/handler.interface';
 
@@ -61,8 +61,7 @@ export class StandardOutputHandler implements IStandardOutputHandler {
         // YAML formatはjsonFormatterでYAML形式として出力
         return await jsonFormatter.format(result);
       default:
-        throw new CloudSupporterError(
-          ErrorType.OUTPUT_ERROR,
+        throw Errors.Common.outputError(
           `Unsupported output format: ${String(format)}`,
           { format }
         );
@@ -73,8 +72,7 @@ export class StandardOutputHandler implements IStandardOutputHandler {
    * サポートされていないフォーマットの処理（複雑度: 1）
    */
   private handleUnsupportedFormat(format: string): void {
-    throw new CloudSupporterError(
-      ErrorType.OUTPUT_ERROR,
+    throw Errors.Common.outputError(
       'YAML output format is not yet implemented',
       { requestedFormat: format }
     );
@@ -134,8 +132,7 @@ export class FileOutputHandler implements IFileOutputHandler {
   private validateFilePath(filePath: string): void {
     // 空文字列チェック
     if (!filePath || filePath.trim() === '') {
-      throw new CloudSupporterError(
-        ErrorType.VALIDATION_ERROR,
+      throw Errors.Common.validationFailed(
         'Invalid file path provided',
         { filePath }
       );
@@ -146,8 +143,7 @@ export class FileOutputHandler implements IFileOutputHandler {
 
     // 絶対パスまたは相対パスの検証
     if (!dir || (!isAbsolute && dir.startsWith('..'))) {
-      throw new CloudSupporterError(
-        ErrorType.VALIDATION_ERROR,
+      throw Errors.Common.validationFailed(
         'Invalid file path provided',
         { filePath }
       );
@@ -172,8 +168,7 @@ export class FileOutputHandler implements IFileOutputHandler {
         // YAML formatはjsonFormatterでYAML形式として出力
         return await jsonFormatter.format(result);
       default:
-        throw new CloudSupporterError(
-          ErrorType.OUTPUT_ERROR,
+        throw Errors.Common.outputError(
           `Unsupported output format: ${String(format)}`,
           { format }
         );
@@ -187,10 +182,10 @@ export class FileOutputHandler implements IFileOutputHandler {
     try {
       writeFileSync(filePath, content, 'utf-8');
     } catch (error) {
-      throw new CloudSupporterError(
-        ErrorType.FILE_ERROR,
-        `Failed to write ${format} file`,
-        { filePath, error: (error as Error).message }
+      throw Errors.Common.fileWriteError(
+        filePath,
+        format,
+        (error as Error).message
       );
     }
   }

@@ -1,8 +1,8 @@
 // MetricsAnalyzer追加カバレッジテスト - エラーハンドリング
 // CLAUDE.md準拠: No any types、TDD実践
 
+import { CloudSupporterError } from '../../../src/errors';
 import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
-import { CloudSupporterError } from '../../../src/utils/error';
 import {
   createTestCloudFormationTemplate,
   createLambdaResource,

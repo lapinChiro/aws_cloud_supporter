@@ -7,8 +7,8 @@ import { tmpdir } from 'os';
 import path from 'path';
 
 import { TemplateParser } from '../../../src/core/parser';
+import { CloudSupporterError, isFileError, isParseError, ErrorType } from '../../../src/errors';
 import type { CloudFormationTemplate } from '../../../src/types/cloudformation';
-import { CloudSupporterError, isFileError, isParseError, ErrorType } from '../../../src/utils/error';
 import {
   createTestCloudFormationTemplate,
   createRDSResource,
@@ -655,7 +655,7 @@ Resources:
     const originalReadFile = parser['readFile'];
     parser['readFile'] = jest.fn().mockImplementation(async function(this: TemplateParser, filePath: string) {
       const fs = await import('fs/promises');
-      const { createFileError } = await import('../../../src/utils/error');
+      const { Errors } = await import('../../../src/errors');
 
       // performance.nowをモックして10秒以上経過したように見せる
       let callCount = 0;
@@ -673,10 +673,9 @@ Resources:
       // 元のメソッドのロジックを実行
       const duration = 11000;
       if (duration > 10000) {
-        throw createFileError(
-          `File reading timeout: ${duration.toFixed(0)}ms (max: 10000ms)`,
+        throw Errors.Common.fileReadError(
           filePath,
-          { duration: Math.round(duration) }
+          `File reading timeout: ${duration.toFixed(0)}ms (max: 10000ms)`
         );
       }
       return content;

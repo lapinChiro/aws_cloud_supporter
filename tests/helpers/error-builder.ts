@@ -1,7 +1,7 @@
 // CloudSupporterError Builder Pattern
 // CLAUDE.md準拠: DRY原則・Builder Pattern
 
-import { CloudSupporterError, ErrorType } from '../../src/utils/error';
+import { CloudSupporterError, ErrorType, ERROR_CODES } from '../../src/errors';
 
 /**
  * CloudSupporterErrorビルダー
@@ -69,7 +69,7 @@ export class CloudSupporterErrorBuilder {
       finalDetails = { ...this.details, suggestions: this.suggestions };
     }
 
-    const error = new CloudSupporterError(this.type, this.message, finalDetails);
+    const error = new CloudSupporterError(ERROR_CODES.VALIDATION_FAILED, this.type, this.message, finalDetails);
 
     if (this.cause) {
       error.cause = this.cause;

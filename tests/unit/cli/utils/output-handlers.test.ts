@@ -5,8 +5,8 @@ import { tmpdir } from 'os';
 import path from 'path';
 
 import { FileOutputHandler } from '../../../../src/cli/utils/output-handlers';
+import { CloudSupporterError, ErrorType, ERROR_CODES } from '../../../../src/errors';
 import type { AnalysisResult } from '../../../../src/types/index';
-import { CloudSupporterError, ErrorType } from '../../../../src/utils/error';
 import { createLogger } from '../../../../src/utils/logger';
 
 // テスト全体で使用する一時ディレクトリ
@@ -199,6 +199,7 @@ describe('FileOutputHandler エラーハンドリングテスト（CLAUDE.md: Er
     
     const handleError = (handler as unknown as { handleError: (error: unknown, logger: unknown) => void }).handleError;
     const mockError = new CloudSupporterError(
+      ERROR_CODES.OUTPUT_ERROR,
       ErrorType.OUTPUT_ERROR,
       'Test CloudSupporter error',
       { testDetail: 'error details' }

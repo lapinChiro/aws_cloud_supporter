@@ -371,3 +371,228 @@ aws_cloud_supporter/
         ├── data.js
         └── icons.js
 ```
+
+## エラーハンドリングシステム
+
+### 概要
+
+AWS Cloud Supporterは統一されたエラーハンドリングシステムを採用しており、型安全で一貫性のあるエラー処理を提供します。すべてのエラーは`CloudSupporterError`クラスを通じて処理され、サービス別のファクトリーメソッドで簡単に生成できます。
+
+### 基本的な使用方法
+
+#### 1. シンプルなエラー生成
+
+```typescript
+import { Errors } from './src/errors';
+
+// Lambda関連のエラー
+throw Errors.Lambda.metricsNotFound();
+
+// DynamoDB関連のエラー
+throw Errors.DynamoDB.metricsNotFound();
+
+// 一般的なバリデーションエラー
+throw Errors.Common.validationFailed('Invalid parameter value');
+
+// ファイル操作エラー
+throw Errors.Common.fileNotFound('/path/to/file.yaml');
+```
+
+#### 2. 詳細情報付きエラー生成
+
+```typescript
+import { ErrorBuilder, ErrorCatalog } from './src/errors';
+
+// ビルダーパターンを使用した詳細なエラー
+throw ErrorBuilder
+  .fromCatalog(ErrorCatalog.validationFailed('CloudFormation template validation failed'))
+  .withFilePath('/templates/web-app.yaml')
+  .withLineNumber(42)
+  .withDetails({
+    resourceId: 'MyDatabase',
+    resourceType: 'AWS::RDS::DBInstance',
+    reason: 'Missing required property: DBInstanceClass'
+  })
+  .build();
+```
+
+#### 3. エラーの判定と処理
+
+```typescript
+import { CloudSupporterError, isFileError, isParseError } from './src/errors';
+
+try {
+  // 何らかの処理
+} catch (error) {
+  if (error instanceof CloudSupporterError) {
+    console.log(`Error Code: ${error.code}`);
+    console.log(`Error Type: ${error.type}`);
+    console.log(`Message: ${error.message}`);
+
+    // 特定のエラータイプの判定
+    if (isFileError(error)) {
+      console.log('ファイル関連のエラーです');
+    } else if (isParseError(error)) {
+      console.log('パース関連のエラーです');
+    }
+
+    // 詳細情報の取得
+    if (error.details) {
+      console.log('Error Details:', error.details);
+    }
+  }
+}
+```
+
+### 利用可能なエラーファクトリー
+
+#### AWS サービス別エラー
+
+```typescript
+// Lambda関連
+Errors.Lambda.metricsNotFound()
+Errors.Lambda.invalidRuntime(runtime)
+Errors.Lambda.timeoutTooHigh(timeout)
+
+// DynamoDB関連
+Errors.DynamoDB.metricsNotFound()
+Errors.DynamoDB.invalidBillingMode(mode)
+Errors.DynamoDB.throughputExceeded(requested, limit)
+
+// RDS関連
+Errors.RDS.metricsNotFound()
+
+// ECS関連
+Errors.ECS.metricsNotFound()
+Errors.ECS.onlyFargateSupported()
+
+// ALB関連
+Errors.ALB.metricsNotFound()
+Errors.ALB.onlyApplicationLoadBalancerSupported()
+
+// API Gateway関連
+Errors.APIGateway.metricsNotFound()
+```
+
+#### 共通エラー
+
+```typescript
+// ファイル操作
+Errors.Common.fileNotFound(filePath)
+Errors.Common.fileReadError(filePath, reason)
+Errors.Common.fileWriteError(filePath, reason)
+
+// パース/バリデーション
+Errors.Common.parseError(message, filePath, lineNumber, details)
+Errors.Common.validationFailed(message, details)
+
+// 出力処理
+Errors.Common.outputError(message, details)
+
+// リソース関連
+Errors.Common.resourceUnsupportedType(resourceType, supportedTypes)
+```
+
+### エラーハンドリングのベストプラクティス
+
+#### 1. 適切なエラータイプの選択
+
+```typescript
+// ❌ 間違い: 汎用的すぎるエラー
+throw new Error('Something went wrong');
+
+// ✅ 正しい: 具体的で分類されたエラー
+throw Errors.Lambda.invalidRuntime('python2.7');
+```
+
+#### 2. 詳細情報の提供
+
+```typescript
+// ❌ 間違い: 情報不足
+throw Errors.Common.validationFailed('Invalid input');
+
+// ✅ 正しい: 詳細な情報を含む
+throw Errors.Common.validationFailed('Invalid CloudFormation template', {
+  templatePath: '/path/to/template.yaml',
+  resourceId: 'MyResource',
+  missingProperty: 'Type'
+});
+```
+
+#### 3. 一貫性のあるエラーメッセージ
+
+```typescript
+// 各サービスのメトリクスが見つからない場合
+throw Errors.Lambda.metricsNotFound();     // "Lambda metrics configuration not found"
+throw Errors.DynamoDB.metricsNotFound();   // "DynamoDB metrics configuration not found"
+throw Errors.RDS.metricsNotFound();        // "RDS metrics configuration not found"
+```
+
+### 開発者向け情報
+
+#### カスタムエラーの作成
+
+新しいサービスやエラータイプを追加する場合：
+
+1. **エラーコードの追加** (`src/errors/error.types.ts`)
+```typescript
+export const ERROR_CODES = {
+  // 既存のコード...
+  NEW_SERVICE_ERROR: 'NEW_SERVICE_ERROR'
+} as const;
+```
+
+2. **ファクトリーの作成** (`src/errors/factories/newservice.ts`)
+```typescript
+export const NewServiceErrors = {
+  metricsNotFound: (): CloudSupporterError =>
+    ErrorBuilder.fromCatalog(ErrorCatalog.metricsNotFound('NewService'))
+      .withDetails({ resourceType: 'AWS::NewService::Resource' })
+      .build()
+};
+```
+
+3. **統合の追加** (`src/errors/index.ts`)
+```typescript
+export const Errors = {
+  // 既存のサービス...
+  NewService: NewServiceErrors
+} as const;
+```
+
+#### テストでのエラー検証
+
+```typescript
+import { Errors, CloudSupporterError, ERROR_CODES, ErrorType } from '../src/errors';
+
+describe('Error Handling', () => {
+  it('should throw appropriate Lambda error', () => {
+    expect(() => {
+      throw Errors.Lambda.metricsNotFound();
+    }).toThrow(CloudSupporterError);
+
+    try {
+      throw Errors.Lambda.metricsNotFound();
+    } catch (error) {
+      expect(error.code).toBe(ERROR_CODES.METRICS_NOT_FOUND);
+      expect(error.type).toBe(ErrorType.RESOURCE_ERROR);
+      expect(error.message).toContain('Lambda metrics configuration not found');
+    }
+  });
+});
+```
+
+### エラーコード一覧
+
+| コード | タイプ | 説明 |
+|--------|--------|------|
+| `METRICS_NOT_FOUND` | RESOURCE_ERROR | メトリクス設定が見つからない |
+| `RESOURCE_UNSUPPORTED_TYPE` | RESOURCE_ERROR | サポートされていないリソースタイプ |
+| `VALIDATION_FAILED` | VALIDATION_ERROR | バリデーション失敗 |
+| `FILE_NOT_FOUND` | FILE_ERROR | ファイルが見つからない |
+| `FILE_READ_ERROR` | FILE_ERROR | ファイル読み込みエラー |
+| `FILE_WRITE_ERROR` | FILE_ERROR | ファイル書き込みエラー |
+| `PARSE_ERROR` | PARSE_ERROR | パースエラー |
+| `OUTPUT_ERROR` | OUTPUT_ERROR | 出力エラー |
+
+このエラーハンドリングシステムにより、開発者は一貫性があり、デバッグしやすいエラー処理を実装できます。

@@ -1,10 +1,10 @@
 // CLAUDE.md準拠: 単一責任原則・No any types・SOLID設計
 
 import { METRICS_CONFIG_MAP } from '../config/metrics';
+import { Errors } from '../errors';
 import type { CloudFormationResource, ECSService} from '../types/cloudformation';
-import { /* ECSServiceProperties, */ isFargateService } from '../types/cloudformation';
+import { isFargateService } from '../types/cloudformation';
 import type { MetricConfig, MetricDefinition } from '../types/metrics';
-import { CloudSupporterError, ErrorType } from '../utils/error';
 
 import { BaseMetricsGenerator } from './base.generator';
 
@@ -27,16 +27,7 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
   override async generate(resource: CloudFormationResource): Promise<MetricDefinition[]> {
     // Fargateサービスのみサポート
     if (!isFargateService(resource)) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
-        'Only Fargate services are supported',
-        { 
-          resourceType: resource.Type,
-          launchType: (resource as ECSService).Properties?.LaunchType ?? 'Unknown'
-        },
-        undefined,
-        undefined
-      );
+      throw Errors.ECS.onlyFargateSupported((resource as ECSService).Properties?.LaunchType ?? 'Unknown');
     }
     
     // 基底クラスのgenerate呼び出し
@@ -84,11 +75,7 @@ export class ECSMetricsGenerator extends BaseMetricsGenerator {
     const baseConfigs = METRICS_CONFIG_MAP['AWS::ECS::Service'];
     
     if (!baseConfigs) {
-      throw new CloudSupporterError(
-        ErrorType.RESOURCE_ERROR,
-        'ECS metrics configuration not found',
-        { resourceType: 'AWS::ECS::Service' }
-      );
+      throw Errors.ECS.metricsNotFound();
     }
     
     const ecs = resource as ECSService;
