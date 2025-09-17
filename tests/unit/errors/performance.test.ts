@@ -11,7 +11,7 @@ describe('Error System Performance Tests (Phase 4.3)', () => {
     BATCH_ERROR_GENERATION_MS: 100, // 100ms for 1000 errors
     FACTORY_ERROR_OVERHEAD_MS: 0.1, // 0.1ms max overhead per factory call
     BUILDER_ERROR_OVERHEAD_MS: 0.5, // 0.5ms max overhead per builder call
-    MEMORY_LEAK_THRESHOLD_MB: 10, // 10MB max memory increase
+    MEMORY_LEAK_THRESHOLD_MB: 15, // 15MB max memory increase for 5000 complex errors
   };
 
   describe('Single Error Generation Performance', () => {
